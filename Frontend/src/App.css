@@ -1,0 +1,17 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+.border-bottom:hover{
+  border-bottom: 3px solid rgb(255, 28, 104);
+  padding-bottom: 32px;
+}
+
+.border-bottom1:hover{
+  border-bottom: 3px solid rgb(255, 28, 104);
+  padding-bottom: 20px;
+}
+
+
+
+
