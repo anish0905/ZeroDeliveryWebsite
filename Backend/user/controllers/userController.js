@@ -59,39 +59,70 @@ exports.verifyOtp = async (req, res) => {
 
 
 //location 
-
 exports.updateLocation = async (req, res) => {
-    const { mobileNumber, location } = req.body;
-  
-    try {
-      const user = await User.findOne({ mobileNumber });
-      if (!user) {
-        return res.status(404).send('User not found');
-      }
-  
-      user.location = location;
-      await user.save();
-  
-      res.status(200).send('Location updated successfully');
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  };
-  
-  exports.getLocation = async (req, res) => {
-    const { mobileNumber } = req.query;
-  
-    try {
-      const user = await User.findOne({ mobileNumber });
-      if (!user) {
-        return res.status(404).send('User not found');
-      }
-  
-      res.status(200).send({ location: user.location });
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
-  };
+  const { mobileNumber, location } = req.body;
 
+  try {
+    const user = await User.findOne({ mobileNumber });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    user.location = location;
+    await user.save();
+
+    res.status(200).send('Location updated successfully');
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.getLocation = async (req, res) => {
+  const { mobileNumber } = req.query;
+
+  try {
+    const user = await User.findOne({ mobileNumber });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).send({ location: user.location });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.updateAddress = async (req, res) => {
+  const { mobileNumber, address } = req.body;
+
+  try {
+    const user = await User.findOne({ mobileNumber });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    user.address = address;
+    await user.save();
+
+    res.status(200).send('Address updated successfully');
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+exports.getAddress = async (req, res) => {
+  const { mobileNumber } = req.query;
+
+  try {
+    const user = await User.findOne({ mobileNumber });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).send({ address: user.address });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
 
 
