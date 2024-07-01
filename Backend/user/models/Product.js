@@ -56,7 +56,7 @@ const productSchema = new mongoose.Schema(
     },
     sku: {
       type: String,
-      required: [true, "Please add the product SKU"],
+      required: [false, "Please add the product SKU"],
       unique: true,
       trim: true,
     },

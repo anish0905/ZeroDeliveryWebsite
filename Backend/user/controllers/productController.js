@@ -64,3 +64,24 @@ exports.deleteProductById = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+
+
+// Fetch products by category
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const products = await Product.find({ category });
+
+    res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
