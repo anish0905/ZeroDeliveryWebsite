@@ -85,3 +85,7 @@ exports.getProductsByCategory = async (req, res) => {
   }
 };
 
+exports.getAllCategories = async (req, res, next) => {
+  
+}
+  

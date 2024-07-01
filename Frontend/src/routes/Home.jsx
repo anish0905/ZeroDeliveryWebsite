@@ -15,6 +15,7 @@ import ManWatch from './ManWatch';
 import WomenWatch from './WomenWatch';
 import Banner from '../Component/Banner';
 import ItemsCategory from '../Component/ItemsCategory';
+import ItemCards from '../Component/ItemCards'
 
 const Home = () => {
   const smartPhones = useSelector(store => store.smartPhone);
@@ -34,6 +35,7 @@ const Home = () => {
   return (
     <div className='flex flex-col '>
       <Banner/>
+      <ItemCards/>
       <ItemsCategory/>
       <Category name="Tops" items={tops} Component={Top} />
       <Category name="Women's Dresses" items={womanDresses} Component={WomensDresses} />
