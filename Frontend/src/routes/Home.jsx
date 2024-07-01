@@ -13,6 +13,8 @@ import ManShirt from './ManShirt';
 import ManShoes from './ManShoes';
 import ManWatch from './ManWatch';
 import WomenWatch from './WomenWatch';
+import Banner from '../Component/Banner';
+import ItemsCategory from '../Component/ItemsCategory';
 
 const Home = () => {
   const smartPhones = useSelector(store => store.smartPhone);
@@ -30,7 +32,9 @@ const Home = () => {
   const womenWatchs = useSelector(store => store.womenWatch);
 
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col '>
+      <Banner/>
+      <ItemsCategory/>
       <Category name="Tops" items={tops} Component={Top} />
       <Category name="Women's Dresses" items={womanDresses} Component={WomensDresses} />
       {/* <Category name="Women's Shoes" items={womenShoes} Component={WomenShoes} /> */}
@@ -62,11 +66,12 @@ const Category = ({ name, items, Component }) => {
   };
 
   return (
-    <div className='mb-2 '>
+    <div className='mb-2  '>
+      
       <h1 className='text-xl font-bold my-4 ml-10'>{name}</h1>
       <div className='relative px-8'>
         <button
-          className='absolute left-0 top-1/2 transform -translate-y-1/2 z-50 bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700 focus:outline-none'
+          className='absolute left-0 top-1/2 transform -translate-y-1/2 z-45 bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700 focus:outline-none'
           onClick={() => scroll('left')}
         >
           &#9664;
@@ -87,7 +92,7 @@ const Category = ({ name, items, Component }) => {
           ))}
         </div>
         <button
-          className='absolute right-0 top-1/2 transform -translate-y-1/2 z-50 bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700 focus:outline-none'
+          className='absolute right-0 top-1/2 transform -translate-y-1/2 z-45 bg-gray-800 text-white p-2 rounded-full shadow-md hover:bg-gray-700 focus:outline-none'
           onClick={() => scroll('right')}
         >
           &#9654;
