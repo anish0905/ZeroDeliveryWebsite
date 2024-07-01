@@ -20,9 +20,9 @@ const Fragrances = ({ item }) => {
   };
 
   return (
-    <div className="font-sef p-5 mt-32">
-      <div className="my-2 relative ">
-        <img src={item.images[0]} alt="item image" className="w-72 h-72 rounded" />
+    <div className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px]">
+      <div className="my-2 relative flex justify-center items-center content-center ">
+        <img src={item.images[0]} alt="item image" className="w-52 h-52 rounded" />
         <div className="my-1 absolute left-2 bottom-0 z-40  text-sm font-thin flex content-center items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded ">
           {item.rating} <CiStar className="text-xl text-yellow-900" /> |{" "}
            {item.stock} 
@@ -44,7 +44,7 @@ const Fragrances = ({ item }) => {
       <div className="my-4 w-1/2">
         {elementFound ? (
           <button
-          className=" bg-red-400 w-full rounded text-white py-1 h-8 flex justify-center content-center items-center gap-2"
+          className=" bg-red-400 w-full rounded text-white py-2 h-8 flex justify-center content-center items-center gap-2"
           onClick={handleRemove}
         >
           <IoBagRemoveSharp className="text-2xl" />
