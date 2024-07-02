@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { VscAccount } from "react-icons/vsc";
 import { FaCartShopping } from "react-icons/fa6";
@@ -13,6 +13,12 @@ import Location from "../Location";
 
 const NavBar1 = () => {
   const bag = useSelector((store) => store.bag);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+
+
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
 
   return (
     <div className="flex lg:px-10 md:pl-2 h-20 py-5 px-5 bg-white  content-center items-center shadow-lg justify-between md:gap-10 fixed z-50 w-full">
@@ -46,9 +52,25 @@ const NavBar1 = () => {
             <div className="flex justify-center content-center items-center">
               <VscAccount className="text-2xl" />
             </div>
-            <Link to="/" className="border-bottom1">
+            <button  onClick={toggleDropdown}>
               Profile
-            </Link>
+            </button>
+            {dropdownVisible && (
+              <ul className="absolute bg-white text-gray-600 font-thin shadow-md rounded w-72 mt-4 p-5 ">
+                <li className="px-4 py-2 hover:bg-gray-200 font-semibold text-lg ">My Account
+                  <p className="text-sm font-thin">635293601</p>
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-200">My Orders</li>
+                <li className="px-4 py-2 hover:bg-gray-200">Save Address Address</li>
+                <li className="px-4 py-2 hover:bg-gray-200 flex justify-between content-center items-center ">
+                  <p>My Wishlist</p>
+                  <p className="text-sm font-thin">₹543</p>
+                </li>
+                <li className="px-4 py-2 hover:bg-gray-200">FAQ's</li>
+                <li className="px-4 py-2 hover:bg-gray-200">Account Privacy</li>
+                <li className="px-4 py-2 hover:bg-gray-200">Logout</li>
+              </ul>
+            )}
           </li>
 
           <li>

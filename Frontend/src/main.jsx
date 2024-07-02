@@ -9,6 +9,7 @@ import myntrastore from "./store";
 import { Provider } from 'react-redux';
 import Bag from "./Component/Bag";
 import ShowCategoryWise from "./routes/ShowCategoryWise";
+import User from "./routes/page/User";
 
 
 const router = createBrowserRouter([
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/showCategory/:name",
         element: <ShowCategoryWise/>
+      },
+      {
+        path: "/user",
+        element: <User/>
       }
       
     ]

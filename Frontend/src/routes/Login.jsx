@@ -4,6 +4,7 @@ import logo from "../image/Blinkit.webp";
 import axios from "axios";
 import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
+import { HiArrowSmallLeft } from "react-icons/hi2";
 
 export function Login() {
   const [open, setOpen] = useState(false);
@@ -61,12 +62,12 @@ export function Login() {
       </Button>
       <Dialog open={open} handler={handleOpen}>
         <div className="flex justify-center items-center content-center">
-          <img src={logo} alt="Blinkit Logo" className="w-52 h-28" />
+          <img src={logo} alt="Blinkit Logo" className="w-40 h-28" />
         </div>
 
         <div className="flex justify-center flex-col content-center items-center font-bold">
           <p className="text-black text-2xl mb-1">India's last minute app</p>
-          <p className="text-base mb-1">Log in or Sign up</p>
+          <p className="text-base font-thin mb-4 text-black">Log in or Sign up</p>
           {otpSent ? (
             <OTPInput otp={otp} handleOtpChange={handleOtpChange} verifyOtp={verifyOtp} />
           ) : (
@@ -84,10 +85,13 @@ export function Login() {
                   </label>
                 </div>
               </div>
-              <div className="flex justify-center items-center content-center my-2 w-11/12">
+              <div className="flex justify-center items-center content-center w-full min-w-[200px] my-4">
                 <Button onClick={requestOtp} className="w-6/12 bg-blue-gray-600">
                   <span>Continue</span>
                 </Button>
+              </div>
+              <div className="absolute top-5 left-5 text-2xl cursor-pointer">
+              <HiArrowSmallLeft onClick={() => setOpen(false)}/>
               </div>
             </>
           )}
