@@ -56,21 +56,54 @@ const NavBar1 = () => {
               Profile
             </button>
             {dropdownVisible && (
-              <ul className="absolute bg-white text-gray-600 font-thin shadow-md rounded w-72 mt-4 p-5 ">
-                <li className="px-4 py-2 hover:bg-gray-200 font-semibold text-lg ">My Account
-                  <p className="text-sm font-thin">635293601</p>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-200">My Orders</li>
-                <li className="px-4 py-2 hover:bg-gray-200">Save Address Address</li>
-                <li className="px-4 py-2 hover:bg-gray-200 flex justify-between content-center items-center ">
-                  <p>My Wishlist</p>
-                  <p className="text-sm font-thin">₹543</p>
-                </li>
-                <li className="px-4 py-2 hover:bg-gray-200">FAQ's</li>
-                <li className="px-4 py-2 hover:bg-gray-200">Account Privacy</li>
-                <li className="px-4 py-2 hover:bg-gray-200">Logout</li>
-              </ul>
-            )}
+        <div className="absolute bg-white text-gray-600 shadow-md rounded w-72 mt-4 p-5 z-10">
+          <Link 
+            to={`/user/MyAcount`} 
+            className="block px-4 py-2 hover:bg-gray-200 text-lg font-semibold"
+          >
+            My Account
+            <p className="text-sm font-thin">635293601</p>
+          </Link>
+          <Link 
+            to={`/user/MyOrder`} 
+            className="block px-4 py-2 hover:bg-gray-200"
+          >
+            My Orders
+          </Link>
+          <Link 
+            to={`/user/SaveAddress`} 
+            className="block px-4 py-2 hover:bg-gray-200"
+          >
+            Save Address
+          </Link>
+          <Link 
+            to={`/user/MyWishlist`} 
+            className="block px-4 py-2 hover:bg-gray-200 flex justify-between items-center"
+          >
+            <span>My Wishlist</span>
+            <span className="text-sm font-thin">₹543</span>
+          </Link>
+          <div className="border-t my-2"></div>
+          <Link 
+            to="/faqs" 
+            className="block px-4 py-2 hover:bg-gray-200"
+          >
+            FAQ's
+          </Link>
+          <Link 
+            to="/account-privacy" 
+            className="block px-4 py-2 hover:bg-gray-200"
+          >
+            Account Privacy
+          </Link>
+          <Link 
+            to="/logout" 
+            className="block px-4 py-2 hover:bg-gray-200 text-red-500"
+          >
+            Logout
+          </Link>
+        </div>
+      )}
           </li>
 
           <li>
