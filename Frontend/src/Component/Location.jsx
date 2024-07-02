@@ -16,6 +16,10 @@ const Location = () => {
           }
         });
         const data = response.data;
+        console.log(data);
+        localStorage.setItem("latitude", data.latitude);
+        localStorage.setItem("longitude", data.longitude);
+
         setLocation(`${data.city}, ${data.countryName}`);
         setDeliveryTime('11 minutes'); // Example delivery time
       } catch (error) {

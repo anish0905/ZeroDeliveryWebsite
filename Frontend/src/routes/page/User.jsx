@@ -49,12 +49,12 @@ const User = () => {
   };
 
   return (
-    <div className="flex justify-center text-sm content-center items-center px-32 h-screen w-full">
-      <div className="bg-white shadow-md rounded flex justify-center items-center content-center border-[1px] border-solid px-2 py-4 w-full">
-        <div className="w-1/5">
+    <div className="flex justify-center text-sm content-center items-center lg:px-32 px-5 h-screen w-full">
+      <div className="bg-white shadow-md rounded lg:flex md:flex block  justify-center items-center content-center border-[1px] border-solid px-2 py-4 w-full">
+        <div className="w-1/5 lg:block md:block hidden">
           <ul className="w-full">
-            <li className="h-20 mb-4">
-              <p className="hover:bg-gray-200 px-4 py-2">635293601</p>
+            <li className="h-12 mb-4">
+              <p className=" px-4 py-2">+91635293601</p>
             </li>
             <Link to={`/user/MyOrder`} className="px-4 py-2 hover:bg-gray-200 mb-4 flex gap-2 content-center items-center cursor-pointer">
               <FaClipboardList className="text-xl" />
