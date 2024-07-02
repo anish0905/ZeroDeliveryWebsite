@@ -20,7 +20,7 @@ const  ManShoes= ({ item }) => {
   };
 
   return (
-    <div className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px]">
+    <div className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[450px] cursor-pointer hover:shadow-2xl">
       <div  className="my-2 relative flex justify-center items-center content-center ">
         <img src={item.images[0]} alt="item image" className="w-60 h-60 rounded" />
         <div className="my-1 absolute left-2 bottom-0 z-40  text-sm font-thin flex content-center items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded ">
@@ -41,7 +41,7 @@ const  ManShoes= ({ item }) => {
           ({item.discountPercentage}% OFF)
         </span>
       </div>
-      <div className="my-4 w-1/2">
+      <div className="my-4 lg:w-9/12 w-full">
         {elementFound ? (
           <button
           className=" bg-red-400 w-full rounded text-white py-1 h-8 flex justify-center content-center items-center gap-2"

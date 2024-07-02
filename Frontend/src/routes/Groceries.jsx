@@ -20,7 +20,7 @@ const Groceries = ({ item }) => {
   };
 
   return (
-    <div className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px]">
+    <div className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px] cursor-pointer hover:shadow-2xl">
       <div className="my-2 relative flex justify-center items-center content-center ">
         <img
           src={item.images[0]}

@@ -20,7 +20,7 @@ const  Top= ({ item }) => {
   };
 
   return (
-    <div className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px]">
+    <div className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px] cursor-pointer hover:shadow-2xl">
     
       <div className="my-2 relative flex justify-center items-center content-center ">
         <img src={item.images[0]} alt="item image" className="w-60 h-60 rounded" />
