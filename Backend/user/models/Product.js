@@ -1,189 +1,51 @@
-// models/productSchema.js
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: [true, "Please add the product title"],
-      trim: true,
-    },
-    description: {
-      type: String,
-      required: [true, "Please add the product description"],
-      trim: true,
-    },
-    category: {
-      type: String,
-      required: [true, "Please add the product category"],
-      trim: true,
-    },
-    subCategory: {
-      type: String,
-      trim: true,
-    },
-    price: {
-      type: Number,
-      required: [true, "Please add the product price"],
-      min: [0, "Price cannot be less than 0"],
-    },
-    discountPercentage: {
-      type: Number,
-      default: 0,
-      min: [0, "Discount percentage cannot be less than 0"],
-      max: [100, "Discount percentage cannot be more than 100"],
-    },
-    finalPrice: {
-      type: Number,
-      required: [true, "Please add the final price after discount"],
-      min: [0, "Final price cannot be less than 0"],
-    },
-    rating: {
-      type: Number,
-      default: 0,
-      min: [0, "Rating cannot be less than 0"],
-      max: [5, "Rating cannot be more than 5"],
-    },
-    stock: {
-      type: Number,
-      required: [true, "Please add the stock quantity"],
-      min: [0, "Stock cannot be less than 0"],
-    },
-    brand: {
-      type: String,
-      required: [true, "Please add the product brand"],
-      trim: true,
-    },
-    sku: {
-      type: String,
-      required: [false, "Please add the product SKU"],
-      unique: true,
-      trim: true,
-    },
-    weight: {
-      type: Number,
-      required: [true, "Please add the product weight"],
-      min: [0, "Weight cannot be less than 0"],
-    },
-    dimensions: {
-      width: {
-        type: Number,
-        required: [true, "Please add the product width"],
-        min: [0, "Width cannot be less than 0"],
-      },
-      height: {
-        type: Number,
-        required: [true, "Please add the product height"],
-        min: [0, "Height cannot be less than 0"],
-      },
-      depth: {
-        type: Number,
-        required: [true, "Please add the product depth"],
-        min: [0, "Depth cannot be less than 0"],
-      },
-    },
-    warrantyInformation: {
-      type: String,
-      default: "No warranty information available",
-    },
-    shippingInformation: {
-      type: String,
-      default: "Ships in 1-2 business days",
-    },
-    availabilityStatus: {
-      type: String,
-      default: "In Stock",
-      enum: ["In Stock", "Out of Stock", "Low Stock", "Preorder"],
-    },
-    returnPolicy: {
-      type: String,
-      default: "30 days return policy",
-    },
-    minimumOrderQuantity: {
-      type: Number,
-      default: 1,
-      min: [1, "Minimum order quantity cannot be less than 1"],
-    },
-    tags: {
-      type: [String],
-      required: true,
-      validate: {
-        validator: function (v) {
-          return Array.isArray(v) && v.length > 0;
-        },
-        message: "Please add at least one tag",
-      },
-    },
-    reviews: [
-      {
-        rating: {
-          type: Number,
-          required: true,
-          min: [0, "Rating cannot be less than 0"],
-          max: [5, "Rating cannot be more than 5"],
-        },
-        comment: {
-          type: String,
-          trim: true,
-        },
-        date: {
-          type: Date,
-          default: Date.now,
-        },
-        reviewerName: {
-          type: String,
-          trim: true,
-        },
-        reviewerEmail: {
-          type: String,
-          trim: true,
-        },
-      },
-    ],
-    meta: {
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-      updatedAt: {
-        type: Date,
-        default: Date.now,
-      },
-      barcode: {
-        type: String,
-        trim: true,
-      },
-      qrCode: {
-        type: String,
-        trim: true,
-      },
-    },
-    thumbnail: {
-      type: String,
-      default: "default-thumbnail-url",
-      trim: true,
-    },
-    images: {
-      type: [String],
-      validate: {
-        validator: function (v) {
-          return Array.isArray(v) && v.length > 0;
-        },
-        message: "Please add at least one image URL",
-      },
-    },
-    isAvailable: {
-      type: Boolean,
-      default: true,
-    },
-    expirationDate: {
-      type: Date,
-      default: null,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+const reviewSchema = new mongoose.Schema({
+    rating: { type: Number, required: true },
+    comment: { type: String, required: true },
+    date: { type: Date, required: true },
+    reviewerName: { type: String, required: true },
+    reviewerEmail: { type: String, required: true }
+});
 
-module.exports = mongoose.model("Product", productSchema);
+const metaSchema = new mongoose.Schema({
+    createdAt: { type: Date, required: true },
+    updatedAt: { type: Date, required: true },
+    barcode: { type: String, required: true },
+    qrCode: { type: String, required: true }
+});
+
+const dimensionsSchema = new mongoose.Schema({
+    width: { type: Number, required: true },
+    height: { type: Number, required: true },
+    depth: { type: Number, required: true }
+});
+
+const productSchema = new mongoose.Schema({
+    // id: { type: mongoose.Schema.Types.ObjectId, required: true },
+    title: { type: String, required: true },
+    description: { type: String, required: true },
+    category: { type: String, required: true },
+    price: { type: Number, required: true },
+    discountPercentage: { type: Number, required: true },
+    rating: { type: Number, required: true },
+    stock: { type: Number, required: true },
+    tags: { type: [String], required: true },
+    brand: { type: String, required: true },
+    sku: { type: String, required: true },
+    weight: { type: Number, required: true },
+    dimensions: { type: dimensionsSchema, required: true },
+    warrantyInformation: { type: String, required: true },
+    shippingInformation: { type: String, required: true },
+    availabilityStatus: { type: String, required: true },
+    reviews: { type: [reviewSchema], required: true },
+    returnPolicy: { type: String, required: true },
+    minimumOrderQuantity: { type: Number, required: true },
+    meta: { type: metaSchema, required: true },
+    images: { type: [String], required: true },
+    thumbnail: { type: String, required: true }
+});
+
+const Product = mongoose.model('Product', productSchema);
+
+module.exports = Product;

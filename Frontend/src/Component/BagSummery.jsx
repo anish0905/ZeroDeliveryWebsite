@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom'
+
 
 const BagSummary = () => {
   const bagItems = useSelector((state) => state.bag);
@@ -65,9 +67,11 @@ const BagSummary = () => {
         <span>₹{formattedfinalPayment}</span>
        </div>
        <div>
-            <button className='w-full rounded bg-pink-600 text-white px-4 py-2 my-2'>
-                PLACE ORDER
-            </button>
+       <Link to="/addressForm">
+  <button className='w-full rounded bg-pink-600 text-white px-4 py-2 my-2'>
+    PLACE ORDER
+  </button>
+</Link>
         </div>
     </div>
   );

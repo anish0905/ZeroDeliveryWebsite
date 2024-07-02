@@ -10,6 +10,7 @@ import { Provider } from 'react-redux';
 import Bag from "./Component/Bag";
 import ShowCategoryWise from "./routes/ShowCategoryWise";
 import User from "./routes/page/User";
+import AddressForm from "./Component/AddressForm";
 
 
 const router = createBrowserRouter([
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "/user",
         element: <User/>
+      },
+      {
+        path: "/addressForm",
+        element: <AddressForm/>
       }
       
     ]

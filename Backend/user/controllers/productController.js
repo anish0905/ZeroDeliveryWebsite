@@ -2,16 +2,31 @@
 const Product = require("../models/Product");
 
 // Create a new product
+// exports.createProduct = async (req, res) => {
+//   try {
+//     const product = new Product(req.body);
+//     await product.save();
+//     res.status(201).json({ message: "Product created successfully", product });
+//   } catch (error) {
+//     res.status(400).json({ message: error.message });
+//   }
+// };
+
+
 exports.createProduct = async (req, res) => {
   try {
-    const product = new Product(req.body);
-    await product.save();
-    res.status(201).json({ message: "Product created successfully", product });
+      const product = new Product(req.body);
+      await product.save();
+      res.status(201).send({
+          message: "Product added successfully!",
+          product
+      });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+      res.status(400).send({
+          message: "Product validation failed: " + error.message
+      });
   }
 };
-
 // Get all products or filter by query parameters
 exports.getProducts = async (req, res) => {
   try {
