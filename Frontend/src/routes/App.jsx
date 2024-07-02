@@ -5,7 +5,8 @@ import NavBar1 from '../Component/NavBar/NavBar1'
 import {Outlet} from 'react-router-dom'
 import FetchItem from '../Component/FetchItem'
 import {useSelector} from 'react-redux'
-import LoadingSpinner from '../Component/LoadingSpinner'
+import LoadingSpinner from '../Component/LoadingSpinner';
+import ScrollButton from '../Component/scrollToTop'
 
 
 
@@ -19,8 +20,8 @@ function App() {
       {
         fetchStatus.currentlyFetching? <LoadingSpinner/>:<Outlet/>
       }
-    
       <Footer/>
+      <ScrollButton/>
     </>
   )
 }

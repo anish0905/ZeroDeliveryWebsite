@@ -37,7 +37,7 @@ const AddressForm = () => {
   return (
     <div className="p-1 max-w-4xl mx-auto flex ">
       <div className="w-1/2 pr-2 mt-28">
-        <GoogleMap
+      <GoogleMap
           mapContainerStyle={mapContainerStyle}
           zoom={15}
           center={center}

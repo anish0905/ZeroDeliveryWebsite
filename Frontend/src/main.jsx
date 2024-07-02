@@ -13,6 +13,7 @@ import User from "./routes/page/User";
 import AddressForm from "./Component/AddressForm";
 
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -49,6 +50,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Provider store={myntrastore}>
       <RouterProvider router={router}>
         <App />
+      
       </RouterProvider>
       </Provider>
     </ThemeProvider>
