@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         element: <ShowCategoryWise/>
       },
       {
-        path: "/user",
+        path: "/user/:name",
         element: <User/>
       }
       
