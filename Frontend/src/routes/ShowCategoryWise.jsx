@@ -1,19 +1,20 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { CiStar } from 'react-icons/ci';
 import { IoBagRemoveSharp, IoBagAddSharp } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
-import { bagActions } from '../store/BagSlice'; // Adjust path as needed
 import { API_URI } from '../Contants';
 
-const ShowCategoryWise = () => {
-    const { name } = useParams();
+
+const ShowCategoryWise = (props) => {
+    const params = useParams();
+    const name = props.name || params.name;
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true); // State to manage loading state
     const bagItem = useSelector(state => state.bag.items) || [];
     const dispatch = useDispatch();
-    
+
     const modifyName = name.toLowerCase();
 
     useEffect(() => {
@@ -30,9 +31,7 @@ const ShowCategoryWise = () => {
         };
 
         fetchData();
-    }, [name]);
-
-    const elementFound = bagItem.includes(items.id);
+    }, [name, modifyName]);
 
     const handleAddToBag = (itemId) => {
         dispatch(bagActions.addToBag(itemId)); // Pass itemId to addToBag action
@@ -51,16 +50,17 @@ const ShowCategoryWise = () => {
     }
 
     return (
-        <div className='flex justify-center items-center content-center gap-5 px-4 flex-wrap pt-32'>
+        <div className='flex justify-center items-center content-center gap-5 flex-wrap pt-32'>
             {items.map(item => {
+                const elementFound = bagItem.includes(item.id);
                 return (
-                    <div key={item.id} className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px] cursor-pointer hover:shadow-2xl">
-                        <div className="my-2 relative flex justify-center items-center content-center ">
+                    <div key={item._id} className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px] cursor-pointer hover:shadow-2xl">
+                        <Link to={`/productDetails/${item._id}`} className="my-2 relative flex justify-center items-center content-center ">
                             <img src={item.images[0]} alt="item image" className="w-60 h-60 rounded" />
                             <div className="my-1 absolute left-2 bottom-0 z-40 text-sm font-thin flex content-center items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded ">
                                 {item.rating} <CiStar className="text-xl text-yellow-900" /> | {item.stock}
                             </div>
-                        </div>
+                        </Link>
                         <div className="block gap-5 my-1 px-1">
                             <p className="text-xl font-semibold"> {item.brand}</p>
                             <p className="text-gray-400 text-sm font-thin">{item.title}</p>

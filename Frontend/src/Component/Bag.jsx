@@ -15,7 +15,7 @@ const Bag = () => {
 
   const finalItems = bagItems.map((bagItemId) => {
     for (const category of Object.values(categories)) {
-      const item = category.find((item) => item.id === bagItemId);
+      const item = category.find((item) => item._id === bagItemId);
       if (item) {
         return item;
       }

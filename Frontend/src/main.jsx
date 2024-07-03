@@ -11,6 +11,7 @@ import Bag from "./Component/Bag";
 import ShowCategoryWise from "./routes/ShowCategoryWise";
 import User from "./routes/page/User";
 import AddressForm from "./Component/AddressForm";
+import ProductDetailsHome from "./routes/ProductDetailsHome";
 
 
 
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
       {
         path: "/addressForm",
         element: <AddressForm/>
+      },
+      {
+        path: "/productDetails/:id",
+        element: <ProductDetailsHome/>
       }
       
     ]
