@@ -16,7 +16,6 @@ const Location = () => {
           }
         });
         const data = response.data;
-        console.log(data);
         localStorage.setItem("latitude", data.latitude);
         localStorage.setItem("longitude", data.longitude);
 

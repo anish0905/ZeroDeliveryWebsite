@@ -9,20 +9,20 @@ const SmartPhone = ({ item }) => {
   const dispatch = useDispatch();
   const bagItem = useSelector((store) => store.bag);
 
-  const elementFound = bagItem.includes(item.id);
+  const elementFound = bagItem.includes(item._id);
 
   const handleAddTOBag = () => {
-    dispatch(bagActions.addToBag(item.id));
+    dispatch(bagActions.addToBag(item._id));
   };
 
   const handleRemove = () => {
-    dispatch(bagActions.removeFromBag(item.id));
+    dispatch(bagActions.removeFromBag(item._id));
   };
 
   return (
-    <div className="font-sef px-4 py-2 shadow-md mt-4 border-2 rounded-2xl h-[410px] cursor-pointer hover:shadow-2xl">
+    <div className="font-sef px-4 py-2 shadow-md mt-4 border-2 rounded-2xl max-h-min cursor-pointer hover:shadow-2xl">
       <div className="my-2 relative flex justify-center items-center content-center ">
-        <img src={item.images[0]} alt="item image" className="w-60 h-60 rounded" />
+        <img src={item.images[0]} alt="item image"  className="w-60 h-60 rounded" />
         <div className="my-1 absolute left-2 bottom-0 z-40  text-sm font-thin flex content-center items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded ">
           {item.rating} <CiStar className="text-xl text-yellow-900" /> |{" "}
            {item.stock} 
@@ -41,10 +41,10 @@ const SmartPhone = ({ item }) => {
           ({item.discountPercentage}% OFF)
         </span>
       </div>
-      <div className="my-4 w-1/2">
+      <div className="my-4 w-full">
         {elementFound ? (
           <button
-          className=" bg-red-400 w-full rounded text-white py-1 h-8 flex justify-center content-center items-center gap-2"
+          className=" bg-red-400 w-full rounded text-white py-1  flex justify-center content-center items-center gap-2"
           onClick={handleRemove}
         >
           <IoBagRemoveSharp className="text-2xl" />
@@ -54,7 +54,7 @@ const SmartPhone = ({ item }) => {
         ) : (
           
            <button
-           className=" bg-green-400 w-full h-8 py-1 rounded text-white flex justify-center content-center items-center gap-2 "
+           className=" bg-green-400 w-full  py-1 rounded text-white flex justify-center content-center items-center gap-2 "
            onClick={handleAddTOBag}
          >
            <IoBagAddSharp className="text-2xl  " />

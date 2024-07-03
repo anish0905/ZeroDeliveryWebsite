@@ -5,24 +5,27 @@ import { CiStar } from 'react-icons/ci';
 import { IoBagRemoveSharp, IoBagAddSharp } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { bagActions } from '../store/BagSlice'; // Adjust path as needed
+import { API_URI } from '../Contants';
 
 const ShowCategoryWise = () => {
     const { name } = useParams();
     const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true); // State to manage loading state
     const bagItem = useSelector(state => state.bag.items) || [];
     const dispatch = useDispatch();
     
+    const modifyName = name.toLowerCase();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const resp = await axios.get(`https://dummyjson.com/products/category/${name}`);
-                setItems(resp.data.products);
-                console.log(resp.data.products); // Log the fetched data instead of the state
+                const resp = await axios.get(`${API_URI}/api/prod/category/${modifyName}`);
+                setItems(resp.data.data);
+                setLoading(false); // Set loading to false when data is fetched
+                console.log(resp.data.data); // Log the fetched data instead of the state
             } catch (error) {
                 console.log("error", error);
-            }
-            finally{
-
+                setLoading(false); // Set loading to false on error
             }
         };
 
@@ -39,15 +42,17 @@ const ShowCategoryWise = () => {
         dispatch(bagActions.removeFromBag(itemId)); // Pass itemId to removeFromBag action
     };
 
-   if (items.length === 0) {
-        return (<span className="loader"></span>);
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
+            </div>
+        );
     }
-
 
     return (
         <div className='flex justify-center items-center content-center gap-5 px-4 flex-wrap pt-32'>
             {items.map(item => {
-                
                 return (
                     <div key={item.id} className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px] cursor-pointer hover:shadow-2xl">
                         <div className="my-2 relative flex justify-center items-center content-center ">

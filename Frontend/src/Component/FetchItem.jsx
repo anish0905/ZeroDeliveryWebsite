@@ -1,68 +1,60 @@
-import React, { useEffect } from 'react'
-import {useSelector,useDispatch} from 'react-redux'
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios'; // Make sure axios is imported
+
 import { fetchStatusActions } from '../store/FetchStatusSlice';
 import { smartPhoneActions } from '../store/SmartPhoneSlice';
-import { laptopActions } from '../store/LaptopSlice';
-import { fragrancesActions } from '../store/fragrancesSlice';
-import { skincareActions } from '../store/SkincareSlice';
-import { groceriesActions } from '../store/groceriesSlice';
-import { topActions } from '../store/TopSlice';
-import { womensDressesActions } from '../store/womensDressesSlice';
-import { womenShoesActions } from '../store/Womens-shoesSlice';
-import { manShirtActions } from '../store/Mens-shirtsSlice';
-import { homeDecorationActions } from '../store/HomeDecorationSlice';
-import { manShoesActions } from '../store/ManShoesSlice';
-import { manWatchActions } from '../store/ManWatchSlice';
-import { womenWatchActions } from '../store/WomenWatchSlice';
-
+import { API_URI } from '../Contants';
 
 const FetchItem = () => {
-    const fetchStatus=useSelector(store=>store.fetchStatus);
+  const fetchStatus = useSelector(state => state.fetchStatus);
+  const dispatch = useDispatch();
+  const [productDetails, setProductDetails] = useState(null); // State to hold fetched product details
 
-    const dispatch = useDispatch ();
+  useEffect(() => {
+    if (fetchStatus.fetchDone) return;
 
-    useEffect(()=>{
-      if(fetchStatus.fetchDone) return;
+    const controller = new AbortController();
+    const signal = controller.signal;
 
-      const controller = new AbortController();
-      const signal = controller.signal;
-      
-      const endpoints = [
-        {url:'https://dummyjson.com/products/category/smartphones',action:smartPhoneActions.addInitialsmartPhone},
-        {url:"https://dummyjson.com/products/category/laptops",action:laptopActions.addInitiallaptop},
-        {url:"https://dummyjson.com/products/category/fragrances",action:fragrancesActions.addInitialfragrances},
-        {url:"https://dummyjson.com/products/category/skincare",action:skincareActions.addInitialskincare},
-        {url:"https://dummyjson.com/products/category/groceries",action:groceriesActions.addInitialGroceries},
-        {url:"https://dummyjson.com/products/category/home-decorations",action:homeDecorationActions.addInitialhomeDecoration},
-        {url:"https://dummyjson.com/products/category/tops",action:topActions.addInitialtop},
-        {url:"https://dummyjson.com/products/category/womens-dresses",action:womensDressesActions.addInitialwomensDresses},
-        {url:"https://dummyjson.com/products/category/women-shoes",action:womenShoesActions.addInitialwomenShoes},
-        {url:"https://dummyjson.com/products/category/man-shirt",action:manShirtActions.addInitialmanShirt},
-        {url:"https://dummyjson.com/products/category/mens-shirts",action:manShirtActions.addInitialmanShirt},
-        {url:"https://dummyjson.com/products/category/mens-shoes", action:manShoesActions.addInitialmanShoes},
-        {url:"https://dummyjson.com/products/category/mens-watches", action:manWatchActions.addInitialmanWatch},
-        {url:"https://dummyjson.com/products/category/womens-watches", action:womenWatchActions.addInitialwomenWatch},
-      ]
-      
-      for (const { url, action } of endpoints) {
-      dispatch(fetchStatusActions.markFetchingStarted());
-      fetch(url,{signal})
-      .then((response)=>response.json())
-      .then(({products})=>{
-         dispatch(fetchStatusActions.markFetchDone());
-         dispatch(action(products));
-         dispatch(fetchStatusActions.markFetchingFinished());
-       })
+    dispatch(fetchStatusActions.markFetchingStarted());
+
+    const fetchData = async () => {
+      try {
+       
+        const resp = await axios.get(`${API_URI}/api/products/`, { signal });
+
+        setProductDetails(resp.data);
+        console.log(resp.data); // Log the fetched data instead of the state
+        dispatch(fetchStatusActions.markFetchDone());
+        dispatch(smartPhoneActions.addInitialsmartPhone(resp.data));
+        dispatch(fetchStatusActions.markFetchingFinished());
+      } catch (error) {
+        console.log(error);
+      } finally {
+        controller.abort(); // Cleanup AbortController
       }
+    };
 
-    },[fetchStatus])
+    fetchData();
 
+    return () => {
+      controller.abort(); // Cleanup on unmount or if fetch is no longer needed
+    };
+  }, [dispatch, fetchStatus]);
 
-    
   return (
-    <>
-    </>
-  )
-}
+    <div>
+      {/* Render your fetched data here */}
+      {productDetails && (
+        <ul>
+          {productDetails.map(product => (
+            <li key={product.id}>{product.name}</li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
 
-export default FetchItem
+export default FetchItem;

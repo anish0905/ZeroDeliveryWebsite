@@ -31,7 +31,7 @@ const productSchema = new mongoose.Schema({
     rating: { type: Number, required: true },
     stock: { type: Number, required: true },
     tags: { type: [String], required: true },
-    brand: { type: String, required: true },
+    brand: { type: String},
     sku: { type: String, required: true },
     weight: { type: Number, required: true },
     dimensions: { type: dimensionsSchema, required: true },
