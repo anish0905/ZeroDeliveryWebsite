@@ -19,6 +19,8 @@ const ShowCategoryWise = (props) => {
 
     const modifyName = name.toLowerCase();
 
+    const elementFound = bagItems.includes(items._id);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -51,9 +53,8 @@ const ShowCategoryWise = (props) => {
     }
 
     return (
-        <div className='flex justify-center items-center content-center gap-5 flex-wrap pt-32'>
+        <div className='flex justify-center items-center content-center gap-5 flex-wrap pt-20'>
             {items.map(item => {
-                const elementFound = bagItems && bagItems.some(bagItem => bagItem.itemId === item._id);
                 return (
                     <div key={item._id} className="font-sef px-4 shadow-md mt-4 border-2 rounded-2xl h-[400px] cursor-pointer hover:shadow-2xl">
                         <Link to={`/productDetails/${item._id}`} className="my-2 relative flex justify-center items-center content-center ">

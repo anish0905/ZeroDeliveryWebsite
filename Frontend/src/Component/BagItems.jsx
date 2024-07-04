@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { IoBagRemoveSharp } from "react-icons/io5";
 import { bagActions } from '../store/BagSlice';
+import { Link } from 'react-router-dom';
 
 const BagItems = ({ item }) => {
   const dispatch = useDispatch();
@@ -19,9 +20,9 @@ const BagItems = ({ item }) => {
 
   return (
     <div className='lg:flex border-2 border-solid rounded gap-5 block justify-center'>
-      <div className='p-6 lg:w-64 h-auto w-full md:w-64'>
+      <Link to={`/productDetails/${item._id}`} className='p-6 lg:w-64 h-auto w-full md:w-64'>
         <img src={item.images[0]} alt={item.title} className=' rounded object-cover'/>
-      </div>
+      </Link>
       <div  className='p-10'>
         <div className='my-1'>
           <p className='text-xl font-semibold my-1'>{item.brand}</p>
