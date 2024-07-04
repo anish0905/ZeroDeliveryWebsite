@@ -25,14 +25,13 @@ const FetchItem = () => {
         const resp = await axios.get(`${API_URI}/api/products/`, { signal });
 
         setProductDetails(resp.data);
-        console.log(resp.data); // Log the fetched data instead of the state
         dispatch(fetchStatusActions.markFetchDone());
         dispatch(smartPhoneActions.addInitialsmartPhone(resp.data));
         dispatch(fetchStatusActions.markFetchingFinished());
       } catch (error) {
         console.log(error);
       } finally {
-        controller.abort(); // Cleanup AbortController
+        controller.abort(); 
       }
     };
 

@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { bagActions } from "../store/BagSlice";
 
 const ProductDetails = ({ item }) => {
   const [selectedImage, setSelectedImage] = useState(item.images[0]);
   const [showReviews, setShowReviews] = useState(false);
-  const [quantity, setQuantity] = useState(1); // Default quantity
+  // const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
+  const bagItem = useSelector((store) => store.bag);
+  const elementFound = bagItem.includes(item._id);
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -13,14 +18,17 @@ const ProductDetails = ({ item }) => {
     setShowReviews(!showReviews);
   };
 
-  const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value);
-    setQuantity(value);
+  // const handleQuantityChange = (e) => {
+  //   const value = parseInt(e.target.value);
+  //   setQuantity(value);
+  // };
+
+  const handleAddToBag = () => {
+    dispatch(bagActions.addToBag(item._id));
   };
 
-  const addToCart = () => {
-    // Implement your addToCart functionality here
-    console.log(`Added ${quantity} ${item.title} to cart`);
+  const handleRemove = () => {
+    dispatch(bagActions.removeFromBag(item._id));
   };
 
   return (
@@ -31,6 +39,7 @@ const ProductDetails = ({ item }) => {
             <img
               src={selectedImage}
               alt={item.title}
+              loading='lazy'
               className="w-full h-auto object-cover rounded-lg"
             />
           </div>
@@ -58,9 +67,13 @@ const ProductDetails = ({ item }) => {
           <p className="text-sm text-gray-600 mb-2">Warranty: {item.warrantyInformation}</p>
           <p className="text-sm text-gray-600 mb-2">Shipping: {item.shippingInformation}</p>
           <p className="text-sm text-gray-600 mb-2">Availability: {item.availabilityStatus}</p>
-          <p className="text-sm text-gray-600 mb-4">Return Policy: {item.returnPolicy}</p>
+          <p className="text-sm text-gray-600 mb-2">Return Policy: {item.returnPolicy}</p>
+          <p className="text-sm text-gray-600 mb-2">Weight: {item.weight} kg</p>
+          <div className="text-sm text-gray-600 mb-2">
+            Dimensions: {item.dimensions.width} x {item.dimensions.height} x {item.dimensions.depth} cm
+          </div>
           
-          <div className="flex items-center mb-4">
+          {/* <div className="flex items-center mb-4">
             <label htmlFor="quantity" className="mr-2">Quantity:</label>
             <div className="relative">
               <select
@@ -80,13 +93,22 @@ const ProductDetails = ({ item }) => {
               </div>
             </div>
           </div>
-          
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4 mr-4"
-            onClick={addToCart}
-          >
-            Add to Cart
-          </button>
+           */}
+          {elementFound ? (
+            <button
+              className="bg-red-500 text-white px-4 py-2 rounded-lg mb-4 mr-4"
+              onClick={handleRemove}
+            >
+              Remove from Bag
+            </button>
+          ) : (
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4 mr-4"
+              onClick={handleAddToBag}
+            >
+              Add to Bag
+            </button>
+          )}
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4"
             onClick={toggleReviews}
@@ -125,7 +147,6 @@ const ProductDetails = ({ item }) => {
                       <p className="text-sm text-gray-600 ml-2">
                         {new Date(review.date).toLocaleDateString()}
                       </p>
-                      
                     </div>
                   </div>
                 ))}

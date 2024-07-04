@@ -78,7 +78,7 @@ const NavBar1 = () => {
           </Link>
           <Link 
             to={`/user/MyWishlist`} 
-            className="block px-4 py-2 hover:bg-gray-200 flex justify-between items-center"
+            className=" px-4 py-2 hover:bg-gray-200 flex justify-between items-center"
           >
             <span>My Wishlist</span>
             <span className="text-sm font-thin">₹543</span>
