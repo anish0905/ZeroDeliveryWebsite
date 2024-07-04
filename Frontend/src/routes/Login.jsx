@@ -6,7 +6,7 @@ import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
 import { HiArrowSmallLeft } from "react-icons/hi2";
 
-export function Login() {
+export function Login({name}) {
   const [open, setOpen] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -58,7 +58,7 @@ export function Login() {
         onClick={handleOpen}
         className="text-black shadow-none hover:shadow-none"
       >
-        Login
+        {name}
       </Button>
       <Dialog open={open} handler={handleOpen}>
         <div className="flex justify-center items-center content-center">

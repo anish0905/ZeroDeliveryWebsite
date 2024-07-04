@@ -1,29 +1,41 @@
-
-import '../App.css'
-import { Footer } from '../Component/Footer'
-import NavBar1 from '../Component/NavBar/NavBar1'
-import {Outlet} from 'react-router-dom'
-import FetchItem from '../Component/FetchItem'
-import {useSelector} from 'react-redux'
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import NavBar1 from '../Component/NavBar/NavBar1';
+import Footer from '../Component/Footer';
+import ScrollButton from '../Component/scrollToTop';
+import FetchItem from '../Component/FetchItem';
 import LoadingSpinner from '../Component/LoadingSpinner';
-import ScrollButton from '../Component/scrollToTop'
+import { Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
+import '../App.css';
 
 
+const App = () => {
+  const fetchStatus = useSelector(state => state.fetchStatus);
+  const location = useLocation();
+  const { pathname } = location;
 
-function App() {   
-  const fetchStatus=useSelector(store=>store.fetchStatus);
+  // Condition to determine when to hide the footer
+  const showFooter = !(
+    pathname === '/Bag' ||
+    pathname === '/payment' ||
+    pathname === '/addressForm'
+  );
 
   return (
-    <>
+    <div>
       <NavBar1 />
-      <FetchItem/>
-      {
-        fetchStatus.currentlyFetching? <LoadingSpinner/>:<Outlet/>
-      }
-      <Footer/>
-      <ScrollButton/>
-    </>
-  )
-}
+      <FetchItem />
+      {fetchStatus.currentlyFetching ? (
+        <LoadingSpinner />
+      ) : (
+        <Outlet />
+      )}
+      {showFooter && <Footer />}
+      <ScrollButton />
+    </div>
+  );
+};
 
-export default App
+export default App;

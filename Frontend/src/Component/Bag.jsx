@@ -34,7 +34,7 @@ const Bag = () => {
         ))}
       </div>
       
-        <div className='lg:w-1/2 w-full my-4'>
+        <div className='lg:w-5/12 w-full my-4 lg:fixed right-10'>
           <BagSummery />
         </div>
      

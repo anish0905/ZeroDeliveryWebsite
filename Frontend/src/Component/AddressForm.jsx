@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import { FaHome, FaBriefcase, FaHotel, FaMapMarkerAlt } from 'react-icons/fa';
 import { FiEdit } from 'react-icons/fi';
+import { useNavigate } from "react-router-dom";
 
 const libraries = ['places'];
 const mapContainerStyle = {
@@ -21,6 +22,7 @@ const AddressForm = () => {
     googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your Google Maps API key
     libraries,
   });
+  const navigate = useNavigate();
 
   const [markers, setMarkers] = useState([]);
 
@@ -36,6 +38,10 @@ const AddressForm = () => {
 
   if (loadError) return 'Error loading maps';
   if (!isLoaded) return 'Loading Maps';
+
+  const handleOnclicked =()=>{
+    navigate('/payment')
+  }
 
   return (
     <div className="p-1 max-w-4xl mx-auto lg:flex md:flex block gap-10 px-10  pt-28 ">
@@ -91,7 +97,7 @@ const AddressForm = () => {
             <input type="text" placeholder="Your name *" className="block w-full  rounded pl-5 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 h-8 sm:text-sm border-2 solid border-black" />
             <input type="number" placeholder="Your phone number (optional)" className="block w-full pl-5 rounded shadow-sm focus:ring-indigo-500 focus:border-indigo-500  h-8 sm:text-sm mt-2 border-2 solid border-black" defaultValue="7260858715" />
           </div>
-          <button type="submit" className="flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600">
+          <button type="submit" className="flex w-full items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600" onClick={handleOnclicked} >
             <FiEdit className="mr-2" /> Save
           </button>
         </form>

@@ -22,7 +22,7 @@ const SITEMAP = [
  
 const currentYear = new Date().getFullYear();
  
-export function Footer() {
+const Footer=()=> {
   return (
     <footer className="relative w-full">
       <div className="mx-auto w-full max-w-7xl px-8">
@@ -107,3 +107,5 @@ export function Footer() {
     </footer>
   );
 }
+
+export default Footer;

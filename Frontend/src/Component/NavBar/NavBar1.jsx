@@ -116,7 +116,7 @@ const NavBar1 = () => {
             </div>
           </li>
           <li className="flex justify-center content-center items-center">
-            <Login />
+            <Login name={"LOGIN"} />
           </li>
         </ul>
       </div>

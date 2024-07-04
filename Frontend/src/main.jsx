@@ -4,14 +4,21 @@ import App from "./routes/App";
 import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
+import myntrastore from "./store/index"
 import Home from "./routes/Home";
-import myntrastore from "./store";
-import { Provider } from 'react-redux';
-import Bag from "./Component/Bag";
+
+import Bag from "../src/Component/Bag";
+
 import ShowCategoryWise from "./routes/ShowCategoryWise";
-import User from "./routes/page/User";
-import AddressForm from "./Component/AddressForm";
+
+import User from "./routes/user/User";
+
+import AddressForm from "../src/Component/AddressForm";
+
 import ProductDetailsHome from "./routes/ProductDetailsHome";
+import { Provider } from "react-redux";
+import PaymentHomePage from "./routes/Payment/PaymentHomePage";
+
 
 
 
@@ -43,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "/productDetails/:id",
         element: <ProductDetailsHome/>
+      },
+      {
+        path: "/payment",
+        element:<PaymentHomePage/>
       }
       
     ]
