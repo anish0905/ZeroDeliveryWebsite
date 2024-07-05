@@ -2,18 +2,23 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API_URI } from '../Contants';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import  { categoriesActions } from '../store/categoriesSlice';
  // Import Spinner component from react-bootstrap
 
 const ItemsCategory = () => {
   const [categories, setCategories] = useState([]);
-  const [isLoading, setLoading] = useState(true); // State to track loading
+  const [isLoading, setLoading] = useState(true);
+  const dispatch = useDispatch()
+   // State to track loading
 
   const fetchItems = async () => {
     try {
       const response = await axios.get(`${API_URI}/api/prod/category`);
       setCategories(response.data.data);
       setLoading(false); // Set loading to false once data is fetched
-      console.log(response.data.data);
+     
+      dispatch(categoriesActions.addCategory(response.data.data))
     } catch (error) {
       console.error(error);
       setLoading(false); // Set loading to false on error as well

@@ -50,9 +50,8 @@ const ProductDetails = ({ item }) => {
                 key={index}
                 src={image}
                 alt={item.title}
-                className={`w-20 h-20 object-cover rounded-lg cursor-pointer ${
-                  selectedImage === image ? "border-2 border-blue-500" : ""
-                }`}
+                className={`w-20 h-20 object-cover rounded-lg cursor-pointer ${selectedImage === image ? "border-2 border-blue-500" : ""
+                  }`}
                 onClick={() => handleImageClick(image)}
               />
             ))}
@@ -61,27 +60,36 @@ const ProductDetails = ({ item }) => {
         <div className="w-full md:w-1/2 md:pl-8">
           <h1 className="text-3xl font-bold mb-2">{item.title}</h1>
           <p className="text-gray-700 mb-4">{item.description}</p>
-          <p className="text-lg font-semibold mb-2">₹{item.price}</p>
+          <div className="flex gap-5 my-2  px-1">
+            <span className="text-xl">RS {item.price}</span>
+            <span className="text-gray-400 text-sm font-thin line-through">
+              RS {(item.price + item.price * (item.discountPercentage / 100)).toFixed(2)}{" "}
+            </span>
+            <span className="text-pink-400 text-sm font-thin">
+              ({item.discountPercentage}% OFF)
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 mb-2 ">
+            <span className="font-bold">Stock:</span> {item.stock}</p>
           <p className="text-sm text-gray-600 mb-2">
-            Discount: {item.discountPercentage}%
-          </p>
-          <p className="text-sm text-gray-600 mb-2">Stock: {item.stock}</p>
-          <p className="text-sm text-gray-600 mb-2">Brand: {item.brand}</p>
+            <span className="font-bold">Brand:</span>{item.brand}</p>
           <p className="text-sm text-gray-600 mb-2">
-            Warranty: {item.warrantyInformation}
+           <span className="font-bold"> Warranty:</span> {item.warrantyInformation}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            Shipping: {item.shippingInformation}
+            <span className="font-bold">Shipping:</span>
+           {item.shippingInformation}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            Availability: {item.availabilityStatus}
+           <span className="font-bold"> Availability:</span> {item.availabilityStatus}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            Return Policy: {item.returnPolicy}
+            <span className="font-bold">Return Policy: </span>{item.returnPolicy}
           </p>
-          <p className="text-sm text-gray-600 mb-2">Weight: {item.weight} kg</p>
+          <p className="text-sm text-gray-600 mb-2">
+            <span className="font-bold">Weight:</span> {item.weight} kg</p>
           <div className="text-sm text-gray-600 mb-4">
-            Dimensions: {item.dimensions.width} x {item.dimensions.height} x{" "}
+           <span className="font-bold"> Dimensions:</span> {item.dimensions.width} x {item.dimensions.height} x{" "}
             {item.dimensions.depth} cm
           </div>
 
@@ -127,11 +135,11 @@ const ProductDetails = ({ item }) => {
           >
             {showReviews ? "Hide Reviews" : "Show Reviews"}
           </button>
-          <Link to="/addressForm">
+          {/* <Link to="/addressForm">
             <button className="w-full rounded bg-pink-600 text-white px-4 py-2 my-2">
               PLACE ORDER
             </button>
-          </Link>
+          </Link> */}
 
           {showReviews && (
             <div>

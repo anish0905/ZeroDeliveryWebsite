@@ -28,4 +28,6 @@ router.get("/prod/brand/:brand", productController.getProductsByBrand);
 // Route to search products by title
 router.get("/products/search/:title", productController.searchProductsByTitle);
 
+
+
 module.exports = router;
