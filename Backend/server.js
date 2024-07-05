@@ -5,6 +5,8 @@ const cors = require("cors");
 const userRoutes = require("./user/routes/userRoutes");
 const productRoutes = require("./user/routes/productRoutes");
 // const categoryRoutes = require("./user/routes/categoryRoutes");
+const addToCartRoutes = require("./user/routes/addToCartRoutes");
+const userAddress = require("./user/routes/addressRoutes");
 connectDB();
 const app = express();
 app.use(express.json());
@@ -13,11 +15,16 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.send("API is running successfully");
 });
+// Routes
+app.use('/api/users', userAddress);
 
 app.use("/user", userRoutes);
 
 // Use the product routes
 app.use("/api", productRoutes);
+
+// // Use the cart routes
+app.use('/api/cart', addToCartRoutes);
 
 // // Use the category routes
 // app.use("/api/categories", categoryRoutes);

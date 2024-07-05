@@ -1,5 +1,28 @@
 const mongoose = require("mongoose");
 
+const addressSchema = new mongoose.Schema({
+  street: {
+    type: String,
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  state: {
+    type: String,
+    required: true,
+  },
+  country: {
+    type: String,
+    required: true,
+  },
+  postalCode: {
+    type: String,
+    required: true,
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     mobileNumber: {
@@ -16,14 +39,7 @@ const userSchema = new mongoose.Schema(
     location: {
       type: String,
     },
-    address: {
-      type: String,
-
-      trim: true,
-      lowercase: true,
-      minlength: 10,
-      maxlength: 100,
-    },
+    addresses: [addressSchema], // Array of addresses
     wallet: {
       type: Number,
       default: 0,
