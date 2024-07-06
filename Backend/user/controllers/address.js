@@ -1,9 +1,10 @@
 const User = require('../models/User');
 
-// Add a new address to user
+
+
 exports.addAddress = async (req, res) => {
-  const { userId } = req.params;
-  const { street, city, state, country, postalCode } = req.body;
+  const { userId } = req.params; // This should get the userId from the route parameter
+  const { street, city, state, country, postalCode, name, phone, addressType, location } = req.body;
 
   try {
     // Find the user by userId
@@ -13,7 +14,7 @@ exports.addAddress = async (req, res) => {
     }
 
     // Add new address to user
-    const newAddress = { street, city, state, country, postalCode };
+    const newAddress = { street, city, state, country, postalCode, name, phone, addressType, location };
     user.addresses.push(newAddress);
     await user.save();
 
@@ -22,6 +23,7 @@ exports.addAddress = async (req, res) => {
     res.status(500).json({ message: 'Error adding address', error });
   }
 };
+
 
 // Update an existing address of user
 exports.updateAddress = async (req, res) => {
