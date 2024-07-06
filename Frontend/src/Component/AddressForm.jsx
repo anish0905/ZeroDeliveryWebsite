@@ -4,6 +4,7 @@ import { FaHome, FaBriefcase, FaHotel, FaMapMarkerAlt } from 'react-icons/fa';
 import { FiEdit } from 'react-icons/fi';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { API_URI } from '../Contants';
 
 const libraries = ['places'];
 const mapContainerStyle = {
@@ -12,6 +13,7 @@ const mapContainerStyle = {
 };
 const longitude = localStorage.getItem('longitude');
 const latitude = localStorage.getItem('latitude');
+const userId = localStorage.getItem('userId');
 const center = {
   lat: parseFloat(latitude),
   lng: parseFloat(longitude),
@@ -63,7 +65,7 @@ const AddressForm = () => {
       location: markers[0] ? { lat: markers[0].lat, lng: markers[0].lng } : null,
     };
     try {
-      const response = await axios.post(`http://localhost:5001/api/users/${localStorage.getItem('userId')}/address`, addressData);
+      const response = await axios.post(`${API_URI}/api/users/address/${userId}`, addressData);
       if (response.status === 201) {
         navigate('/payment');
       } else {

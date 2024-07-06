@@ -41,6 +41,10 @@ export function Login({ name }) {
         mobileNumber: `+91${mobileNumber}`,
         otp
       });
+      console.log(resp.data);
+      localStorage.setItem('token', resp.data.token);
+      localStorage.setItem('userId', resp.data.userId);
+
       if (resp.status === 200) {
         localStorage.setItem('token', resp.data.token);
         localStorage.setItem('userId', resp.data.userId);
