@@ -57,7 +57,7 @@ export function Login({name}) {
     <>
       <Button
         onClick={handleOpen}
-        className="text-black shadow-none hover:shadow-none"
+        className="text-black shadow-none hover:shadow-none   "
       >
         {name}
       </Button>

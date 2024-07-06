@@ -35,15 +35,15 @@ const NavBar1 = () => {
           </li>
         </ul>
       </div>
-      <div className="w-1/2  content-center items-center relative hidden lg:block md:block  ">
-        <Search className="hidden md:block lg:hidden" />
-        <IoSearch className="text-2xl lg:absolute lg:left-3 lg:top-2 text-gray-500 md:hidden lg:block  " />
+      <div className="w-1/2 flex  content-center items-center relative   ">
+        {/* <Search className="hidden  lg:hidden" /> */}
+        <IoSearch className="text-2xl absolute left-3 top-2 text-gray-500   " />
         <input
           type="search"
           name=""
           id=""
           placeholder="Search for products , brand and  more "
-          className="bg-gray-200 rounded w-full h-10 hover:border-none px-12 md:hidden lg:block"
+          className="bg-gray-200 rounded w-full h-10 hover:border-none px-12  "
         />
       </div>
       <div className="w-1/4 gap-5  content-center items-center font-semibold text-sm hidden lg:block md:block">

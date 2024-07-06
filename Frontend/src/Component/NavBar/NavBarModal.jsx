@@ -16,7 +16,7 @@ export function NavBarModal() {
  
   return (
     <React.Fragment>
-      <Button onClick={openDrawer} className="lg:hidden md:hidden block  px-2 py-1">
+      <Button onClick={openDrawer} className="lg:hidden md:hidden block  px-2 py-1 shadow-none">
       <IoReorderThree className="text-5xl lg:hidden md:hidden float-end block text-black"/>
       </Button>
       <Drawer open={open} onClose={closeDrawer} className="p-4">
