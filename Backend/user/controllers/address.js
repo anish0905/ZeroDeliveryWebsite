@@ -1,7 +1,5 @@
 const User = require('../models/User');
 
-
-
 exports.addAddress = async (req, res) => {
   const { userId } = req.params; // This should get the userId from the route parameter
   const { street, city, state, country, postalCode, name, phone, addressType, location } = req.body;

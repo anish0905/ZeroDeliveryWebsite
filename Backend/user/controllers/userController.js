@@ -2,6 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const twilio = require("twilio");
+const { generateOTP } = require('../utils/otp');
 
 const client = new twilio(
   process.env.TWILIO_ACCOUNT_SID,
@@ -219,3 +220,60 @@ exports.deleteUser = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+
+exports.loginUser = async (req, res) => {
+  const { mobileNumber } = req.body;
+
+  try {
+      // Generate a 4-digit OTP
+      const otpCode = generateOTP(4);
+
+      // Find if user already exists
+      let user = await User.findOne({ mobileNumber });
+
+      if (!user) {
+          // If user doesn't exist, create a new user with the OTP
+          user = new User({ mobileNumber, otp: otpCode });
+          await user.save();
+
+          // Send OTP to user's mobile number (assuming you have an SMS sending service)
+          // sendOTPSMS(mobileNumber, otpCode);
+
+          return res.status(201).json({ message: 'User created and OTP sent' });
+      } else {
+          // If user exists, update the OTP
+          user.otp = otpCode;
+          await user.save();
+
+          // Send OTP to user's mobile number (assuming you have an SMS sending service)
+          // sendOTPSMS(mobileNumber, otpCode);
+
+          return res.status(200).json({ message: 'OTP sent' });
+      }
+  } catch (error) {
+      console.error('Error in loginUser:', error);
+      res.status(500).json({ message: 'Error logging in', error });
+  }
+};
+
+exports.verifyUser = async (req, res) => {
+  const { mobileNumber, otp } = req.body;
+  try {
+      // Find user with the provided mobile number
+      let user = await User.findOne({ mobileNumber });
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      // Verify the OTP
+      if (user.otp!== otp) {
+          return res.status(401).json({ message: 'Invalid OTP' });
+      }
+      // If OTP is valid, generate a JWT token and return it to the user
+      const token = jwt.sign({ mobileNumber }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      res.json({ message: 'Logged in successfully', token, userId:user._id });
+  } catch (error) {
+    console.error('Error in verifyUser:', error);
+    res.status(500).json({ message: 'Error verifying user', error });
+  }
+}

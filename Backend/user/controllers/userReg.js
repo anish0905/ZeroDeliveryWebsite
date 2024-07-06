@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const transporter = require('./mailer');
 const crypto = require('crypto');
 
+
 const saltRounds = 10;
 const secretKey = 'your_secret_key'; // Use a strong, secure secret key
 
@@ -103,7 +104,7 @@ exports.createPassword = async (req, res) => {
 };
 
 // Login a user
-exports.loginUser = async (req, res) => {
+exports.loginUsers = async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -132,3 +133,5 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error });
     }
 };
+
+
