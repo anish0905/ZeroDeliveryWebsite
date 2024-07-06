@@ -43,6 +43,7 @@ export function Login({name}) {
       });
       console.log(resp.data);
       localStorage.setItem('token', resp.data.token);
+      localStorage.setItem('userId', resp.data.userId);
 
       if (resp.status === 200) {
         setOpen(false);
