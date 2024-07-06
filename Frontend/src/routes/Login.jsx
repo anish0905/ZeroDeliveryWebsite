@@ -6,7 +6,7 @@ import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
 import { HiArrowSmallLeft } from "react-icons/hi2";
 
-export function Login({name}) {
+export function Login({ name }) {
   const [open, setOpen] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -31,7 +31,7 @@ export function Login({name}) {
         setOtpSent(true);
       }
     } catch (error) {
-      console.log("error", error);
+      console.log("Error requesting OTP:", error);
     }
   };
 
@@ -41,32 +41,26 @@ export function Login({name}) {
         mobileNumber: `+91${mobileNumber}`,
         otp
       });
-      console.log(resp.data);
-      localStorage.setItem('token', resp.data.token);
-
       if (resp.status === 200) {
+        localStorage.setItem('token', resp.data.token);
+        localStorage.setItem('userId', resp.data.userId);
         setOpen(false);
       }
     } catch (error) {
-      console.log("error", error);
+      console.log("Error verifying OTP:", error);
     }
   };
 
   return (
     <>
-      <Button
-        onClick={handleOpen}
-        className="text-black shadow-none hover:shadow-none"
-      >
+      <Button onClick={handleOpen} className="text-black shadow-none hover:shadow-none">
         {name}
       </Button>
       <Dialog open={open} handler={handleOpen}>
         <div className="flex justify-center items-center content-center">
-          <img src={logo} alt="Blinkit Logo" className="w-60 h-72" />
+          <img src={logo} alt="Logo" className="w-60 h-72" />
         </div>
-
         <div className="flex justify-center flex-col content-center items-center font-bold">
-          {/* <p className="text-black text-2xl mb-1">India's last minute app</p> */}
           <p className="text-base font-thin mb-4 text-black">Log in or Sign up</p>
           {otpSent ? (
             <OTPInput otp={otp} handleOtpChange={handleOtpChange} verifyOtp={verifyOtp} />
@@ -91,7 +85,7 @@ export function Login({name}) {
                 </Button>
               </div>
               <div className="absolute top-5 left-5 text-2xl cursor-pointer">
-              <HiArrowSmallLeft onClick={() => setOpen(false)}/>
+                <HiArrowSmallLeft onClick={() => setOpen(false)} />
               </div>
             </>
           )}
