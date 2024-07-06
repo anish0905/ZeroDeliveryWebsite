@@ -30,6 +30,9 @@ router.get("/products/search/:title", productController.searchProductsByTitle);
 // Route to fetch categories
 router.get('/categories', productController.getCategories);
 
+// Route to fetch brands
+router.get('/product/brands', productController.getBrand);
+
 
 
 module.exports = router;

@@ -25,7 +25,7 @@ const SmartPhone = ({ item }) => {
       <Link to={`/productDetails/${item._id}`}
         className="my-2 relative flex justify-center items-center content-center ">
         <img src={item.images[0]} alt="item image" loading='lazy' className="w-60 h-60 rounded" />
-        <div className="my-1 absolute left-2 bottom-0 z-40  text-sm font-thin flex content-center items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded ">
+        <div className="my-1 absolute left-2 bottom-0 z-20  text-sm font-thin flex content-center items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded ">
           {item.rating} <CiStar className="text-xl text-yellow-900" /> |{" "}
           {item.stock}
         </div>

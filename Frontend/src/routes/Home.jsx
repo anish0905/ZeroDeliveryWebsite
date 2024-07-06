@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import SmartPhone from './SmartPhone';
 import Banner from '../Component/Banner';
-import ItemsCategory from '../Component/ItemsCategory';
+import ItemsCategory from '../routes/catgories/ItemsCategory';
 import ItemCards from '../Component/ItemCards';
 
 const Home = () => {

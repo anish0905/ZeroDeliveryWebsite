@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { API_URI } from '../Contants';
+import { API_URI } from '../../Contants';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import  { categoriesActions } from '../store/categoriesSlice';
+import  { categoriesActions } from '../../store/categoriesSlice';
  // Import Spinner component from react-bootstrap
 
 const ItemsCategory = () => {
@@ -30,7 +30,7 @@ const ItemsCategory = () => {
   }, []);
 
   return (
-    <div className='flex flex-wrap justify-evenly items-center content-center gap-5 mt-20'>
+    <div className='flex flex-wrap px-5 justify-center items-center content-center gap-10 mt-20'>
       {/* Conditional rendering based on isLoading */}
       {isLoading ? (
         <span class="loader"></span>

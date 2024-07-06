@@ -9,7 +9,7 @@ import Home from "./routes/Home";
 
 import Bag from "../src/Component/Bag";
 
-import ShowCategoryWise from "./routes/ShowCategoryWise";
+import ShowCategoryWise from "./routes/catgories/ShowCategoryWise";
 
 import User from "./routes/user/User";
 
@@ -18,6 +18,7 @@ import AddressForm from "../src/Component/AddressForm";
 import ProductDetailsHome from "./routes/ProductDetailsHome";
 import { Provider } from "react-redux";
 import PaymentHomePage from "./routes/Payment/PaymentHomePage";
+import ShowBrand from "./routes/brand/ShowBrand";
 
 
 
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
       {
         path: "/payment",
         element:<PaymentHomePage/>
+      },
+      {
+        path: "/showbrand/:name",
+        element: <ShowBrand/>
       }
       
     ]

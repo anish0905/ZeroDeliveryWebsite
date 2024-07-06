@@ -4,9 +4,10 @@ import { Link, useParams } from "react-router-dom";
 import { CiStar } from "react-icons/ci";
 import { IoBagRemoveSharp, IoBagAddSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { API_URI } from "../Contants";
-import { bagActions } from "../store/BagSlice";
-import { CategoryList } from "./catgories/CategoryList"; // Adjusted path to match your project structure
+
+import { bagActions } from "../../store/BagSlice";
+import { CategoryList } from "../catgories/CategoryList";
+import { API_URI } from "../../Contants";
 
 const ShowCategoryWise = (props) => {
   const params = useParams();
@@ -45,20 +46,20 @@ const ShowCategoryWise = (props) => {
 
   if (loading) {
     return (
-      <div className="flex justify-start items-center h-screen">
+      <div className="flex justify-center items-center h-screen">
         <div className="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-center gap-5 px-10 content-center relative">
+    <div className="lg:flex md:flex block justify-center gap-5 content-center">
       {params.name && (
-        <div className="relative">
+        <div className="lg:w-52 md:w-52 w-full">
           <CategoryList />
         </div>
       )}
-      <div className={`flex justify-start items-center content-center gap-5 flex-wrap mt-20 ${params.name ? 'ml-96' : ''}`}>
+      <div className={`flex justify-center items-center content-center gap-5 flex-wrap   ${params.name ? 'lg:ml-40 md:ml-40 ml-0 lg:mt-32 md:mt-32 mt-52' : 'mt-10'}`}>
         {items.map((item) => {
           const elementFound = bagItems.some(bagItem => bagItem._id === item._id);
 
@@ -77,7 +78,7 @@ const ShowCategoryWise = (props) => {
                   loading="lazy"
                   className="w-60 h-60 rounded"
                 />
-                <div className="my-1 absolute left-2 bottom-0 z-40 text-sm font-thin flex items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded">
+                <div className="my-1 absolute left-2 bottom-0 z-20 text-sm font-thin flex items-center gap-1 bg-blue-gray-50 px-2 py-1 rounded">
                   {item.rating} <CiStar className="text-xl text-yellow-900" /> |{" "}
                   {item.stock}
                 </div>

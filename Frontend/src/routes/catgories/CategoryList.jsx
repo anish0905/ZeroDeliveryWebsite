@@ -1,46 +1,65 @@
- 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
+import { API_URI } from "../../Contants";
 
-import {
-    List,
-    ListItem,
-    ListItemPrefix,
-    Avatar,
-    Card,
-    Typography,
-  } from "@material-tailwind/react";
-   
-  export function CategoryList() {
-    return (
-      <Card className="w-96 mt-20 fixed left-5 top-10 ">
-        <List>
-          <ListItem>
-            <ListItemPrefix>
-              <Avatar variant="circular" alt="candice" src="https://docs.material-tailwind.com/img/face-1.jpg" />
-            </ListItemPrefix>
-            <div>
-              <Typography variant="h6" color="blue-gray">
-                Tania Andrew
-              </Typography>
-              <Typography variant="small" color="gray" className="font-normal">
-                Software Engineer @ Material Tailwind
-              </Typography>
-            </div>
-          </ListItem>
-          
-          <ListItem>
-            <ListItemPrefix>
-              <Avatar variant="circular" alt="emma" src="https://docs.material-tailwind.com/img/face-3.jpg" />
-            </ListItemPrefix>
-            <div>
-              <Typography variant="h6" color="blue-gray">
-                Emma Willever
-              </Typography>
-              <Typography variant="small" color="gray" className="font-normal">
-                UI/UX Designer @ Material Tailwind
-              </Typography>
-            </div>
-          </ListItem>
-        </List>
-      </Card>
-    );
-  }
+export function CategoryList() {
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const resp = await axios.get(`${API_URI}/api/categories`);
+
+      setCategories(resp.data); // Assuming resp.data is an array of category names
+    } catch (error) {
+      console.log("Error fetching categories:", error);
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const resp = await axios.get(`${API_URI}/api/product/brands`);
+      setBrands(resp.data);
+    } catch (error) {
+      console.log("Error fetching brands:", error);
+    }
+  };
+
+
+
+  useEffect(() => {
+    fetchData();
+    fetchBrands();
+  }, []);
+
+  return (
+    <div className="lg:min-w-52 lg:h-screen md:w-40 z-40 lg:mt-10 md:mt-10 w-full fixed md:fixed py-4 lg:left-5 top-20 lg:bg-gray-100 md:bg-blue-gray-100 bg-gray-200 shadow-md lg:rounded-lg md:rounded-lg overflow-y-auto ">
+      <h1 className="text-center font-bold text-xl">Categories</h1>
+      <div className=" lg:block flex justify-evenly items-center content-center px-2 ">
+        {categories.map((category, index) => (
+          <Link
+            to={`/showCategory/${category}`}
+            key={index}
+            className="lg:block md:block block px-4 py-1 mb-1 lg:text-base lg:font-thin   text-lg  md:font-medium  font-semibold text-gray-900 hover:bg-gray-800 hover:text-gray-100 rounded-md transition duration-300"
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1).toLowerCase()}
+          </Link>
+        ))}
+      </div>
+      <h1 className="text-center font-bold text-xl my-4">Brand</h1>
+      <div className=" lg:block flex justify-evenly items-center content-center px-2 ">
+        {brands.map((brand, index) => (
+          <Link
+            to={`/showCategory/${brand}`}
+            key={index}
+            className="lg:block md:block block px-4 py-1 mb-1 lg:text-base lg:font-thin   text-lg  md:font-medium  font-semibold text-gray-900 hover:bg-gray-800 hover:text-gray-100 rounded-md transition duration-300"
+          >
+            {brand.charAt(0).toUpperCase() + brand.slice(1).toLowerCase()}
+          </Link>
+        ))}
+      </div>
+      
+    </div>
+  );
+}

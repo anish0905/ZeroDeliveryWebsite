@@ -4,7 +4,7 @@ import { VscAccount } from "react-icons/vsc";
 import { FaCartShopping } from "react-icons/fa6";
 import { HiShoppingBag } from "react-icons/hi2";
 import { NavBarModal } from "./NavBarModal";
-import logo from "../../../public/images/logo2.png";
+import logo from "../../../public/images/logo11.png";
 import { Search } from "./Search";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -25,7 +25,7 @@ const NavBar1 = () => {
       <div className="lg:pr-10 ">
         <Link to="/">
           {" "}
-          <img src={logo} alt="logo" className="w-20 h-14 " />
+          <img src={logo} alt="logo" className="w-28 h-16 " />
         </Link>
       </div>
       <div className="w-1/5 lg:pl-10 hidden lg:block ">

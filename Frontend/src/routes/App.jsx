@@ -20,7 +20,10 @@ const App = () => {
   const showFooter = !(
     pathname === '/Bag' ||
     pathname === '/payment' ||
-    pathname === '/addressForm'
+    pathname === '/addressForm'||
+    pathname.startsWith('/showCategory/')
+    
+    
   );
 
   return (

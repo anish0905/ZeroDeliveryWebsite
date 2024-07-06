@@ -3,7 +3,7 @@ import ProductDetils from './ProductDetils'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { API_URI } from '../Contants'
-import ShowCategoryWise from './ShowCategoryWise'
+import ShowCategoryWise from './catgories/ShowCategoryWise'
 
 const ProductDetailsHome = () => {
     const {id} = useParams()
