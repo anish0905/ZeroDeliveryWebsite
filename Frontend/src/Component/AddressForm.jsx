@@ -24,7 +24,7 @@ const AddressForm = () => {
     googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your Google Maps API key
     libraries,
   });
-  const navigate = useNavigate();
+  const navigate = useNavigate("/");
 
   const [markers, setMarkers] = useState([]);
   const [addressType, setAddressType] = useState('');
