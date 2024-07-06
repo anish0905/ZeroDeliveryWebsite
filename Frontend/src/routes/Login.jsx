@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Dialog } from "@material-tailwind/react";
-import logo from "../image/Blinkit.webp";
+import logo from "../../public/images/login.png";
 import axios from "axios";
 import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
@@ -62,11 +62,11 @@ export function Login({name}) {
       </Button>
       <Dialog open={open} handler={handleOpen}>
         <div className="flex justify-center items-center content-center">
-          <img src={logo} alt="Blinkit Logo" className="w-40 h-28" />
+          <img src={logo} alt="Blinkit Logo" className="w-60 h-72" />
         </div>
 
         <div className="flex justify-center flex-col content-center items-center font-bold">
-          <p className="text-black text-2xl mb-1">India's last minute app</p>
+          {/* <p className="text-black text-2xl mb-1">India's last minute app</p> */}
           <p className="text-base font-thin mb-4 text-black">Log in or Sign up</p>
           {otpSent ? (
             <OTPInput otp={otp} handleOtpChange={handleOtpChange} verifyOtp={verifyOtp} />

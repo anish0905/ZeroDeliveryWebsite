@@ -34,9 +34,9 @@ export function CategoryList() {
   }, []);
 
   return (
-    <div className="lg:min-w-52 lg:h-screen md:w-40 z-40 lg:mt-10 md:mt-10 w-full fixed md:fixed py-4 lg:left-5 top-20 lg:bg-gray-100 md:bg-blue-gray-100 bg-gray-200 shadow-md lg:rounded-lg md:rounded-lg overflow-y-auto ">
-      <h1 className="text-center font-bold text-xl">Categories</h1>
-      <div className=" lg:block flex justify-evenly items-center content-center px-2 ">
+    <div className="lg:min-w-52 lg:h-screen md:h-screen md:w-40 z-40 lg:mt-10 md:mt-10 w-full fixed md:fixed py-4 lg:left-5 top-20 lg:bg-gray-100 md:bg-blue-gray-100 bg-gray-200 shadow-md lg:rounded-lg md:rounded-lg overflow-y-auto my-4 ">
+      <h1 className="text-center font-bold text-xl lg:block md:block hidden my-4 ">Categories</h1>
+      <div className=" lg:block md:block flex justify-evenly items-center content-center px-2 ">
         {categories.map((category, index) => (
           <Link
             to={`/showCategory/${category}`}
@@ -47,8 +47,8 @@ export function CategoryList() {
           </Link>
         ))}
       </div>
-      <h1 className="text-center font-bold text-xl my-4">Brand</h1>
-      <div className=" lg:block flex justify-evenly items-center content-center px-2 ">
+      <h1 className="text-center font-bold text-xl lg:block md:block hidden my-4">Brand</h1>
+      <div className=" lg:block md:block flex justify-evenly items-center content-center px-2 ">
         {brands.map((brand, index) => (
           <Link
             to={`/showCategory/${brand}`}
