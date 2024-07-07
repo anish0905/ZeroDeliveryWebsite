@@ -17,10 +17,13 @@ const NavBar1 = () => {
   const bag = useSelector((store) => store.bag);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const { userId } = useSelector((store) => store.user);
+
+  const  userProfile  = useSelector((store) => store.userProfile);
+  
+
   const navigate = useNavigate();
   const dispatch = useDispatch()
 
-  console.log(userId);
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -105,7 +108,7 @@ const NavBar1 = () => {
                     className="block px-4 py-2 hover:bg-gray-200 text-lg font-semibold"
                   >
                     My Account
-                    <p className="text-sm font-thin">635293601</p>
+                    <p className="text-sm font-thin">{userProfile.mobileNumber}</p>
                   </Link>
                   <Link
                     to={`/user/MyOrder`}
@@ -124,7 +127,7 @@ const NavBar1 = () => {
                     className="px-4 py-2 hover:bg-gray-200 flex justify-between items-center"
                   >
                     <span>My Wishlist</span>
-                    <span className="text-sm font-thin">₹543</span>
+                    <span className="text-sm font-thin">₹{userProfile.wallet}</span>
                   </Link>
                   <div className="border-t my-2"></div>
                   <Link to="/faqs" className="block px-4 py-2 hover:bg-gray-200">

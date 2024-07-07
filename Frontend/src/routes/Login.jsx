@@ -8,12 +8,15 @@ import { HiArrowSmallLeft } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
 import { userActions } from "../store/userInfoSlice";
 import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom";
+import { userProfileAction } from "../store/userProfile";
 
 export function Login({ name }) {
   const [open, setOpen] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const[userDetails,setUserDetails] = useState("")
 
   const dispatch = useDispatch()
 
@@ -22,6 +25,7 @@ export function Login({ name }) {
   const handleMobileNumberChange = (e) => {
     setMobileNumber(e.target.value);
   };
+  const navigate = useNavigate();
 
   const handleOtpChange = (e) => {
     setOtp(e.target.value);
@@ -46,19 +50,24 @@ export function Login({ name }) {
         mobileNumber: mobileNumber,
         otp
       });
-      console.log(resp.data);
-      localStorage.setItem('token', resp.data.token);
-      localStorage.setItem('userId', resp.data.userId);
-      dispatch(userActions.updateUser(resp.data.userId))
-      setOpen(false);  
-      Swal.fire({
-        title: 'Success!',
-        text: 'User is Logined successfully',
-        icon: 'success',
-        confirmButtonText: 'OK'
-      }); 
+      if (resp.status === 200) {
+        localStorage.setItem('token', resp.data.token);
+        localStorage.setItem('userId', resp.data.userId);
+        dispatch(userActions.updateUser({ userId: resp.data.userId }));
+        FetchUserDeatils(resp.data.userId)
+
+        Swal.fire({
+          title: 'Success!',
+          text: 'User logged in successfully',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        });
+
+        navigate("/");
+
       
-    } catch (error) {
+    }}
+     catch (error) {
       console.log("Error verifying OTP:", error);
       Swal.fire({
         title: 'Error!',
@@ -68,6 +77,22 @@ export function Login({ name }) {
       });
     }
   };
+
+  const FetchUserDeatils = async(userId) =>{
+    try {
+      const resp = await axios.get(`${API_URI}/user/getGetUser/${userId}`)
+      setUserDetails(resp.data);
+      dispatch(userProfileAction.updateProfile(resp.data));
+
+
+    } catch (error) {
+      console.log(error);
+      
+    }
+
+
+  }
+
 
   return (
     <>

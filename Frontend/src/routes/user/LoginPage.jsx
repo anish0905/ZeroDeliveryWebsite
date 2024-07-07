@@ -9,12 +9,14 @@ import { useDispatch } from "react-redux";
 import { userActions } from "../../store/userInfoSlice";
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
+import { userProfileAction } from "../../store/userProfile";
 
 export function LoginPage() {
   const [open, setOpen] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+  const[userDetails,setUserDetails] = useState("")
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,6 +52,7 @@ export function LoginPage() {
         localStorage.setItem('token', resp.data.token);
         localStorage.setItem('userId', resp.data.userId);
         dispatch(userActions.updateUser({ userId: resp.data.userId }));
+        FetchUserDeatils(resp.data.userId)
 
         Swal.fire({
           title: 'Success!',
@@ -70,6 +73,24 @@ export function LoginPage() {
       });
     }
   };
+
+  const FetchUserDeatils = async(userId) =>{
+    try {
+      const resp = await axios.get(`${API_URI}/user/getGetUser/${userId}`)
+      setUserDetails(resp.data);
+      dispatch(userProfileAction.updateProfile(resp.data));
+
+
+    } catch (error) {
+      console.log(error);
+      
+    }
+
+
+  }
+
+  
+
 
   return (
     <div className="flex justify-center pt-32 content-center items-center">

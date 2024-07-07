@@ -12,6 +12,7 @@ const {
   deleteUser,
   loginUser,
   verifyUser,
+  getUserById,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -39,6 +40,8 @@ router.delete("/delete-user", deleteUser);
 router.post("/login",loginUser )
 
 router.post("/vefifyOpt",verifyUser)
+
+router.get("/getGetUser/:userId",getUserById)
 
 
 module.exports = router;

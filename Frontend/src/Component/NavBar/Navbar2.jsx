@@ -10,6 +10,7 @@ import { CiLogin } from "react-icons/ci";
 import loginIMg from "../../../public/images/login.png";
 import Swal from 'sweetalert2'; // Import SweetAlert2
 import { Login } from "../../routes/Login";
+import { userActions } from "../../store/userInfoSlice";
 
 
 const NavBar2 = () => {
