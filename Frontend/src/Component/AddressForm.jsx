@@ -71,7 +71,7 @@ const AddressForm = () => {
     try {
       const response = await axios.post(`${API_URI}/api/users/address/${userId}`, addressData);
       if (response.status === 201) {
-        navigate('/payment');
+        navigate('/user/SaveAddress');
       } else {
         console.error('Failed to save address');
       }

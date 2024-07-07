@@ -6,15 +6,19 @@ import UpdateAddress from "./UpdateAddress";
 import { MdDeleteOutline } from "react-icons/md";
 import Swal from 'sweetalert2';
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addressActions } from "../../store/addressSlice";
 
 const SaveAddress = () => {
   const [address, setAddress] = useState([]);
   const userId = localStorage.getItem("userId");
+  const disatch = useDispatch()
 
   const fetchAddress = async () => {
     try {
       const resp = await axios.get(`${API_URI}/user/get-address/${userId}`);
       setAddress(resp.data.address);
+      disatch(addressActions.updateAddress(resp.data.address))
     } catch (error) {
       console.log(error);
     }
@@ -101,22 +105,26 @@ const SaveAddress = () => {
               </div>
             </div>
           </div>
+          
         ))
       ) : (
         <div className="block justify-center items-center w-full">
           <p className="text-sm text-gray-600 text-center">No address available</p>
           <div className="flex justify-center items-center w-full">
-          <Link to={'/addressForm'}
-            className="flex gap-2 items-center my-4 w-32 justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-500 hover:bg-green-600"
-
-          >
-            Save Address
-
-        </Link>
+         
           </div>
        </div>
      
       )}
+      <div className="flex justify-center content-center items-center">
+      <Link to={'/addressForm'}
+            className="flex gap-2 text-xs  items-center my-4  justify-center px-4 py-1 border border-transparent rounded-lg shadow-sm  font-medium text-white bg-green-500 hover:bg-green-600"
+
+          >
+            Add New Address
+
+        </Link>
+      </div>
     </div >
   );
 };

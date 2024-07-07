@@ -5,6 +5,7 @@ import smartPhoneSlice from './SmartPhoneSlice';
 import categoriesSlice from './categoriesSlice';
 import userSlice from './userInfoSlice';
 import userProfileSlice from './userProfile';
+import addressSlice from './addressSlice';
 
 
 const myntrastore = configureStore({
@@ -15,6 +16,7 @@ const myntrastore = configureStore({
         categories: categoriesSlice.reducer,
         user: userSlice.reducer,
         userProfile:userProfileSlice.reducer,
+        address: addressSlice.reducer,
         
     }
 })

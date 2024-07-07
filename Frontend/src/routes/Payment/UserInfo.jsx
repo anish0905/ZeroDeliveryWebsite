@@ -1,8 +1,11 @@
 import React from "react";
 import { Login } from "../Login";
 import { IoCheckmarkDone } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const UserInfo = () => {
+  const  userProfile  = useSelector((store) => store.userProfile);
+
   return (
     <div className="bg-gray-50 shadow-md w-full flex gap-4 content-center items-center p-4 mt-2 mb-4 ">
       <span className="bg-blue-gray-200 py-1 px-2 text-sm rounded-sm text-blue-600">
@@ -17,7 +20,7 @@ const UserInfo = () => {
 
           <div className=" flex justify-between content-center items-center gap-5 ">
             <h1>RAMNARAYAN MANDAL</h1>
-            <p className="text-sm">+91 9988776655</p>
+            <p className="text-sm">{userProfile.mobileNumber}</p>
           </div>
         </div>
 

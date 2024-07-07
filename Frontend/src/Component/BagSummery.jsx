@@ -53,7 +53,7 @@ const BagSummary = ({ name }) => {
       </div>
      
       {!name && (
-         <Link to="/addressForm">
+         <Link to="/payment">
          <button className="w-full rounded bg-pink-600 text-white px-4 py-2 my-2">
            PLACE ORDER
          </button>
