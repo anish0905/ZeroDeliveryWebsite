@@ -11,21 +11,15 @@ const mapContainerStyle = {
   flex: 1,
   height: '400px',
 };
-const longitude = localStorage.getItem('longitude');
-const latitude = localStorage.getItem('latitude');
-const userId = localStorage.getItem('userId');
-const center = {
-  lat: parseFloat(latitude),
-  lng: parseFloat(longitude),
-};
 
 const AddressForm = () => {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your Google Maps API key
     libraries,
   });
-  const navigate = useNavigate("/");
-
+  const navigate = useNavigate();
+  
+  const userId = localStorage.getItem('userId');
   const [markers, setMarkers] = useState([]);
   const [addressType, setAddressType] = useState('');
   const [street, setStreet] = useState('');
@@ -35,6 +29,14 @@ const AddressForm = () => {
   const [postalCode, setPostalCode] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+
+  const latitude = localStorage.getItem('latitude');
+  const longitude = localStorage.getItem('longitude');
+
+  const center = {
+    lat: parseFloat(latitude),
+    lng: parseFloat(longitude),
+  };
 
   const onMapClick = useCallback((event) => {
     setMarkers([{
@@ -64,6 +66,7 @@ const AddressForm = () => {
       addressType,
       location: markers[0] ? { lat: markers[0].lat, lng: markers[0].lng } : null,
     };
+    console.log(addressData);
     try {
       const response = await axios.post(`${API_URI}/api/users/address/${userId}`, addressData);
       if (response.status === 201) {
