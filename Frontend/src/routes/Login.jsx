@@ -5,12 +5,17 @@ import axios from "axios";
 import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
 import { HiArrowSmallLeft } from "react-icons/hi2";
+import { useDispatch } from "react-redux";
+import { userActions } from "../store/userInfoSlice";
+import Swal from 'sweetalert2';
 
 export function Login({ name }) {
   const [open, setOpen] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
+
+  const dispatch = useDispatch()
 
   const handleOpen = () => setOpen(!open);
 
@@ -24,8 +29,8 @@ export function Login({ name }) {
 
   const requestOtp = async () => {
     try {
-      const resp = await axios.post(`${API_URI}/user/request-otp`, {
-        mobileNumber: `+91${mobileNumber}`
+      const resp = await axios.post(`${API_URI}/user/login`, {
+        mobileNumber: mobileNumber
       });
       if (resp.status === 200) {
         setOtpSent(true);
@@ -37,21 +42,30 @@ export function Login({ name }) {
 
   const verifyOtp = async () => {
     try {
-      const resp = await axios.post(`${API_URI}/user/verify-otp`, {
-        mobileNumber: `+91${mobileNumber}`,
+      const resp = await axios.post(`${API_URI}/user/vefifyOpt`, {
+        mobileNumber: mobileNumber,
         otp
       });
       console.log(resp.data);
       localStorage.setItem('token', resp.data.token);
       localStorage.setItem('userId', resp.data.userId);
-
-      if (resp.status === 200) {
-        localStorage.setItem('token', resp.data.token);
-        localStorage.setItem('userId', resp.data.userId);
-        setOpen(false);
-      }
+      dispatch(userActions.updateUser(resp.data.userId))
+      setOpen(false);  
+      Swal.fire({
+        title: 'Success!',
+        text: 'User is Logined successfully',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }); 
+      
     } catch (error) {
       console.log("Error verifying OTP:", error);
+      Swal.fire({
+        title: 'Error!',
+        text: 'There was an issue logining the User',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     }
   };
 

@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const twilio = require("twilio");
 const { generateOTP } = require('../utils/otp');
+const mongoose = require('mongoose');
 
 const client = new twilio(
   process.env.TWILIO_ACCOUNT_SID,
@@ -116,20 +117,24 @@ exports.updateAddress = async (req, res) => {
 };
 
 exports.getAddress = async (req, res) => {
-  const { mobileNumber } = req.query;
+  const { userId } = req.params; // Fixed the typo from req.prams to req.params
+
+  // Validate the UserId
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).send("Invalid User ID");
+  }
 
   try {
-    const user = await User.findOne({ mobileNumber });
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).send("User not found");
     }
 
-    res.status(200).send({ address: user.address });
+    res.status(200).send({ address: user.addresses });
   } catch (error) {
     res.status(500).send(error.message);
   }
-};
-
+}
 exports.addBalance = async (req, res) => {
   const { mobileNumber, amount } = req.body;
 
@@ -227,7 +232,7 @@ exports.loginUser = async (req, res) => {
 
   try {
       // Generate a 4-digit OTP
-      const otpCode = generateOTP(4);
+      const otpCode = generateOTP(6);
 
       // Find if user already exists
       let user = await User.findOne({ mobileNumber });

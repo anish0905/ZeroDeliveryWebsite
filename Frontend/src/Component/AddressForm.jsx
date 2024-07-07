@@ -13,7 +13,7 @@ const mapContainerStyle = {
 };
 const longitude = localStorage.getItem('longitude');
 const latitude = localStorage.getItem('latitude');
-const userId = localStorage.getItem('userId');
+
 const center = {
   lat: parseFloat(latitude),
   lng: parseFloat(longitude),
@@ -35,6 +35,8 @@ const AddressForm = () => {
   const [postalCode, setPostalCode] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+
+  const userId = localStorage.getItem('userId');
 
   const onMapClick = useCallback((event) => {
     setMarkers([{

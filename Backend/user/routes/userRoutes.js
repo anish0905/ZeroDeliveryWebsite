@@ -25,7 +25,7 @@ router.get("/get-location", getLocation);
 //address
 
 router.post("/update-address", updateAddress);
-router.get("/get-address", getAddress);
+router.get("/get-address/:userId", getAddress);
 
 //wallet
 

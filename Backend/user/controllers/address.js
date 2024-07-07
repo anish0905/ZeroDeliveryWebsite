@@ -26,7 +26,7 @@ exports.addAddress = async (req, res) => {
 // Update an existing address of user
 exports.updateAddress = async (req, res) => {
   const { userId, addressId } = req.params;
-  const { street, city, state, country, postalCode } = req.body;
+  const { street, city, state, country, postalCode, name, phone, addressType, location } = req.body;
 
   try {
     // Find the user by userId
@@ -47,6 +47,11 @@ exports.updateAddress = async (req, res) => {
     address.state = state;
     address.country = country;
     address.postalCode = postalCode;
+    address.name = name;
+    address.phone = phone;
+    address.addressType = addressType;
+    address.location = location;
+    
 
     await user.save();
 
@@ -67,8 +72,14 @@ exports.deleteAddress = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Find and remove the address within user's addresses array by addressId
-    user.addresses.id(addressId).remove();
+    // Find the index of the address to be removed
+    const addressIndex = user.addresses.findIndex(address => address._id.toString() === addressId);
+    if (addressIndex === -1) {
+      return res.status(404).json({ message: 'Address not found' });
+    }
+
+    // Remove the address from the addresses array
+    user.addresses.splice(addressIndex, 1);
     await user.save();
 
     res.status(200).json({ message: 'Address deleted successfully', user });
