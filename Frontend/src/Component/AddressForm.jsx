@@ -24,8 +24,9 @@ const AddressForm = () => {
     googleMapsApiKey: 'YOUR_GOOGLE_MAPS_API_KEY', // Replace with your Google Maps API key
     libraries,
   });
-  const navigate = useNavigate("/");
-
+  const navigate = useNavigate();
+  
+  const userId = localStorage.getItem('userId');
   const [markers, setMarkers] = useState([]);
   const [addressType, setAddressType] = useState('');
   const [street, setStreet] = useState('');
@@ -66,6 +67,7 @@ const AddressForm = () => {
       addressType,
       location: markers[0] ? { lat: markers[0].lat, lng: markers[0].lng } : null,
     };
+    console.log(addressData);
     try {
       const response = await axios.post(`${API_URI}/api/users/address/${userId}`, addressData);
       if (response.status === 201) {
