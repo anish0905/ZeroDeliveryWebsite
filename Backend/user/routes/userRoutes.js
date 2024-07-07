@@ -13,6 +13,7 @@ const {
   loginUser,
   verifyUser,
   getUserById,
+  addUserName
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -42,6 +43,8 @@ router.post("/login",loginUser )
 router.post("/vefifyOpt",verifyUser)
 
 router.get("/getGetUser/:userId",getUserById)
+
+router.post("/addname/:userId",addUserName)
 
 
 module.exports = router;
