@@ -7,6 +7,8 @@ const productRoutes = require("./user/routes/productRoutes");
 // const categoryRoutes = require("./user/routes/categoryRoutes");
 const addToCartRoutes = require("./user/routes/addToCartRoutes");
 const userAddress = require("./user/routes/addressRoutes");
+const productOrderRoutes = require('./user/routes/productOrder');
+
 connectDB();
 const app = express();
 app.use(express.json());
@@ -25,6 +27,8 @@ app.use("/api", productRoutes);
 
 // // Use the cart routes
 app.use('/api/cart', addToCartRoutes);
+
+app.use("/api/products",productOrderRoutes);
 
 // // Use the category routes
 // app.use("/api/categories", categoryRoutes);
