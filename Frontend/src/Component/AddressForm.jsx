@@ -11,6 +11,13 @@ const mapContainerStyle = {
   flex: 1,
   height: '400px',
 };
+const longitude = localStorage.getItem('longitude');
+const latitude = localStorage.getItem('latitude');
+
+const center = {
+  lat: parseFloat(latitude),
+  lng: parseFloat(longitude),
+};
 
 const AddressForm = () => {
   const { isLoaded, loadError } = useLoadScript({
@@ -30,13 +37,7 @@ const AddressForm = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
 
-  const latitude = localStorage.getItem('latitude');
-  const longitude = localStorage.getItem('longitude');
-
-  const center = {
-    lat: parseFloat(latitude),
-    lng: parseFloat(longitude),
-  };
+  const userId = localStorage.getItem('userId');
 
   const onMapClick = useCallback((event) => {
     setMarkers([{

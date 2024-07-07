@@ -19,6 +19,8 @@ import ProductDetailsHome from "./routes/ProductDetailsHome";
 import { Provider } from "react-redux";
 import PaymentHomePage from "./routes/Payment/PaymentHomePage";
 import ShowBrand from "./routes/brand/ShowBrand";
+import { Login } from "./routes/Login";
+import { LoginPage } from "./routes/user/LoginPage";
 
 
 
@@ -59,6 +61,10 @@ const router = createBrowserRouter([
       {
         path: "/showbrand/:name",
         element: <ShowBrand/>
+      },
+      {
+        path: "/login",
+        element: <LoginPage/>
       }
       
     ]

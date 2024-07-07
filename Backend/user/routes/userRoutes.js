@@ -10,6 +10,8 @@ const {
   getBalance,
   checkSecurity,
   deleteUser,
+  loginUser,
+  verifyUser,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -23,7 +25,7 @@ router.get("/get-location", getLocation);
 //address
 
 router.post("/update-address", updateAddress);
-router.get("/get-address", getAddress);
+router.get("/get-address/:userId", getAddress);
 
 //wallet
 
@@ -33,5 +35,10 @@ router.get("/get-balance", getBalance);
 // Define routes
 router.get("/account-security", checkSecurity);
 router.delete("/delete-user", deleteUser);
+
+router.post("/login",loginUser )
+
+router.post("/vefifyOpt",verifyUser)
+
 
 module.exports = router;
