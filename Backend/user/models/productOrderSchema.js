@@ -1,29 +1,23 @@
 const mongoose = require("mongoose");
 
-const prosuctOrderSchema = new  mongoose.Schema({
+const productOrderSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    productId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    quantity: { type: Number, required: true },
-    price: { type: Number, required: true },
+    products: [
+        {
+            productId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Product' },
+            quantity: { type: Number, required: true },
+            price: { type: Number, required: true }
+        }
+    ],
+    address: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Address',
+        required: true,
+    },
     status: { type: String, required: true, enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'] },
-    orderDate: { type: Date, required: true },
     deliveryDate: { type: Date },
     paymentMethod: { type: String, required: true },
-    paymentStatus:{ type: String, required: true,
-        enum: ['paid', 'unpaid']
-     },
+    paymentStatus: { type: String, required: true, enum: ['paid', 'unpaid'] },
+}, { timestamps: true });
 
-
-    trackingNumber: { type: String },
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zipCode: { type: String, required: true },
-    country: { type: String, required: true },
-    customerName: { type: String, required: true },
-    
-
-},{timestamps:true})
-
-
-module.exports = mongoose.model("ProductOrder", prosuctOrderSchema);
+module.exports = mongoose.model("ProductOrder", productOrderSchema);
