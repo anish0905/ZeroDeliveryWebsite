@@ -2,14 +2,12 @@ const AddToCart = require('../models/AddToCart'); // Adjust the path accordingly
 
 // Add a new item to the cart
 exports.addItemToCart = async (req, res) => {
-    const { userId, sessionId, cartItems, source, promotionCode, totalPrice } = req.body;
+    const { userId,cartItems,promotionCode,totalPrice} = req.body;
 
     try {
         const newCart = new AddToCart({
             userId,
-            sessionId,
             cartItems,
-            source,
             promotionCode,
             totalPrice
         });

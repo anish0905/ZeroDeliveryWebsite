@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bagActions } from "../store/BagSlice";
 import { Link } from "react-router-dom";
+import axios from 'axios';
+import { API_URI } from '../Contants';
 
 const ProductDetails = ({ item }) => {
   const [selectedImage, setSelectedImage] = useState(item.images[0]);
   const [showReviews, setShowReviews] = useState(false);
-  // const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
   const bagItem = useSelector((store) => store.bag);
   const elementFound = bagItem.includes(item._id);
+  const userId = localStorage.getItem('userId');
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -19,16 +22,32 @@ const ProductDetails = ({ item }) => {
     setShowReviews(!showReviews);
   };
 
-  // const handleQuantityChange = (e) => {
-  //   const value = parseInt(e.target.value);
-  //   setQuantity(value);
-  // };
+  const handleQuantityChange = (e) => {
+    const value = parseInt(e.target.value);
+    setQuantity(value);
+  };
 
-  const handleAddToBag = () => {
-    dispatch(bagActions.addToBag(item._id));
-   
-
-
+  const handleAddToBag = async() => {
+    try {
+      const resp = await axios.post(`${API_URI}/api/cart`, {
+        userId,
+        cartItems: {
+          productId: item._id,
+          productName: item.title,
+          price: item.price,
+          quantity: quantity,
+     
+      
+        },
+        promotionCode: item.promotionCode || "null",
+        totalPrice: (item.price*quantity)
+      });
+  
+      dispatch(bagActions.addToBag(item._id));
+    } catch (error) {
+      console.error("Error adding to cart:", error.message);
+      
+    }
   };
 
   const handleRemove = () => {
@@ -53,8 +72,7 @@ const ProductDetails = ({ item }) => {
                 key={index}
                 src={image}
                 alt={item.title}
-                className={`w-20 h-20 object-cover rounded-lg cursor-pointer ${selectedImage === image ? "border-2 border-blue-500" : ""
-                  }`}
+                className={`w-20 h-20 object-cover rounded-lg cursor-pointer ${selectedImage === image ? "border-2 border-blue-500" : ""}`}
                 onClick={() => handleImageClick(image)}
               />
             ))}
@@ -72,31 +90,33 @@ const ProductDetails = ({ item }) => {
               ({item.discountPercentage}% OFF)
             </span>
           </div>
-          <p className="text-sm text-gray-600 mb-2 ">
-            <span className="font-bold">Stock:</span> {item.stock}</p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Brand:</span>{item.brand}</p>
-          <p className="text-sm text-gray-600 mb-2">
-           <span className="font-bold"> Warranty:</span> {item.warrantyInformation}
+            <span className="font-bold">Stock:</span> {item.stock}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Shipping:</span>
-           {item.shippingInformation}
+            <span className="font-bold">Brand:</span> {item.brand}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-           <span className="font-bold"> Availability:</span> {item.availabilityStatus}
+            <span className="font-bold">Warranty:</span> {item.warrantyInformation}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Return Policy: </span>{item.returnPolicy}
+            <span className="font-bold">Shipping:</span> {item.shippingInformation}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Weight:</span> {item.weight} kg</p>
+            <span className="font-bold">Availability:</span> {item.availabilityStatus}
+          </p>
+          <p className="text-sm text-gray-600 mb-2">
+            <span className="font-bold">Return Policy:</span> {item.returnPolicy}
+          </p>
+          <p className="text-sm text-gray-600 mb-2">
+            <span className="font-bold">Weight:</span> {item.weight} kg
+          </p>
           <div className="text-sm text-gray-600 mb-4">
-           <span className="font-bold"> Dimensions:</span> {item.dimensions.width} x {item.dimensions.height} x{" "}
+            <span className="font-bold">Dimensions:</span> {item.dimensions.width} x {item.dimensions.height} x{" "}
             {item.dimensions.depth} cm
           </div>
 
-          {/* <div className="flex items-center mb-4">
+          <div className="flex items-center mb-4">
             <label htmlFor="quantity" className="mr-2">Quantity:</label>
             <div className="relative">
               <select
@@ -116,10 +136,10 @@ const ProductDetails = ({ item }) => {
               </div>
             </div>
           </div>
-           */}
+
           {elementFound ? (
             <button
-              className="bg-red-500 text-white px-4 py-2  rounded-lg mb-4 mr-4"
+              className="bg-red-500 text-white px-4 py-2 rounded-lg mb-4 mr-4"
               onClick={handleRemove}
             >
               Remove from Bag
@@ -138,11 +158,6 @@ const ProductDetails = ({ item }) => {
           >
             {showReviews ? "Hide Reviews" : "Show Reviews"}
           </button>
-          {/* <Link to="/addressForm">
-            <button className="w-full rounded bg-pink-600 text-white px-4 py-2 my-2">
-              PLACE ORDER
-            </button>
-          </Link> */}
 
           {showReviews && (
             <div>
