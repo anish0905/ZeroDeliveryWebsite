@@ -26,7 +26,7 @@ const AddressForm = () => {
   });
   const navigate = useNavigate();
   
-  const userId = localStorage.getItem('userId');
+  
   const [markers, setMarkers] = useState([]);
   const [addressType, setAddressType] = useState('');
   const [street, setStreet] = useState('');
