@@ -26,6 +26,9 @@ const ProductDetails = ({ item }) => {
 
   const handleAddToBag = () => {
     dispatch(bagActions.addToBag(item._id));
+   
+
+
   };
 
   const handleRemove = () => {

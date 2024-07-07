@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import userProfilePic from '../../../public/images/myPic.avif';
 import { useSelector, useDispatch } from 'react-redux';
 import { FiEdit } from 'react-icons/fi';
+import axios from 'axios';
+import { API_URI } from "../../Contants";
 
 const MyAccount = () => {
   const userProfile = useSelector((store) => store.userProfile);
@@ -9,9 +11,15 @@ const MyAccount = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState(userProfile.name || "");
 
-  const handleUpdateName = () => {
-    dispatch({ type: 'UPDATE_NAME', payload: newName });
-    setIsModalOpen(false);
+  const handleUpdateName = async () => {
+    const userId = localStorage.getItem('userId'); // Retrieve userId from local storage
+    try {
+      const resp = await axios.post(`${API_URI}/user/addname/${userId}`, { name: newName });
+      dispatch({ type: 'UPDATE_NAME', payload: newName });
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error('Failed to update name:', error);
+    }
   };
 
   return (
@@ -21,9 +29,9 @@ const MyAccount = () => {
       </div>
       <div>
         <h1 className='text-xl font-semibold'>My Account</h1>
-        <p className='my-1'>Welcome, {userProfile.name || "John Doe"}</p> 
+        <p className='my-1'>Welcome, {userProfile.name || "John Doe"}</p>
         <p className='my-1'>+91 {userProfile.mobileNumber}</p>
-        <p className='my-1'><span className='font-semibold text-gray-700'>Wallet:</span> ₹{userProfile.wallet||"0"}</p>
+        <p className='my-1'><span className='font-semibold text-gray-700'>Wallet:</span> ₹{userProfile.wallet || "0"}</p>
       </div>
       <div>
         <button 
