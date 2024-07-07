@@ -296,3 +296,19 @@ exports.getUserById = async(req, res, next) => {
     res.status(500).json({ message: 'Error fetching user', error });
   }
 }
+
+exports.addUserName = async(req,res)=>{
+  const userId = req.params.userId;
+  const { name } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(userId, { name }, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Error in addUserName:', error);
+    res.status(500).json({ message: 'Error updating user name', error });
+  }
+
+}
