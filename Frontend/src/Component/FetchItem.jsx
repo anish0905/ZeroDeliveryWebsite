@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios'; // Make sure axios is imported
+import axios from 'axios';
 
 import { fetchStatusActions } from '../store/FetchStatusSlice';
 import { smartPhoneActions } from '../store/SmartPhoneSlice';
-import { API_URI } from '../Contants';
+
 import { userProfileAction } from '../store/userProfile';
+import { addressActions } from '../store/addressSlice';
+import { API_URI } from '../Contants';
 
 const FetchItem = () => {
   const fetchStatus = useSelector(state => state.fetchStatus);
   const dispatch = useDispatch();
-  const [productDetails, setProductDetails] = useState(null); 
+  const [productDetails, setProductDetails] = useState(null);
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -23,45 +25,35 @@ const FetchItem = () => {
 
     const fetchData = async () => {
       try {
-       
-        const resp = await axios.get(`${API_URI}/api/products/`, { signal });
+        const [productsResp, userResp, addressResp] = await Promise.all([
+          axios.get(`${API_URI}/api/products/`, { signal }),
+          axios.get(`${API_URI}/user/getGetUser/${userId}`, { signal }),
+          axios.get(`${API_URI}/user/get-address/${userId}`, { signal })
+        ]);
 
-        setProductDetails(resp.data);
+        setProductDetails(productsResp.data);
+        dispatch(smartPhoneActions.addInitialsmartPhone(productsResp.data));
+        dispatch(userProfileAction.updateProfile(userResp.data));
+        dispatch(addressActions.updateAddress(addressResp.data.address));
+
         dispatch(fetchStatusActions.markFetchDone());
-        dispatch(smartPhoneActions.addInitialsmartPhone(resp.data));
-        dispatch(fetchStatusActions.markFetchingFinished());
       } catch (error) {
         console.log(error);
       } finally {
-        controller.abort(); 
+        dispatch(fetchStatusActions.markFetchingFinished());
+        controller.abort();
       }
     };
 
     fetchData();
 
     return () => {
-      controller.abort(); // Cleanup on unmount or if fetch is no longer needed
+      controller.abort();
     };
-  }, [dispatch, fetchStatus]);
-
-  const FetchUserDeatils = async(userId) =>{
-    try {
-      const resp = await axios.get(`${API_URI}/user/getGetUser/${userId}`)
-      dispatch(userProfileAction.updateProfile(resp.data));
-
-
-    } catch (error) {
-      console.log(error);
-      
-    }
-  }
-  useEffect(() => {
-    FetchUserDeatils(userId);
-  }, []);
+  }, [dispatch, fetchStatus, userId]);
 
   return (
     <div>
-      {/* Render your fetched data here */}
       {productDetails && (
         <ul>
           {productDetails.map(product => (
