@@ -30,19 +30,14 @@ const ProductDetails = ({ item }) => {
   const handleAddToBag = async () => {
     try {
       const resp = await axios.post(`${API_URI}/api/cart`, {
-        userId,
-        cartItems: {
+          userId,
           productId: item._id,
           productName: item.title,
           price: item.price,
           quantity: quantity,
-        },
-        promotionCode: item.promotionCode || "null",
-        totalPrice: (item.price * quantity),
+          promotionCode: item.promotionCode || "null",
       });
-      console.log(resp);
-
-      dispatch(bagActions.addToBag(item._id));
+      dispatch(bagActions.addToBag(resp.data));
     } catch (error) {
       console.error("Error adding to cart:", error.message);
     }

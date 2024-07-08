@@ -16,7 +16,6 @@ const ProductDetailsHome = () => {
                 const resp = await axios.get(`${API_URI}/api/products/${id}`);
                 setItem(resp.data);
                 setLoading(false); // Set loading to false when data is fetched
-                console.log(resp.data); // Log the fetched data instead of the state
             } catch (error) {
                 console.log("error", error);
                 setLoading(false); // Set loading to false on error

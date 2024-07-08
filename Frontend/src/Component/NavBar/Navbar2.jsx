@@ -49,6 +49,14 @@ const NavBar2 = () => {
     navigate("/"); // Navigate to home or another appropriate route
   };
 
+  const totalQuantity = bag.reduce((acc, cart) => {
+    const cartQuantity = cart.cartItems?.reduce((cartAcc, item) => {
+      const quantity = isNaN(item.quantity) ? 0 : item.quantity;
+      return cartAcc + quantity;
+    }, 0);
+    return acc + cartQuantity;
+  }, 0);
+
   return (
     <div className="mb-4">
       <div className="flex justify-center content-center items-center">
@@ -98,7 +106,7 @@ const NavBar2 = () => {
             <div className="flex justify-center content-center items-center relative">
               <HiShoppingBag className="text-2xl" />
               <div className="absolute px-2 py-1 left-4 -top-3 rounded-full bg-deep-orange-800 text-white text-xs"  >
-                {bag.length}
+                {totalQuantity}
               </div>
             </div>
             <button  className="border-bottom2"

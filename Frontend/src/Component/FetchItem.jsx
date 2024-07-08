@@ -8,6 +8,7 @@ import { smartPhoneActions } from '../store/SmartPhoneSlice';
 import { userProfileAction } from '../store/userProfile';
 import { addressActions } from '../store/addressSlice';
 import { API_URI } from '../Contants';
+import { bagActions } from '../store/BagSlice';
 
 const FetchItem = () => {
   const fetchStatus = useSelector(state => state.fetchStatus);
@@ -25,16 +26,19 @@ const FetchItem = () => {
 
     const fetchData = async () => {
       try {
-        const [productsResp, userResp, addressResp] = await Promise.all([
+        const [productsResp, userResp, addressResp,cartResp] = await Promise.all([
           axios.get(`${API_URI}/api/products/`, { signal }),
           axios.get(`${API_URI}/user/getGetUser/${userId}`, { signal }),
-          axios.get(`${API_URI}/user/get-address/${userId}`, { signal })
+          axios.get(`${API_URI}/user/get-address/${userId}`, { signal }),
+          axios.get(`${API_URI}/api/cart/${userId}`, { signal})
         ]);
 
         setProductDetails(productsResp.data);
         dispatch(smartPhoneActions.addInitialsmartPhone(productsResp.data));
         dispatch(userProfileAction.updateProfile(userResp.data));
         dispatch(addressActions.updateAddress(addressResp.data.address));
+        dispatch(bagActions.addToBag(cartResp.data));
+        
 
         dispatch(fetchStatusActions.markFetchDone());
       } catch (error) {
