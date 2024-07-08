@@ -15,7 +15,7 @@ import { userActions } from "../../store/userInfoSlice";
 
 const NavBar2 = () => {
   const bag = useSelector((store) => store.bag);
-  const { userId } = useSelector((store) => store.user);
+  const userId= localStorage.getItem('userId');
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Use useNavigate instead of useHistory
 

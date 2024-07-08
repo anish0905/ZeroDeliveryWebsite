@@ -16,7 +16,7 @@ import { userActions } from "../../store/userInfoSlice";
 const NavBar1 = () => {
   const bag = useSelector((store) => store.bag);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const { userId } = useSelector((store) => store.user);
+  const userId= localStorage.getItem('userId');
 
   const  userProfile  = useSelector((store) => store.userProfile);
   
