@@ -1,4 +1,5 @@
 const AddToCart = require('../models/AddToCart'); // Adjust the path accordingly
+const User = require('../models/User');
 
 // Add a new item to the cart
 exports.addItemToCart = async (req, res) => {
@@ -21,15 +22,24 @@ exports.addItemToCart = async (req, res) => {
 
 // Get cart by user ID
 exports.getCartByUserId = async (req, res) => {
-    const { userId } = req.params;
-
+    const { userId } = req.params; // Correct parameter name
+  
     try {
-        const cart = await AddToCart.findOne({ userId }).populate('cartItems.productId');
-        if (!cart) {
-            return res.status(404).json({ message: 'Cart not found' });
+        // Find the user and populate the cart with product details
+        const user = await User.findById(userId).populate('cart.productId');
+        console.log(user);
+  
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
-        res.status(200).json(cart);
+  
+        if (!user.cart || user.cart.length === 0) {
+            return res.status(404).json({ message: 'Cart is empty' });
+        }
+  
+        res.status(200).json(user.cart);
     } catch (error) {
+        console.error('Error fetching cart:', error);
         res.status(500).json({ message: 'Error fetching cart', error });
     }
 };

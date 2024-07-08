@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { bagActions } from "../store/BagSlice";
 import { Link } from "react-router-dom";
 import axios from 'axios';
-import { API_URI } from '../Contants';
+import { API_URI } from '../../src/Contants';
 
 const ProductDetails = ({ item }) => {
   const [selectedImage, setSelectedImage] = useState(item.images[0]);
@@ -27,7 +27,7 @@ const ProductDetails = ({ item }) => {
     setQuantity(value);
   };
 
-  const handleAddToBag = async() => {
+  const handleAddToBag = async () => {
     try {
       const resp = await axios.post(`${API_URI}/api/cart`, {
         userId,
@@ -36,22 +36,26 @@ const ProductDetails = ({ item }) => {
           productName: item.title,
           price: item.price,
           quantity: quantity,
-     
-      
         },
         promotionCode: item.promotionCode || "null",
-        totalPrice: (item.price*quantity)
+        totalPrice: (item.price * quantity),
       });
-  
+      console.log(resp);
+
       dispatch(bagActions.addToBag(item._id));
     } catch (error) {
       console.error("Error adding to cart:", error.message);
-      
     }
   };
 
-  const handleRemove = () => {
-    dispatch(bagActions.removeFromBag(item._id));
+  const handleRemove = async () => {
+    try {
+      dispatch(bagActions.removeFromBag(item._id));
+      const resp = await axios.delete(`${API_URI}/api/cart/${item._id}`);
+      console.log(resp);
+    } catch (error) {
+      console.error("Error removing from cart:", error.message);
+    }
   };
 
   return (
