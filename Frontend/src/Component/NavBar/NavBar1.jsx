@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import { IoSearch } from "react-icons/io5";
 import { VscAccount } from "react-icons/vsc";
 import { FaCartShopping } from "react-icons/fa6";
-import { HiShoppingBag } from "react-icons/hi2";
 import { NavBarModal } from "./NavBarModal";
 import logo from "../../../public/images/logo11.png";
-import { Search } from "./Search";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Login } from "../../routes/Login";
@@ -15,15 +13,14 @@ import { userActions } from "../../store/userInfoSlice";
 
 const NavBar1 = () => {
   const bag = useSelector((store) => store.bag);
+  console.log(bag);
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const userId= localStorage.getItem('userId');
+  const userId = localStorage.getItem('userId');
 
-  const  userProfile  = useSelector((store) => store.userProfile);
-  
+  const userProfile = useSelector((store) => store.userProfile);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-
+  const dispatch = useDispatch();
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);
@@ -48,13 +45,18 @@ const NavBar1 = () => {
     }
   };
 
-  const logout=()=>{
+  const logout = () => {
     localStorage.clear();
     dispatch(userActions.clearUser());
     window.location.reload();
-
-  }
-
+  };
+  const totalQuantity = bag.reduce((acc, cart) => {
+    const cartQuantity = cart.cartItems?.reduce((cartAcc, item) => {
+      const quantity = isNaN(item.quantity) ? 0 : item.quantity;
+      return cartAcc + quantity;
+    }, 0);
+    return acc + cartQuantity;
+  }, 0);
   return (
     <div className="flex lg:px-10 md:pl-2 h-20 py-5 px-5 bg-white content-center items-center shadow-lg justify-between md:gap-10 fixed z-50 w-full">
       <div className="lg:pr-10">
@@ -86,7 +88,7 @@ const NavBar1 = () => {
             >
               <FaCartShopping className="lg:text-2xl text-xl" />
               <div className="absolute px-2 py-1 left-4 -top-3 rounded-full bg-green-800 text-white text-xs">
-                {bag.length}
+                {totalQuantity}
               </div>
               <span className="lg:text-sm text-xs">My Cart</span>
             </div>
@@ -140,9 +142,9 @@ const NavBar1 = () => {
                     Account Privacy
                   </Link>
                   <button
-                   
                     className="block px-4 py-2 hover:bg-gray-200 text-red-500"
-                   onClick={logout}>
+                    onClick={logout}
+                  >
                     Logout
                   </button>
                 </div>
