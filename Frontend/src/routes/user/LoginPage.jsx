@@ -18,6 +18,8 @@ export function LoginPage() {
   const [otp, setOtp] = useState("");
   const[userDetails,setUserDetails] = useState("")
 
+  const userId = localStorage.getItem("userId");
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -88,6 +90,12 @@ export function LoginPage() {
 
 
   }
+
+  useEffect(() => {
+    if(userId){
+      FetchUserDeatils(userId)
+    }
+  }, [])
 
   
 
