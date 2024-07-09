@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { bagActions } from "../store/BagSlice";
 import { Link } from "react-router-dom";
 import axios from 'axios';
-import { API_URI } from '../Contants';
+import { API_URI } from "../Contants";
+
 
 const ProductDetails = ({ item }) => {
   const [selectedImage, setSelectedImage] = useState(item.images[0]);
@@ -11,7 +12,10 @@ const ProductDetails = ({ item }) => {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
   const bagItem = useSelector((store) => store.bag);
-  const elementFound = bagItem.includes(item._id);
+  
+  const flattenedBagItems = bagItem?.data?.flat() || [];
+  const elementFound = flattenedBagItems.some(bagItem => bagItem.productId === item._id);
+  
   const userId = localStorage.getItem('userId');
 
   const handleImageClick = (image) => {
@@ -35,17 +39,34 @@ const ProductDetails = ({ item }) => {
           productName: item.title,
           price: item.price,
           quantity: quantity,
+          discountPercentage: item.discountPercentage,
           promotionCode: item.promotionCode || "null",
       });
-      dispatch(bagActions.addToBag(resp.data));
+      fetchItems();
     } catch (error) {
       console.error("Error adding to cart:", error.message);
-      
     }
   };
 
-  const handleRemove = () => {
-    dispatch(bagActions.removeFromBag(item._id));
+  const handleRemove = async() => {
+    try{
+      await axios.post(`${API_URI}/api/cart/${userId}/${item._id}`);
+      dispatch(bagActions.removeFromBag({productId:item._id}));
+
+    }catch (error) {
+      console.error("Error removing from cart:", error.message);
+    }
+  
+};
+
+  const fetchItems = async () => {
+    try {
+      const resp = await axios.get(`${API_URI}/api/cart/totalProductQuantity/${userId}`);
+      // console.log(resp.data.data)
+      dispatch(bagActions.addToBag(resp.data));
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   return (
@@ -140,10 +161,11 @@ const ProductDetails = ({ item }) => {
             </button>
           ) : (
             <button
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4 mr-4"
+              className={`bg-blue-500 text-white px-4 py-2 rounded-lg mb-4 mr-4 ${item.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
               onClick={handleAddToBag}
+              disabled={item.stock <= 0} // Disable if out of stock
             >
-              Add to Bag
+              {item.stock <= 0 ? 'Out of Stock' : 'Add to Bag'}
             </button>
           )}
           <button

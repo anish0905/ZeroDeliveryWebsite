@@ -1,16 +1,18 @@
 import { IoCheckmarkDone } from "react-icons/io5";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import {  useNavigate } from "react-router-dom"; // Import useHistory for navigation
 
 const Address = () => {
   const [showAll, setShowAll] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const addressData = useSelector((store) => store.address);
+  const navagite = useNavigate(); // Initialize useHistory
 
   // Convert the address object to an array, filtering out non-numeric keys
   const addresses = Object.keys(addressData)
-    .filter(key => !isNaN(key))
-    .map(key => addressData[key]);
+    .filter((key) => !isNaN(key))
+    .map((key) => addressData[key]);
 
   const handleChangeClick = () => {
     setShowAll((prev) => !prev);
@@ -19,6 +21,10 @@ const Address = () => {
   const handleSelectAddress = (address) => {
     setSelectedAddress(address);
     setShowAll(false);
+  };
+
+  const handleNavigateToAddressForm = () => {
+    navagite("/addressForm"); // Navigate to /addressForm route
   };
 
   return (
@@ -54,7 +60,7 @@ const Address = () => {
             </div>
           )}
         </div>
-        <button onClick={handleChangeClick} className="text-xs font-semibold px-6">
+        <button onClick={addresses.length === 0 ? handleNavigateToAddressForm : handleChangeClick} className="text-xs font-semibold px-6">
           {showAll ? "SELECT" : "CHANGE"}
         </button>
       </div>

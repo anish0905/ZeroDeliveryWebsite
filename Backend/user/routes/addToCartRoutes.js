@@ -16,6 +16,10 @@ router.delete('/:userId', addToCartController.deleteCartByUserId);
 
 router.post('/:userId/:productId', addToCartController.removeItemFromCart)
 
-router.post('/updateProductQuantity', addToCartController.updateProductQuantity)
+router.put('/addProductQuantityByOne', addToCartController.AddProductQuantity)
+
+router.put('/subProductQuantityByOne', addToCartController.subProductQuantity)
+
+router.get('/totalProductQuantity/:userId', addToCartController.getTotalQuantity)
 
 module.exports = router;

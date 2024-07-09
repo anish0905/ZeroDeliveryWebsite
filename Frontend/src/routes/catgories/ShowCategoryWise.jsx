@@ -14,8 +14,10 @@ const ShowCategoryWise = (props) => {
   const name = props.name || params.name;
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const bagItems = useSelector((store) => store.bag);
+  const bagItems = useSelector((store) => store.bag) || { data: [] }; // Add a default fallback
   const dispatch = useDispatch();
+  const [quantity, setQuantity] = useState(1);
+  const userId = localStorage.getItem('userId');
 
   const modifyName = name.toLowerCase();
 
@@ -36,13 +38,43 @@ const ShowCategoryWise = (props) => {
     fetchData();
   }, [name, modifyName]);
 
-  const handleAddToBag = (itemId) => {
-    dispatch(bagActions.addToBag(itemId));
+  const handleAddToBag = async(productId, productName, price,discountPercentage) => {
+    console.log("addToBag", productId, productName, price);
+    try {
+      const resp = await axios.post(`${API_URI}/api/cart`, {
+          userId,
+          productId,
+          productName,
+          price,
+          discountPercentage,
+          quantity: quantity,
+          promotionCode: items.promotionCode || "null",
+      });
+      fetchItems();
+    } catch (error) {
+      console.error("Error adding to cart:", error.message);
+    }
   };
 
-  const handleRemove = (itemId) => {
-    dispatch(bagActions.removeFromBag(itemId));
+  const fetchItems = async () => {
+    try {
+      const resp = await axios.get(`${API_URI}/api/cart/totalProductQuantity/${userId}`);
+      dispatch(bagActions.addToBag(resp.data));
+    } catch (error) {
+      console.error("error", error);
+    }
   };
+
+  const handleRemove = async(productId) => {
+    try{
+      await axios.post(`${API_URI}/api/cart/${userId}/${productId}`);
+      dispatch(bagActions.removeFromBag({productId:productId}));
+
+    }catch (error) {
+      console.error("Error removing from cart:", error.message);
+    }
+  
+};
 
   if (loading) {
     return (
@@ -59,9 +91,11 @@ const ShowCategoryWise = (props) => {
           <CategoryList />
         </div>
       )}
-      <div className={`flex justify-center items-center content-center gap-5 flex-wrap   ${params.name ? 'lg:ml-40 md:ml-40 ml-0 lg:mt-32 md:mt-32 mt-52' : 'mt-10'}`}>
+      <div className={`flex justify-center items-center content-center gap-5 flex-wrap ${params.name ? 'lg:ml-40 md:ml-40 ml-0 lg:mt-32 md:mt-32 mt-52' : 'mt-10'}`}>
         {items.map((item) => {
-          const elementFound = bagItems.some(bagItem => bagItem._id === item._id);
+           const flattenedBagItems = bagItems?.data?.flat() || [];
+           const elementFound = flattenedBagItems.some(bagItem => bagItem.productId === item._id);
+           // Check if item is already in bag
 
           return (
             <div
@@ -112,7 +146,7 @@ const ShowCategoryWise = (props) => {
                 ) : (
                   <button
                     className="bg-green-400 w-full rounded text-white py-1 h-8 flex justify-center items-center gap-2"
-                    onClick={() => handleAddToBag(item._id)}
+                    onClick={() => handleAddToBag(item._id, item.title, item.price,items.discountPercentage)}
                   >
                     <IoBagAddSharp className="text-2xl" />
                     Add to Bag

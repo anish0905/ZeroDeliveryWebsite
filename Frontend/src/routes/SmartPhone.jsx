@@ -1,23 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import { CiStar } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { bagActions } from "../store/BagSlice";
 import { IoBagAddSharp } from "react-icons/io5";
 import { IoBagRemoveSharp } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { API_URI } from "../Contants";
 
 const SmartPhone = ({ item }) => {
   const dispatch = useDispatch();
   const bagItem = useSelector((store) => store.bag);
+  const userId = localStorage.getItem('userId');
+  const [quantity, setQuantity] = useState(1);
 
-  const elementFound = bagItem.includes(item._id);
+  const flattenedBagItems = bagItem?.data?.flat() || [];
+  const elementFound = flattenedBagItems.some(bagItem => bagItem.productId === item._id);
+  
 
-  const handleAddTOBag = () => {
-    dispatch(bagActions.addToBag(item._id));
+  const handleAddTOBag = async() => {
+    try {
+      const resp = await axios.post(`${API_URI}/api/cart`, {
+          userId,
+          productId: item._id,
+          productName: item.title,
+          price: item.price,
+          quantity: quantity,
+          discountPercentage:item.discountPercentage,
+          promotionCode: item.promotionCode || "null",
+      });
+      fetchItems();
+    } catch (error) {
+      console.error("Error adding to cart:", error.message);
+    }
   };
 
-  const handleRemove = () => {
-    dispatch(bagActions.removeFromBag(item._id));
+  const fetchItems = async () => {
+    try {
+      const resp = await axios.get(`${API_URI}/api/cart/totalProductQuantity/${userId}`);
+      // console.log(resp.data.data)
+      dispatch(bagActions.addToBag(resp.data));
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  const handleRemove = async() => {
+      try{
+         await axios.post(`${API_URI}/api/cart/${userId}/${item._id}`);
+        dispatch(bagActions.removeFromBag({productId:item._id}));
+       
+      }catch (error) {
+        console.error("Error removing from cart:", error.message);
+      }
+    
   };
 
   return (

@@ -1,14 +1,43 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { IoBagRemoveSharp } from "react-icons/io5";
+import { IoBagRemoveSharp,IoBagAddSharp } from "react-icons/io5";
 import { bagActions } from '../store/BagSlice';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import {API_URI} from "../Contants"
+
 
 const BagItems = ({ item }) => {
   const dispatch = useDispatch();
+  const userId = localStorage.getItem('userId');
 
-  const handleRemove = () => {
-    dispatch(bagActions.removeFromBag(item._id));
+  const addItem = async() => {
+    try {
+      const resp = await axios.put(`${API_URI}/api/cart/addProductQuantityByOne`,{
+        userId,
+        productId: item._id,
+      })
+      dispatch(bagActions.increaseQuantity({productId: item._id}))
+      
+    } catch (error) {
+      console.error('Error adding item to bag:', error);
+      
+    }
+  }
+
+  const subItem = async() => {
+    try {
+      const resp = await axios.put(`${API_URI}/api/cart/subProductQuantityByOne`,{
+        userId,
+        productId: item._id,
+      })
+      dispatch(bagActions.decreaseQuantity({productId: item._id}))
+
+      
+    } catch (error) {
+      console.error('Error subtracting item from bag:', error);
+      
+    }
   }
 
  
@@ -40,13 +69,21 @@ const BagItems = ({ item }) => {
           Delivery by 
           <span className='text-cyan-400 ml-2'>{formattedDeliveryDate}</span>
         </div>
-        <div className='my-4'>
+        <div className='my-4 w-full flex justify-center content-center items-center'>
           <button
-            className="bg-red-400 w-full rounded text-white py-1 h-8 flex justify-center content-center items-center gap-2"
-            onClick={handleRemove}
+            className="bg-green-400 w-full rounded-s text-white py-1 h-8 flex justify-center content-center items-center gap-2"
+            onClick={addItem}
+          >
+            <IoBagAddSharp className="text-2xl" />
+            
+          </button>
+          <p className='bg-blue-400 w-full  text-white py-1 h-8 flex justify-center content-center items-center gap-2'>{item.quantity}</p>
+          <button
+            className="bg-red-400 w-full rounded-e text-white py-1 h-8 flex justify-center content-center items-center gap-2"
+            onClick={subItem}
           >
             <IoBagRemoveSharp className="text-2xl" />
-            Remove Item
+           
           </button>
         </div>  
       </div>

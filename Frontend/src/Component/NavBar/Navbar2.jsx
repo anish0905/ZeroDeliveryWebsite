@@ -14,7 +14,7 @@ import { userActions } from "../../store/userInfoSlice";
 
 
 const NavBar2 = () => {
-  const bag = useSelector((store) => store.bag);
+  const bag = useSelector((store) => store.bag) || { totalQuantity: 0, data: [] };
   const userId= localStorage.getItem('userId');
   const dispatch = useDispatch();
   const navigate = useNavigate(); // Use useNavigate instead of useHistory
@@ -49,14 +49,7 @@ const NavBar2 = () => {
     navigate("/"); // Navigate to home or another appropriate route
   };
 
-  const totalQuantity = bag.reduce((acc, cart) => {
-    const cartQuantity = cart.cartItems?.reduce((cartAcc, item) => {
-      const quantity = isNaN(item.quantity) ? 0 : item.quantity;
-      return cartAcc + quantity;
-    }, 0);
-    return acc + cartQuantity;
-  }, 0);
-
+  
   return (
     <div className="mb-4">
       <div className="flex justify-center content-center items-center">
@@ -105,9 +98,11 @@ const NavBar2 = () => {
           <li className="flex my-4 gap-5 hover:bg-blue-gray-200 px-4 py-1 rounded w-60" onClick={() => handleAuthenticationRequired('/Bag')}>
             <div className="flex justify-center content-center items-center relative">
               <HiShoppingBag className="text-2xl" />
-              <div className="absolute px-2 py-1 left-4 -top-3 rounded-full bg-deep-orange-800 text-white text-xs"  >
-                {totalQuantity}
-              </div>
+              {bag.totalQuantity > 0 && (
+                <div className="absolute px-2 py-1 left-4 -top-3 rounded-full bg-green-800 text-white text-xs">
+                  {bag.totalQuantity}
+                </div>
+              )}
             </div>
             <button  className="border-bottom2"
            
