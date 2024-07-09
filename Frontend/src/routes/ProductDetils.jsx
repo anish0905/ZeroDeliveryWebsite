@@ -31,7 +31,7 @@ const ProductDetails = ({ item }) => {
     setQuantity(value);
   };
 
-  const handleAddToBag = async() => {
+  const handleAddToBag = async () => {
     try {
       const resp = await axios.post(`${API_URI}/api/cart`, {
           userId,

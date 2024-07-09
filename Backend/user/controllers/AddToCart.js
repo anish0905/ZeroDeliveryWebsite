@@ -142,8 +142,8 @@ exports.subProductQuantity = async (req, res) => {
 
 // Get cart by user ID
 exports.getCartByUserId = async (req, res) => {
-    const { userId } = req.params;
-
+    const { userId } = req.params; // Correct parameter name
+  
     try {
         // Find the user by userId and populate the cart items with product details
         const user = await User.findById(userId).populate('cart.productId');
@@ -154,6 +154,7 @@ exports.getCartByUserId = async (req, res) => {
 
         res.status(200).json(user.cart);
     } catch (error) {
+        console.error('Error fetching cart:', error);
         res.status(500).json({ message: 'Error fetching cart', error });
     }
 };
