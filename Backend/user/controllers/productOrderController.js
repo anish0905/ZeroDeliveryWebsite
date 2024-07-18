@@ -90,5 +90,6 @@ const cancelledOrder = async (req, res) => {
 
 module.exports = {
     productOrder,
-    cancelledOrder  
+    cancelledOrder ,
+    getProductOrdersByUserId 
 };
