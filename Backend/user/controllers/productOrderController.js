@@ -3,40 +3,40 @@ const Product = require("../models/Product")
 const mongoose = require("mongoose");
 
 const productOrder = async (req, res) => {
-    try {
-      const { userId, products, address, paymentMethod } = req.body;
-  
-      // Validate the required fields
-      if (!userId || !products || !address || !paymentMethod) {
-        return res.status(400).json({ message: 'All fields are required.' });
-      }
-  
-      // Validate productIds in products array
-      const isValidProductIds = Product.every(product => Types.ObjectId.isValid(_id.productId));
-  
-      if (!isValidProductIds) {
-        return res.status(400).json({ message: 'Invalid productId format.' });
-      }
-  
-      // Create a new product order
-      const newOrder = new ProductOrder({
-        userId,
-        products,
-        address,
-        paymentMethod,
-        paymentStatus: 'unpaid',
-        status: 'pending'
-      });
-  
-      // Save the product order to the database
-      const savedOrder = await newOrder.save();
-  
-      res.status(201).json(savedOrder);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Server error. Please try again later.' });
+  try {
+    const { userId, products, address, paymentMethod } = req.body;
+
+    // Validate the required fields
+    if (!userId || !products || !address || !paymentMethod) {
+      return res.status(400).json({ message: 'All fields are required.' });
     }
-  };
+
+    // Validate productIds in products array
+    const isValidProductIds = products.every(product => mongoose.Types.ObjectId.isValid(product.productId));
+
+    if (!isValidProductIds) {
+      return res.status(400).json({ message: 'Invalid productId format.' });
+    }
+
+    // Create a new product order
+    const newOrder = new ProductOrder({
+      userId,
+      products,
+      address,
+      paymentMethod,
+      paymentStatus: 'unpaid',
+      status: 'pending'
+    });
+
+    // Save the product order to the database
+    const savedOrder = await newOrder.save();
+
+    res.status(201).json(savedOrder);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error. Please try again later.' });
+  }
+};
   // Fetch product orders by user ID
   const getProductOrdersByUserId = async (req, res) => {
     try {

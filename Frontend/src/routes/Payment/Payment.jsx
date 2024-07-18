@@ -98,7 +98,7 @@ const Payment = () => {
     };
 
     try {
-      const resp = await axios.put(`${API_URI}/api/products/orderProduct`, orderData);
+      const resp = await axios.post(`${API_URI}/api/products/orderProduct`, orderData);
       Swal.fire({
         icon: 'success',
         title: 'Success!',
