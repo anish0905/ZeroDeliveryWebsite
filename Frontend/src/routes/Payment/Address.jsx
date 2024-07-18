@@ -1,18 +1,25 @@
 import { IoCheckmarkDone } from "react-icons/io5";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import {  useNavigate } from "react-router-dom"; // Import useHistory for navigation
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const Address = () => {
   const [showAll, setShowAll] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const addressData = useSelector((store) => store.address);
-  const navagite = useNavigate(); // Initialize useHistory
+  const navigate = useNavigate(); // Initialize useNavigate
 
-  // Convert the address object to an array, filtering out non-numeric keys
   const addresses = Object.keys(addressData)
     .filter((key) => !isNaN(key))
     .map((key) => addressData[key]);
+
+  useEffect(() => {
+    // Save the first address if no address is selected
+    if (!selectedAddress && addresses.length > 0) {
+      setSelectedAddress(addresses[0]);
+      localStorage.setItem('selectedAddress', JSON.stringify(addresses[0]));
+    }
+  }, [selectedAddress, addresses]);
 
   const handleChangeClick = () => {
     setShowAll((prev) => !prev);
@@ -20,11 +27,12 @@ const Address = () => {
 
   const handleSelectAddress = (address) => {
     setSelectedAddress(address);
+    localStorage.setItem('selectedAddress', JSON.stringify(address));
     setShowAll(false);
   };
 
   const handleNavigateToAddressForm = () => {
-    navagite("/addressForm"); // Navigate to /addressForm route
+    navigate("/addressForm"); // Navigate to /addressForm route
   };
 
   return (
@@ -49,7 +57,7 @@ const Address = () => {
               </div>
             ))
           ) : (
-            <div className="flex justify-between content-center items-center gap-5  my-1">
+            <div className="flex justify-between content-center items-center gap-5 my-1">
               <p className="text-sm">
                 {selectedAddress
                   ? `${selectedAddress.street}, ${selectedAddress.city}, ${selectedAddress.postalCode}, ${selectedAddress.state}, ${selectedAddress.country}`

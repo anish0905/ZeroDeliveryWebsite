@@ -3,7 +3,7 @@ const { productOrder, cancelledOrder } = require('../controllers/productOrderCon
 
 const router = express.Router()
 
-router.post("/orderProduct",productOrder)
+router.put("/orderProduct",productOrder)
 router.put("/cancleOrder",cancelledOrder)
 
 module.exports = router;
