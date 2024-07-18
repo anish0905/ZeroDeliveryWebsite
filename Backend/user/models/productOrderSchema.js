@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const productOrderSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'User' },
   products: [
     {
       productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
@@ -9,7 +9,7 @@ const productOrderSchema = new mongoose.Schema({
       price: { type: Number, required: true }
     }
   ],
-  address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true },
+  address: { type: mongoose.Schema.Types.ObjectId, required: true },
   status: { type: String, required: true, enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'] },
   deliveryDate: { type: Date },
   paymentMethod: { type: String, required: true },

@@ -1,6 +1,7 @@
 const ProductOrder = require("../models/productOrderSchema");
 const Product = require("../models/Product")
 const mongoose = require("mongoose");
+const User = require('../models/User');
 
 const productOrder = async (req, res) => {
   try {
@@ -47,20 +48,33 @@ const productOrder = async (req, res) => {
         return res.status(400).json({ message: 'User ID is required.' });
       }
   
-      // Find product orders by user ID
-      const orders = await ProductOrder.find({ userId }).populate('products.productId').populate('address');
+      // Check if userId is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID format.' });
+      }
   
-      if (!orders.length) {
+      // Find product orders by user ID
+      const orders = await ProductOrder.find({ userId:new mongoose.Types.ObjectId(userId) })
+        .populate('products.productId')
+        .populate('address');
+  
+      // Fetch addresses for each order
+      const ordersWithAddresses = await Promise.all(orders.map(async order => {
+        const user = await User.findById(order.userId).select('addresses');
+        const address = user.addresses.id(order.address);
+        return { ...order.toObject(), address };
+      }));
+  
+      if (!ordersWithAddresses.length) {
         return res.status(404).json({ message: 'No orders found for this user.' });
       }
   
-      res.status(200).json(orders);
+      res.status(200).json(ordersWithAddresses);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server error. Please try again later.' });
     }
   };
-  
 
 
 const cancelledOrder = async (req, res) => {
@@ -90,5 +104,6 @@ const cancelledOrder = async (req, res) => {
 
 module.exports = {
     productOrder,
-    cancelledOrder  
+    cancelledOrder,
+    getProductOrdersByUserId 
 };
