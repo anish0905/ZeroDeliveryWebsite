@@ -29,3 +29,35 @@
     transform: rotate(360deg)
   }
 }
+
+/* Add this to your CSS file or Tailwind configuration */
+/* Add this to your global styles or Tailwind CSS configuration */
+/* Global styles or Tailwind CSS configuration */
+/* Global styles */
+.stepper-red {
+  border-color: red;
+  background-color: red;
+  color: white;
+}
+
+.stepper-green {
+  border-color: green;
+  background-color: green;
+  color: white;
+}
+
+.stepper-blue {
+  border-color: blue;
+  background-color: blue;
+  color: white;
+}
+
+.stepper-gray {
+  border-color: gray;
+  background-color: transparent;
+  color: gray;
+}
+
+
+
+

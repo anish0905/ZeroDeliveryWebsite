@@ -21,6 +21,8 @@ import PaymentHomePage from "./routes/Payment/PaymentHomePage";
 import ShowBrand from "./routes/brand/ShowBrand";
 import { Login } from "./routes/Login";
 import { LoginPage } from "./routes/user/LoginPage";
+import OrderHistory from "./routes/user/OrderHistory";
+import OrderDetails from "./routes/user/OrderDetails";
 
 
 
@@ -65,7 +67,16 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage/>
-      }
+      },
+      {
+        path: "/orderHistory",
+        element: <OrderHistory/>
+      },
+      {
+        path: "/orderDetails/:id",
+        element: <OrderDetails/>
+      },
+      
       
     ]
   }
@@ -77,6 +88,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Provider store={myntrastore}>
       <RouterProvider router={router}>
         <App />
+    
       
       </RouterProvider>
       </Provider>

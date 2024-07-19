@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import MyAcount from "./MyAcount";
 import Wallet from "./Wallet";
 import { userActions } from "../../store/userInfoSlice";
+import OrderHistory from "./OrderHistory";
 
 const User = () => {
   const { name } = useParams();
@@ -29,9 +30,8 @@ const User = () => {
         );
       case 'MyOrder':
         return (
-          <div>
-            <h1 className="text-xl font-semibold">My Orders</h1>
-            <p>Order details go here...</p>
+          <div className="w-full">
+           <OrderHistory/>
           </div>
         );
       case 'SaveAddress':

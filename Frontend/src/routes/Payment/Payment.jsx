@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { IoCheckmarkDone } from 'react-icons/io5';
 import Swal from 'sweetalert2';
 import { API_URI } from '../../Contants';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { bagActions } from '../../store/BagSlice';
 
 const Payment = () => {
   const [paymentOption, setPaymentOption] = useState('');
@@ -10,15 +13,44 @@ const Payment = () => {
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(true);
   const [bagItems, setBagItems] = useState([]);
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const bagItem = useSelector((store) => store.bag);
 
   const address = localStorage.getItem('selectedAddress') ? JSON.parse(localStorage.getItem('selectedAddress')) : {};
   const userId = localStorage.getItem('userId');
+
+  const handleRemove = async (itemId) => {
+    try {
+      await axios.post(`${API_URI}/api/cart/${userId}/${itemId}`);
+      dispatch(bagActions.removeFromBag({ productId: itemId }));
+      fetchCart(); // Fetch updated cart after removing item
+      Swal.fire({
+        icon: 'success',
+        title: 'Order placed successfully ',
+        text: 'The item has been removed from your cart.',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+    } catch (error) {
+      console.error("Error removing from cart:", error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'Something went wrong while removing the item. Please try again.',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+    }
+  };
 
   const fetchCart = async () => {
     try {
       const resp = await axios.get(`${API_URI}/api/cart/${userId}`);
       setBagItems(resp.data);
-      console.log(resp.data);
     } catch (error) {
       console.error(error);
     }
@@ -83,7 +115,7 @@ const Payment = () => {
     }
 
     const products = bagItems.map(item => ({
-      productId:item.productId,
+      productId: item.productId,
       quantity: item.quantity,
       price: item.price
     }));
@@ -99,6 +131,8 @@ const Payment = () => {
 
     try {
       const resp = await axios.post(`${API_URI}/api/products/orderProduct`, orderData);
+      // Assuming you want to clear the cart after placing order, you can clear bagItems state here
+      setBagItems([]);
       Swal.fire({
         icon: 'success',
         title: 'Success!',
@@ -107,8 +141,13 @@ const Payment = () => {
         timerProgressBar: true,
         showConfirmButton: false
       });
+       bagItems.map(item => (
+        handleRemove(item.productId)
+      ));
+      navigate('/user/myorder'); // Redirect to my orders page after successful payment
+     
     } catch (error) {
-      console.log(error);
+      console.error(error);
       Swal.fire({
         icon: 'error',
         title: 'Error!',

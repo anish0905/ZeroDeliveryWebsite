@@ -102,8 +102,54 @@ const cancelledOrder = async (req, res) => {
     }
 }
 
+const productOrderById = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    if (!orderId) {
+      return res.status(400).json({ message: 'orderId is required.' });
+    }
+
+    // Fetch the order with populated product details
+    const order = await ProductOrder.findById(orderId).populate('products.productId');
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found.' });
+    }
+
+    // Fetch the user who placed the order
+    const user = await User.findById(order.userId).select('addresses');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Find the address from the user's addresses using the address ID from the order
+    const address = user.addresses.id(order.address);
+
+    if (!address) {
+      return res.status(404).json({ message: 'Address not found.' });
+    }
+
+    // Add address details to the order object
+    const orderWithAddress = {
+      ...order.toObject(),
+      address
+    };
+
+    res.status(200).json(orderWithAddress);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+
+
 module.exports = {
     productOrder,
     cancelledOrder,
-    getProductOrdersByUserId 
+    getProductOrdersByUserId ,
+    productOrderById
 };
