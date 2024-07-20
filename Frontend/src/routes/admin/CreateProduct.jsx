@@ -47,9 +47,9 @@ const CreateProduct = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl mx-auto p-4">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="mt-4 lg:mt-0">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-7xl mx-auto p-4 ">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-32">
+        <div className=""> 
           <label htmlFor="title" className="block">
             Title
           </label>
@@ -64,7 +64,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="description" className="block">
             Description
           </label>
@@ -78,7 +78,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="category" className="block">
             Category
           </label>
@@ -93,7 +93,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="price" className="block">
             Price
           </label>
@@ -108,7 +108,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="discountPercentage" className="block">
             Discount Percentage
           </label>
@@ -123,7 +123,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="rating" className="block">
             Rating
           </label>
@@ -138,7 +138,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="stock" className="block">
             Stock
           </label>
@@ -153,7 +153,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="tags" className="block">
             Tags (comma separated)
           </label>
@@ -172,7 +172,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="brand" className="block">
             Brand
           </label>
@@ -187,7 +187,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="sku" className="block">
             SKU
           </label>
@@ -202,7 +202,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="weight" className="block">
             Weight
           </label>
@@ -217,7 +217,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="dimensions" className="block">
             Dimensions (W x H x L)
           </label>
@@ -239,7 +239,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="warrantyInformation" className="block">
             Warranty Information
           </label>
@@ -253,7 +253,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="shippingInformation" className="block">
             Shipping Information
           </label>
@@ -267,7 +267,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="availabilityStatus" className="block">
             Availability Status
           </label>
@@ -281,7 +281,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="returnPolicy" className="block">
             Return Policy
           </label>
@@ -295,7 +295,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="minimumOrderQuantity" className="block">
             Minimum Order Quantity
           </label>
@@ -309,7 +309,7 @@ const CreateProduct = () => {
           />
         </div>
 
-        <div className="mt-4 lg:mt-0">
+        <div>
           <label htmlFor="images" className="block">
             Images
           </label>
