@@ -4,7 +4,7 @@ import App from "./routes/App";
 import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "@material-tailwind/react";
-import myntrastore from "./store/index"
+import myntrastore from "./store/index";
 import Home from "./routes/Home";
 
 import Bag from "../src/Component/Bag";
@@ -23,9 +23,7 @@ import { Login } from "./routes/Login";
 import { LoginPage } from "./routes/user/LoginPage";
 import OrderHistory from "./routes/user/OrderHistory";
 import OrderDetails from "./routes/user/OrderDetails";
-
-
-
+import AdminDashBoard from "./routes/admin/AdminDashBoard";
 
 const router = createBrowserRouter([
   {
@@ -34,63 +32,63 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home />
+        element: <Home />,
       },
       {
         path: "/Bag",
-        element: <Bag />
+        element: <Bag />,
       },
       {
         path: "/showCategory/:name",
-        element: <ShowCategoryWise/>
+        element: <ShowCategoryWise />,
       },
       {
         path: "/user/:name",
-        element: <User/>
+        element: <User />,
       },
       {
         path: "/addressForm",
-        element: <AddressForm/>
+        element: <AddressForm />,
       },
       {
         path: "/productDetails/:id",
-        element: <ProductDetailsHome/>
+        element: <ProductDetailsHome />,
       },
       {
         path: "/payment",
-        element:<PaymentHomePage/>
+        element: <PaymentHomePage />,
       },
       {
         path: "/showbrand/:name",
-        element: <ShowBrand/>
+        element: <ShowBrand />,
       },
       {
         path: "/login",
-        element: <LoginPage/>
+        element: <LoginPage />,
       },
       {
         path: "/orderHistory",
-        element: <OrderHistory/>
+        element: <OrderHistory />,
       },
       {
         path: "/orderDetails/:id",
-        element: <OrderDetails/>
+        element: <OrderDetails />,
       },
-      
-      
-    ]
-  }
+      {
+        path: "/admindashboard",
+        element: <AdminDashBoard />,
+      },
+    ],
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
       <Provider store={myntrastore}>
-      <RouterProvider router={router}>
-        <App />
-    
-      
-      </RouterProvider>
+        <RouterProvider router={router}>
+          <App />
+        </RouterProvider>
       </Provider>
     </ThemeProvider>
   </React.StrictMode>
