@@ -24,6 +24,7 @@ import { LoginPage } from "./routes/user/LoginPage";
 import OrderHistory from "./routes/user/OrderHistory";
 import OrderDetails from "./routes/user/OrderDetails";
 import AdminDashBoard from "./routes/admin/AdminDashBoard";
+import CreateProduct from "./routes/admin/CreateProduct";
 
 const router = createBrowserRouter([
   {
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: "/admindashboard",
         element: <AdminDashBoard />,
+      },
+      {
+        path: "/createProduct",
+        element: <CreateProduct />,
       },
     ],
   },

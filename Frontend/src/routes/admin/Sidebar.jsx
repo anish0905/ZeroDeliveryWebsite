@@ -29,7 +29,7 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/orders"
+          to="/createProduct"
           className="p-2 my-2 rounded hover:bg-gray-700"
           activeClassName="bg-gray-700"
         >
