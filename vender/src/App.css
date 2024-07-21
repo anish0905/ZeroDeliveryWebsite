@@ -1,0 +1,63 @@
+.loader {
+  width: 64px;
+  height: 64px;
+  position: relative;
+  background-image:
+    linear-gradient(#e6e615 16px, transparent 0) ,
+    linear-gradient(#FF3D00 16px, transparent 0) ,
+    linear-gradient(#7cf81d 16px, transparent 0) ,
+    linear-gradient(#203fed 16px, transparent 0);
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  background-position: left top , left bottom , right top , right bottom;
+  animation: rotate 1s linear infinite;
+}
+@keyframes rotate {
+  0% {
+    width: 64px;
+    height: 64px;
+    transform: rotate(0deg)
+  }
+  50% {
+    width: 30px;
+    height: 30px;
+    transform: rotate(180deg)
+  }
+  100% {
+    width: 64px;
+    height: 64px;
+    transform: rotate(360deg)
+  }
+}
+
+/* Add this to your CSS file or Tailwind configuration */
+/* Add this to your global styles or Tailwind CSS configuration */
+/* Global styles or Tailwind CSS configuration */
+/* Global styles */
+.stepper-red {
+  border-color: red;
+  background-color: red;
+  color: white;
+}
+
+.stepper-green {
+  border-color: green;
+  background-color: green;
+  color: white;
+}
+
+.stepper-blue {
+  border-color: blue;
+  background-color: blue;
+  color: white;
+}
+
+.stepper-gray {
+  border-color: gray;
+  background-color: transparent;
+  color: gray;
+}
+
+
+
+
