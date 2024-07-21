@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { API_URI } from "../../Contants";
+import Swal from 'sweetalert2';
 
 const CreateProduct = () => {
   const [formData, setFormData] = useState({
@@ -9,19 +12,18 @@ const CreateProduct = () => {
     discountPercentage: "",
     rating: "",
     stock: "",
-    tags: [],
+    tags: "",
     brand: "",
     sku: "",
     weight: "",
-    dimensions: { width: "", height: "", length: "" },
+    dimensions: { width: "", height: "", depth: "" },
     warrantyInformation: "",
     shippingInformation: "",
     availabilityStatus: "",
-    reviews: [],
     returnPolicy: "",
     minimumOrderQuantity: "",
-    meta: {},
     images: [],
+    thumbnail: "",
   });
 
   const handleChange = (e) => {
@@ -32,298 +34,131 @@ const CreateProduct = () => {
     });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e, fieldName) => {
     const files = Array.from(e.target.files);
+    const base64Images = await Promise.all(files.map(file => convertToBase64(file)));
     setFormData({
       ...formData,
-      images: files,
+      [fieldName]: base64Images,
+    });
+  };
+  const handleThumbnailChange = async (e,fieldName) => {
+    const file = e.target.files[0];
+    const base64Thumbnail = await convertToBase64(file);
+    setFormData({
+     ...formData,
+      thumbnail: base64Thumbnail,
+    });
+
+  }
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would handle form submission, such as posting to an API
-    console.log(formData);
+    const { tags, dimensions, ...rest } = formData;
+    const productData = {
+      ...rest,
+      tags: tags.split(',').map(tag => tag.trim()),
+      dimensions: {
+        width: parseFloat(dimensions.width),
+        height: parseFloat(dimensions.height),
+        depth: parseFloat(dimensions.depth),
+      },
+    };
+
+    try {
+      await axios.post(`${API_URI}/api/products`, productData);
+      Swal.fire({
+        icon: 'success',
+        title: 'Product created successfully',
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+    } catch (error) {
+      console.error("Error creating product:", error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Something went wrong while creating the product',
+        text: `${error.message}`,
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-7xl mx-auto p-4 ">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-32">
-        <div className=""> 
-          <label htmlFor="title" className="block">
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-7xl mx-auto p-4 pt-32">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Form fields here */}
+        {['title', 'description', 'category', 'price', 'discountPercentage', 'rating', 'stock', 'brand', 'sku', 'weight', 'warrantyInformation', 'shippingInformation', 'availabilityStatus', 'returnPolicy', 'minimumOrderQuantity'].map(field => (
+          <div key={field}>
+            <label htmlFor={field} className="block capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
+            <input
+              type={field === 'price' || field === 'discountPercentage' || field === 'rating' || field === 'stock' || field === 'weight' || field === 'minimumOrderQuantity' ? 'number' : 'text'}
+              id={field}
+              name={field}
+              value={formData[field]}
+              onChange={handleChange}
+              className="border p-2 w-full"
+              required={field !== 'discountPercentage' && field !== 'warrantyInformation'}
+            />
+          </div>
+        ))}
         <div>
-          <label htmlFor="description" className="block">
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="category" className="block">
-            Category
-          </label>
-          <input
-            type="text"
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="price" className="block">
-            Price
-          </label>
-          <input
-            type="number"
-            id="price"
-            name="price"
-            value={formData.price}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="discountPercentage" className="block">
-            Discount Percentage
-          </label>
-          <input
-            type="number"
-            id="discountPercentage"
-            name="discountPercentage"
-            value={formData.discountPercentage}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="rating" className="block">
-            Rating
-          </label>
-          <input
-            type="number"
-            id="rating"
-            name="rating"
-            value={formData.rating}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="stock" className="block">
-            Stock
-          </label>
-          <input
-            type="number"
-            id="stock"
-            name="stock"
-            value={formData.stock}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="tags" className="block">
-            Tags (comma separated)
-          </label>
+          <label htmlFor="tags" className="block">Tags (comma separated)</label>
           <input
             type="text"
             id="tags"
             name="tags"
-            value={formData.tags.join(", ")}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                tags: e.target.value.split(",").map((tag) => tag.trim()),
-              })
-            }
-            className="border p-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="brand" className="block">
-            Brand
-          </label>
-          <input
-            type="text"
-            id="brand"
-            name="brand"
-            value={formData.brand}
+            value={formData.tags}
             onChange={handleChange}
             className="border p-2 w-full"
-            required
           />
         </div>
-
         <div>
-          <label htmlFor="sku" className="block">
-            SKU
-          </label>
-          <input
-            type="text"
-            id="sku"
-            name="sku"
-            value={formData.sku}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="weight" className="block">
-            Weight
-          </label>
-          <input
-            type="number"
-            id="weight"
-            name="weight"
-            value={formData.weight}
-            onChange={handleChange}
-            className="border p-2 w-full"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="dimensions" className="block">
-            Dimensions (W x H x L)
-          </label>
+          <label htmlFor="dimensions" className="block">Dimensions (W x H x D)</label>
           <input
             type="text"
             id="dimensions"
             name="dimensions"
-            value={`${formData.dimensions.width} x ${formData.dimensions.height} x ${formData.dimensions.length}`}
-            onChange={(e) => {
-              const [width, height, length] = e.target.value
-                .split(" x ")
-                .map((dim) => parseFloat(dim));
-              setFormData({
-                ...formData,
-                dimensions: { width, height, length },
-              });
-            }}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="warrantyInformation" className="block">
-            Warranty Information
-          </label>
-          <input
-            type="text"
-            id="warrantyInformation"
-            name="warrantyInformation"
-            value={formData.warrantyInformation}
+            value={`${formData.dimensions.width} x ${formData.dimensions.height} x ${formData.dimensions.depth}`}
             onChange={handleChange}
             className="border p-2 w-full"
           />
         </div>
-
         <div>
-          <label htmlFor="shippingInformation" className="block">
-            Shipping Information
-          </label>
-          <input
-            type="text"
-            id="shippingInformation"
-            name="shippingInformation"
-            value={formData.shippingInformation}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="availabilityStatus" className="block">
-            Availability Status
-          </label>
-          <input
-            type="text"
-            id="availabilityStatus"
-            name="availabilityStatus"
-            value={formData.availabilityStatus}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="returnPolicy" className="block">
-            Return Policy
-          </label>
-          <input
-            type="text"
-            id="returnPolicy"
-            name="returnPolicy"
-            value={formData.returnPolicy}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="minimumOrderQuantity" className="block">
-            Minimum Order Quantity
-          </label>
-          <input
-            type="number"
-            id="minimumOrderQuantity"
-            name="minimumOrderQuantity"
-            value={formData.minimumOrderQuantity}
-            onChange={handleChange}
-            className="border p-2 w-full"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="images" className="block">
-            Images
-          </label>
+          <label htmlFor="images" className="block">Images</label>
           <input
             type="file"
             id="images"
             name="images"
             multiple
-            onChange={handleImageChange}
+            onChange={(e) => handleImageChange(e, 'images')}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label htmlFor="thumbnail" className="block">Thumbnail</label>
+          <input
+            type="file"
+            id="thumbnail"
+            name="thumbnail"
+            
+            onChange={(e) => handleThumbnailChange(e, 'thumbnail')}
             className="border p-2 w-full"
           />
         </div>
       </div>
-
       <button
         type="submit"
         className="bg-blue-500 text-white p-2 rounded w-full lg:w-auto mt-4"

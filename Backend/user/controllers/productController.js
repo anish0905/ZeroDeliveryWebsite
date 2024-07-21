@@ -15,16 +15,16 @@ const Product = require("../models/Product");
 
 exports.createProduct = async (req, res) => {
   try {
-      const product = new Product(req.body);
-      await product.save();
-      res.status(201).send({
-          message: "Product added successfully!",
-          product
-      });
+    const product = new Product(req.body);
+    await product.save();
+    res.status(201).send({
+      message: "Product added successfully!",
+      product
+    });
   } catch (error) {
-      res.status(400).send({
-          message: "Product validation failed: " + error.message
-      });
+    res.status(400).send({
+      message: "Product validation failed: " + error.message
+    });
   }
 };
 // Get all products or filter by query parameters
