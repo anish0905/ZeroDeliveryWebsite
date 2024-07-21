@@ -30,7 +30,9 @@ const AdminDashBoard = () => {
 
   return (
     <div className="flex">
+      <div className="lg:block md:block hidden">
       <Sidebar />
+      </div>
       <div className="flex-1 px-10 py-5 mt-16">
         <div className="flex justify-end">
           <div className="w-full">
@@ -40,7 +42,7 @@ const AdminDashBoard = () => {
                   OverView
                 </marquee>
               </h1>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1  gap-4 mb-6">
                 <div className="bg-gradient-to-r from-[#ffbb96] via-[hsl(140,37%,50%)] to-[#fe8796] rounded-lg p-5 text-white">
                   <p className="font-medium text-lg">Account Balance</p>
                   <p className="font-bold text-xl">RS. {todaySales}</p>
