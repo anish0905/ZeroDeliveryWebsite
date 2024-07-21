@@ -21,7 +21,7 @@ const Sidebar = () => {
           All Order
         </NavLink>
         <NavLink
-          to="/orders"
+          to="/products"
           className="p-2 my-2 rounded hover:bg-gray-700"
           activeClassName="bg-gray-700"
         >

@@ -12,6 +12,8 @@ import { LoginPage } from "./routes/admin/LoginPage";
 
 import AdminDashBoard from "./routes/admin/AdminDashBoard";
 import CreateProduct from "./routes/admin/CreateProduct";
+import OrderHomePage from "./routes/AllOrder.jsx/OrderHomePage";
+import ProductHome from "./routes/AllProduct.jsx/ProductHome";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +34,14 @@ const router = createBrowserRouter([
         path: "/createProduct",
         element: <CreateProduct />,
       },
+      {
+        path: "/orders",
+        element: <OrderHomePage />,
+      },
+      {
+        path: "/products",
+        element: <ProductHome />,
+      }
     ],
   },
 ]);
