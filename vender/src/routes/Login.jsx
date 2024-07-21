@@ -7,25 +7,24 @@ import { OTPInput } from "../Component/OTPInput";
 import { HiArrowSmallLeft } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
 import { userActions } from "../store/userInfoSlice";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { userProfileAction } from "../store/userProfile";
 
-export function Login({name}) {
+export function Login({ name }) {
   const [open, setOpen] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
-  const[userDetails,setUserDetails] = useState("")
+  const [userDetails, setUserDetails] = useState("");
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(!open);
 
   const handleMobileNumberChange = (e) => {
     setMobileNumber(e.target.value);
   };
-  const navigate = useNavigate();
 
   const handleOtpChange = (e) => {
     setOtp(e.target.value);
@@ -34,81 +33,74 @@ export function Login({name}) {
   const requestOtp = async () => {
     try {
       const resp = await axios.post(`${API_URI}/user/login`, {
-        mobileNumber: mobileNumber
+        mobileNumber,
       });
       if (resp.status === 200) {
         setOtpSent(true);
       }
     } catch (error) {
-      console.log("error", error);
+      console.error("Error requesting OTP:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to send OTP. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
   };
 
   const verifyOtp = async () => {
     try {
-      const resp = await axios.post(`${API_URI}/user/vefifyOpt`, {
-        mobileNumber: mobileNumber,
-        otp
+      const resp = await axios.post(`${API_URI}/user/verifyOtp`, {
+        mobileNumber,
+        otp,
       });
       if (resp.status === 200) {
-        localStorage.setItem('token', resp.data.token);
-        localStorage.setItem('userId', resp.data.userId);
+        localStorage.setItem("token", resp.data.token);
+        localStorage.setItem("userId", resp.data.userId);
         dispatch(userActions.updateUser({ userId: resp.data.userId }));
-        FetchUserDeatils(resp.data.userId)
+        fetchUserDetails(resp.data.userId);
 
         Swal.fire({
-          title: 'Success!',
-          text: 'User logged in successfully',
-          icon: 'success',
-          confirmButtonText: 'OK',
+          title: "Success!",
+          text: "User logged in successfully",
+          icon: "success",
+          confirmButtonText: "OK",
         });
 
         navigate("/");
-
-      
-    }}
-     catch (error) {
-      console.log("Error verifying OTP:", error);
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
       Swal.fire({
-        title: 'Error!',
-        text: 'There was an issue logining the User',
-        icon: 'error',
-        confirmButtonText: 'OK'
+        title: "Error!",
+        text: "There was an issue logging in the user",
+        icon: "error",
+        confirmButtonText: "OK",
       });
     }
   };
 
-  const FetchUserDeatils = async(userId) =>{
+  const fetchUserDetails = async (userId) => {
     try {
-      const resp = await axios.get(`${API_URI}/user/getGetUser/${userId}`)
+      const resp = await axios.get(`${API_URI}/user/getUser/${userId}`);
       setUserDetails(resp.data);
-      dispatch(userProfileAction.updateProfile(resp.data));
-
-
+      dispatch(userActions.updateUserProfile(resp.data));
     } catch (error) {
-      console.log(error);
-      
+      console.error("Error fetching user details:", error);
     }
-
-
-  }
-
+  };
 
   return (
     <>
-      <Button
-        onClick={handleOpen}
-        className="text-black shadow-none hover:shadow-none"
-      >
+      <Button onClick={handleOpen} className="text-black shadow-none hover:shadow-none">
         {name}
       </Button>
       <Dialog open={open} handler={handleOpen}>
         <div className="flex justify-center items-center content-center">
           <img src={logo} alt="Blinkit Logo" className="w-60 h-72" />
         </div>
-
-        <div className="flex justify-center flex-col content-center items-center font-bold">
-          {/* <p className="text-black text-2xl mb-1">India's last minute app</p> */}
+        <div className="flex flex-col justify-center items-center font-bold">
           <p className="text-base font-thin mb-4 text-black">Log in or Sign up</p>
           {otpSent ? (
             <OTPInput otp={otp} handleOtpChange={handleOtpChange} verifyOtp={verifyOtp} />
@@ -129,11 +121,11 @@ export function Login({name}) {
               </div>
               <div className="flex justify-center items-center content-center w-full min-w-[200px] my-4">
                 <Button onClick={requestOtp} className="w-6/12 bg-blue-gray-600">
-                  <span>Continue</span>
+                  Continue
                 </Button>
               </div>
               <div className="absolute top-5 left-5 text-2xl cursor-pointer">
-              <HiArrowSmallLeft onClick={() => setOpen(false)}/>
+                <HiArrowSmallLeft onClick={handleOpen} />
               </div>
             </>
           )}

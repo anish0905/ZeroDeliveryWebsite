@@ -75,21 +75,7 @@ const NavBar1 = () => {
       </div>
       <div className="w-1/4 gap-5 content-center items-center font-semibold text-sm hidden lg:block md:block">
         <ul className="flex gap-5 w-full">
-          <li>
-            <div
-              onClick={handleCartClick}
-              className="flex max-w-60 justify-center content-center lg:text-sm text-xs items-center relative bg-green-600 px-3 py-2 gap-2 rounded shadow-md text-white cursor-pointer"
-            >
-              <HiShoppingBag className="lg:text-2xl text-xl" />
-              {bag.totalQuantity > 0 && (
-                <div className="absolute px-2 py-1 left-4 -top-3 rounded-full bg-green-800 text-white text-xs">
-                  {bag.totalQuantity}
-                </div>
-              )}
           
-              <span className="lg:text-sm text-xs">My Bag</span>
-            </div>
-          </li>
           {!userId ? (
             <li className="flex justify-center content-center items-center">
               <Login name={"LOGIN"} />

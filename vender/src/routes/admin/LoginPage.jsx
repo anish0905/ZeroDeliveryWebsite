@@ -4,12 +4,12 @@ import logo from "../../../public/images/login1.png";
 import axios from "axios";
 import { API_URI } from "../../Contants";
 import { OTPInput } from "../../Component/OTPInput";
-import { HiArrowSmallLeft } from "react-icons/hi2";
+
 import { useDispatch } from "react-redux";
 import { userActions } from "../../store/userInfoSlice";
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
-import { userProfileAction } from "../../store/userProfile";
+
 
 export function LoginPage() {
   const [open, setOpen] = useState(false);
