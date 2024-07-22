@@ -1,96 +1,110 @@
+import { Button } from "@material-tailwind/react";
 import React from "react";
 import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
   return (
     <div className="w-64 min-h-screen bg-gray-800 text-white flex flex-col py-20">
-     
       <nav className="flex flex-col p-4">
         <NavLink
-          to="/"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          to="/dashboard"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
           Dashboard
         </NavLink>
         <NavLink
           to="/orders"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
-          All Order
+          All Orders
         </NavLink>
         <NavLink
           to="/products"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
           All Products
         </NavLink>
 
         <NavLink
           to="/createProduct"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
-          Create product
+          Create Product
         </NavLink>
 
         <NavLink
-          to="/orders"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          to="/events"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
           All Events
         </NavLink>
 
         <NavLink
-          to="/orders"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          to="/createEvent"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
-          Create Events
+          Create Event
         </NavLink>
 
         <NavLink
-          to="/orders"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          to="/withdrawMoney"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
-          Withdrow Money
+          Withdraw Money
         </NavLink>
 
         <NavLink
-          to="/shopinbox"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          to="/shopInbox"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
           Shop Inbox
         </NavLink>
 
         <NavLink
-          to="/shopinbox"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          to="/discountCodes"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
           Discount Codes
         </NavLink>
 
         <NavLink
-          to="/registration"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+          to="/refund"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
         >
           Refund
         </NavLink>
 
-        <NavLink
-          to="/logout"
-          className="p-2 my-2 rounded hover:bg-gray-700"
-          activeClassName="bg-gray-700"
+        <Button
+          className="p-2 my-2 rounded hover:bg-gray-700 shadow-none text-start"
+          onClick={handleLogout}
         >
           LOGOUT
-        </NavLink>
+        </Button>
       </nav>
     </div>
   );

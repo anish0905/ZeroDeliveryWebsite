@@ -14,6 +14,8 @@ import AdminDashBoard from "./routes/admin/AdminDashBoard";
 import CreateProduct from "./routes/admin/CreateProduct";
 import OrderHomePage from "./routes/AllOrder.jsx/OrderHomePage";
 import ProductHome from "./routes/AllProduct.jsx/ProductHome";
+import  Register  from "../src/Component/Register";
+import OtpVerification from "./Component/OtpVerification";
 
 const router = createBrowserRouter([
   {
@@ -21,12 +23,12 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "/",
+        path: "/dashboard",
         element: <AdminDashBoard />,
       },
 
       {
-        path: "/login",
+        path: "/",
         element: <LoginPage />,
       },
 
@@ -41,6 +43,14 @@ const router = createBrowserRouter([
       {
         path: "/products",
         element: <ProductHome />,
+      },
+      {
+        path: "/vendorregister",
+        element: <Register/>,
+      },
+      {
+        path: "/otpVerification",
+        element: <OtpVerification/>,
       }
     ],
   },

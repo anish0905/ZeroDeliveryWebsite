@@ -6,9 +6,11 @@ import { Outlet } from "react-router-dom";
 
 import "../App.css";
 
+
 const App = () => {
   return (
     <div>
+
       <NavBar1 />
 
       <Outlet />

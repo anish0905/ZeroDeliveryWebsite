@@ -4,7 +4,7 @@ import loginIMg from "../../../public/images/login.png";
 
 const Navbar2 = () => {
   return (
-    <div className="w-64 min-h-screen  text-black flex flex-col py-20">
+    <div className="w-64 min-h-screen  text-black flex flex-col pb-20 ">
        <div className="flex justify-center content-center items-center">
         <img src={loginIMg} alt="" className="h-40" />
       </div>

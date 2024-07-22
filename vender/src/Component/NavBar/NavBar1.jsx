@@ -17,7 +17,7 @@ const NavBar1 = () => {
     data: [],
   };
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("token");
 
   console.log(bag);
   const userProfile = useSelector((store) => store.userProfile);

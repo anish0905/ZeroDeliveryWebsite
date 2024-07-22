@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Dialog } from "@material-tailwind/react";
-import logo from "../../public/images/login.png";
+import logo from "../../public/images/vendorLogin.svg";
 import axios from "axios";
 import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
