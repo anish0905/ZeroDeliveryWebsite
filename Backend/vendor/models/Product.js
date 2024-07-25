@@ -46,6 +46,6 @@ const productSchema = new mongoose.Schema({
   User: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
-const Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model("AddProductVendor", productSchema);
 
 module.exports = Product;

@@ -9,6 +9,7 @@ const addToCartRoutes = require("./user/routes/addToCartRoutes");
 const userAddress = require("./user/routes/addressRoutes");
 const productOrderRoutes = require("./user/routes/productOrder");
 const vendorRoutes = require("./vendor/routes/userRoutes");
+const vendorAddProducts = require("./vendor/routes/productRoutes");
 
 connectDB();
 const app = express();
@@ -33,6 +34,7 @@ app.use("/api/products", productOrderRoutes);
 
 //Vender
 app.use("/api/vendor", vendorRoutes);
+app.use("/api/vendor", vendorAddProducts);
 
 // // Use the category routes
 // app.use("/api/categories", categoryRoutes);

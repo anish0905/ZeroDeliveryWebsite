@@ -1,12 +1,12 @@
 // routes/productRoutes.js
 const express = require("express");
-const productController = require("../../user/controllers/productController");
-const validateToken = require('../../middleware/validateTokenHandler')
+const productController = require("../controller/productController");
+const validateToken = require("../../middleware/validateTokenHandler");
 const router = express.Router();
 
 // Define routes
-router.post("/products", validateToken ,productController.createProduct);
-router.get("/products",validateToken, productController.getProducts);
+router.post("/products", validateToken, productController.createProduct);
+router.get("/products/:id", validateToken, productController.getProducts);
 router.get("/products/:id", productController.getProductById);
 router.put("/products/:id", productController.updateProductById);
 router.delete("/products/:id", productController.deleteProductById);
@@ -28,11 +28,9 @@ router.get("/prod/brand/:brand", productController.getProductsByBrand);
 // Route to search products by title
 router.get("/products/search/:title", productController.searchProductsByTitle);
 // Route to fetch categories
-router.get('/categories', productController.getCategories);
+router.get("/categories", productController.getCategories);
 
 // Route to fetch brands
-router.get('/product/brands', productController.getBrand);
-
-
+router.get("/product/brands", productController.getBrand);
 
 module.exports = router;
