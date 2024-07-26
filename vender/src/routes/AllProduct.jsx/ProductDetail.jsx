@@ -1,7 +1,50 @@
 import React from 'react';
+import { API_URI } from '../../Contants';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 
-const ProductDetail = ({ product, onEditClick }) => {
+const ProductDetail = ({ product, onEditClick ,setProducts }) => {
+ 
   if (!product) return <div>No product selected</div>;
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel!',
+    });
+  
+    if (result.isConfirmed) {
+      try {
+       const resp = await axios.delete(`${API_URI}/api/vendor/products/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'Product has been deleted.',
+          icon: 'success',
+          confirmButtonText: 'Close',
+        });
+        // Optionally, update the products list
+       setProducts(resp.data);
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to delete product.',
+          icon: 'error',
+          confirmButtonText: 'Close',
+        });
+      }
+    }
+  };
+  
 
   return (
     <div className="container mx-auto p-4 pt-24 w-full">
@@ -21,7 +64,7 @@ const ProductDetail = ({ product, onEditClick }) => {
             <span className="text-gray-900 font-semibold">Category:</span> {product.category}
           </div>
           <div className="">
-            <span className="text-gray-900 font-semibold">Price:</span> ${product.price.toFixed(2)}
+            <span className="text-gray-900 font-semibold">Price:</span> ${product?.price?.toFixed(2)}
           </div>
           <div className="">
             <span className="text-gray-900 font-semibold">Discount:</span> {product.discountPercentage}%
@@ -59,12 +102,20 @@ const ProductDetail = ({ product, onEditClick }) => {
           
         </div>
         
+        <div className='flex items-center justify-between gap-5'>
         <button
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
             onClick={onEditClick}
           >
             Edit Product
           </button>
+          <button
+            className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+            onClick={()=>handleDelete(product._id)}
+          >
+           delete
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -73,14 +73,20 @@ exports.resendOtp = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) return res.status(400).send("User not found");
-  if (!user.isVerified) return res.status(400).send("Email not verified");
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).send("User not found");
+    if (!user.isVerified) return res.status(400).send("Email not verified");
 
-  const isMatch = await user.comparePassword(password);
-  if (!isMatch) return res.status(400).send("Invalid password");
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) return res.status(400).send("Invalid password");
 
-  const token = user.generateAuthToken();
-  res.send({ token });
+    const token = user.generateAuthToken();
+    res.send({ token, user });
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
 };
+
+

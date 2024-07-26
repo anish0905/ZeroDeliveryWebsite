@@ -34,6 +34,7 @@ export function LoginPage() {
         const userDetails = resp.data;
         console.log(userDetails)
         localStorage.setItem("token", userDetails.token);
+        localStorage.setItem("userId", userDetails?.user?._id);
         // dispatch(userActions.updateProfile(userDetails));
         navigate("/dashboard");
       }

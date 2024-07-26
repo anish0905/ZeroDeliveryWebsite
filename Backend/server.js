@@ -10,6 +10,7 @@ const userAddress = require("./user/routes/addressRoutes");
 const productOrderRoutes = require("./user/routes/productOrder");
 const vendorRoutes = require("./vendor/routes/userRoutes");
 const vendorAddProducts = require("./vendor/routes/productRoutes");
+const recivedVendororder = require("./vendor/routes/orderRouters");
 
 connectDB();
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/products", productOrderRoutes);
 //Vender
 app.use("/api/vendor", vendorRoutes);
 app.use("/api/vendor", vendorAddProducts);
+app.use("/api/vendor", recivedVendororder);
 
 // // Use the category routes
 // app.use("/api/categories", categoryRoutes);

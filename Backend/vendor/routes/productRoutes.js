@@ -8,8 +8,8 @@ const router = express.Router();
 router.post("/products", validateToken, productController.createProduct);
 router.get("/products/:id", validateToken, productController.getProducts);
 router.get("/products/:id", productController.getProductById);
-router.put("/products/:id", productController.updateProductById);
-router.delete("/products/:id", productController.deleteProductById);
+router.put("/products/:id", validateToken, productController.updateProductById);
+router.delete("/products/:id", validateToken , productController.deleteProductById);
 
 // Define the route to fetch products by category
 

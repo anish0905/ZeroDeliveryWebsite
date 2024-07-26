@@ -3,9 +3,15 @@ import axios from "axios";
 import { API_URI } from "../../Contants";
 import Swal from "sweetalert2";
 import Sidebar from "./Sidebar";
+import { useNavigate } from "react-router-dom";
 
 const CreateProduct = () => {
+  const userId = localStorage.getItem("userId")
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
+    User: userId,
     title: "",
     description: "",
     category: "",
@@ -26,6 +32,8 @@ const CreateProduct = () => {
     images: [],
     thumbnail: "",
   });
+
+ 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,7 +85,10 @@ const CreateProduct = () => {
     };
 
     try {
-      await axios.post(`${API_URI}/api/products`, productData);
+      await axios.post(`${API_URI}/api/vendor/products`, productData,
+        { headers: { Authorization: `Bearer ${token}` } },
+        
+      );
       Swal.fire({
         icon: "success",
         title: "Product created successfully",
@@ -85,6 +96,8 @@ const CreateProduct = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      navigate("/products")
+      
     } catch (error) {
       console.error("Error creating product:", error.message);
       Swal.fire({
