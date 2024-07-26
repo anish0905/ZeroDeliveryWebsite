@@ -17,7 +17,7 @@ exports.getOrders = async (req, res) => {
 
         // Find all orders and populate necessary fields
         const orders = await recivedOrder.find()
-        .populate('products.productId')
+        .populate('product.productId')
         .populate('address');
 
         // Filter orders where at least one product's User matches the provided userId
