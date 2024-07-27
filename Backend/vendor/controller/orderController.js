@@ -1,55 +1,60 @@
- const recivedOrder = require("../../user/models/productOrderSchema");
-const user = require("../../user/models/User");
-const product = require("../../user/models/Product");
+const recivedOrder = require("../../user/models/productOrderSchema");
+const User = require("../../user/models/User");
+const Product = require("../../user/models/Product");
+
 const mongoose = require("mongoose");
 
+exports.getOrdersByVendorUser = async (req, res) => {
+  const { vendorUserId } = req.params;
 
-
-
-exports.getOrders = async (req, res) => {
-    const { userId } = req.params;
-
-    try {
-        // Ensure userId is provided
-        if (!userId) {
-            return res.status(400).json({ success: false, message: 'User ID is required' });
-        }
-
-        // Find all orders and populate necessary fields
-        const orders = await recivedOrder.find()
-        .populate('product.productId')
-        .populate('address');
-
-        // Filter orders where at least one product's User matches the provided userId
-        console.log(orders);
-        const filteredOrders = orders.filter(order => 
-            order.products.some(product => 
-                product.User && product.User.toString() === userId
-            )
-        );
-
-        if (filteredOrders.length === 0) {
-            return res.status(404).json({ success: false, message: 'No orders found for this user' });
-        }
-
-        // Format the orders if needed
-        const formattedOrders = filteredOrders.map(order => {
-            return {
-                ...order.toObject(),
-                products: order.products.map(product => ({
-                    ...product.toObject(),
-                    product: product.productId // Use populated productId details
-                }))
-            };
-        });
-
-        res.status(200).json({ success: true, data: formattedOrders });
-    } catch (error) {
-        console.error('Error retrieving orders:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
+  try {
+    // Ensure vendorUserId is provided
+    if (!vendorUserId) {
+      return res.status(400).json({ message: "Vendor User ID is required." });
     }
+
+    // Check if vendorUserId is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(vendorUserId)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid Vendor User ID format." });
+    }
+
+    // Fetch all orders where VendorUser matches the provided ID
+    const orders = await recivedOrder
+      .find({ VendorUser: vendorUserId })
+      .populate({
+        path: "products.productId",
+        select: "name price image", // Add the fields you need from the Product schema
+      })
+      .populate("address") // Populate address details
+      .exec();
+
+    // Fetch addresses for each order
+    const ordersWithDetails = await Promise.all(
+      orders.map(async (order) => {
+        const user = await User.findById(order.userId).select("addresses");
+        const address = user.addresses.id(order.address);
+        return {
+          ...order.toObject(),
+          address,
+          products: order.products.map((product) => ({
+            ...product.toObject(),
+            image: product.productId.image, // Include image in the product details
+          })),
+        };
+      })
+    );
+
+    if (!ordersWithDetails.length) {
+      return res
+        .status(404)
+        .json({ message: "No orders found for this vendor." });
+    }
+
+    res.status(200).json(ordersWithDetails);
+  } catch (error) {
+    console.error("Error in getOrdersByVendorUser:", error);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
 };
-
-
-
-

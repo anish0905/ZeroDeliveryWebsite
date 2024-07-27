@@ -1,25 +1,25 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { IoCheckmarkDone } from 'react-icons/io5';
-import Swal from 'sweetalert2';
-import { API_URI } from '../../Contants';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { bagActions } from '../../store/BagSlice';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { IoCheckmarkDone } from "react-icons/io5";
+import Swal from "sweetalert2";
+import { API_URI } from "../../Contants";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { bagActions } from "../../store/BagSlice";
 
 const Payment = () => {
-  const [paymentOption, setPaymentOption] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [paymentOption, setPaymentOption] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [authenticated, setAuthenticated] = useState(true);
   const [bagItems, setBagItems] = useState([]);
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
   const bagItem = useSelector((store) => store.bag);
-
-  const address = localStorage.getItem('selectedAddress') ? JSON.parse(localStorage.getItem('selectedAddress')) : {};
-  const userId = localStorage.getItem('userId');
+  const address = localStorage.getItem("selectedAddress")
+    ? JSON.parse(localStorage.getItem("selectedAddress"))
+    : {};
+  const userId = localStorage.getItem("userId");
 
   const handleRemove = async (itemId) => {
     try {
@@ -27,22 +27,21 @@ const Payment = () => {
       dispatch(bagActions.removeFromBag({ productId: itemId }));
       fetchCart(); // Fetch updated cart after removing item
       Swal.fire({
-        icon: 'success',
-        title: 'Order placed successfully ',
-        text: 'The item has been removed from your cart.',
+        icon: "success",
+        title: "Item removed from cart",
         timer: 3000,
         timerProgressBar: true,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
     } catch (error) {
       console.error("Error removing from cart:", error.message);
       Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'Something went wrong while removing the item. Please try again.',
+        icon: "error",
+        title: "Error!",
+        text: "Something went wrong while removing the item. Please try again.",
         timer: 3000,
         timerProgressBar: true,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
     }
   };
@@ -74,50 +73,53 @@ const Payment = () => {
 
   const handleLogin = () => {
     // Simplified mock authentication logic
-    if (username === 'user' && password === 'password') {
+    if (username === "user" && password === "password") {
       setAuthenticated(true);
       Swal.fire({
-        icon: 'success',
-        title: 'Login successful!',
+        icon: "success",
+        title: "Login successful!",
         timer: 3000,
         timerProgressBar: true,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
     } else {
       Swal.fire({
-        icon: 'error',
-        title: 'Invalid credentials',
-        text: 'Please try again.',
+        icon: "error",
+        title: "Invalid credentials",
+        text: "Please try again.",
         timer: 3000,
         timerProgressBar: true,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
     }
   };
 
   const handleLogout = () => {
     setAuthenticated(false);
-    setUsername('');
-    setPassword('');
+    setUsername("");
+    setPassword("");
   };
 
   const handlePaymentSubmit = async () => {
     if (!paymentOption) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'Please select a payment option.',
+        icon: "error",
+        title: "Error!",
+        text: "Please select a payment option.",
         timer: 3000,
         timerProgressBar: true,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
       return;
     }
 
-    const products = bagItems.map(item => ({
+    const vendorUsers = bagItems.map((item) => item.VendorUser);
+    const singleVendorUser = vendorUsers[0]; // Use the first VendorUser
+
+    const products = bagItems.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
-      price: item.price
+      price: item.price,
     }));
 
     const orderData = {
@@ -125,43 +127,45 @@ const Payment = () => {
       address: address._id,
       products,
       paymentMethod: paymentOption,
-      paymentStatus: 'unpaid',
-      status: 'pending'
+      paymentStatus: "unpaid",
+      status: "pending",
+      VendorUser: singleVendorUser, // Single VendorUser
     };
 
     try {
-      const resp = await axios.post(`${API_URI}/api/products/orderProduct`, orderData);
-      // Assuming you want to clear the cart after placing order, you can clear bagItems state here
-      setBagItems([]);
+      const resp = await axios.post(
+        `${API_URI}/api/products/orderProduct`,
+        orderData
+      );
+      setBagItems([]); // Clear the cart after placing the order
       Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Cash on Delivery selected. Generating success SMS.',
+        icon: "success",
+        title: "Order placed successfully!",
+        text: "Generating success SMS.",
         timer: 3000,
         timerProgressBar: true,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
-       bagItems.map(item => (
-        handleRemove(item.productId)
-      ));
-      navigate('/user/myorder'); // Redirect to my orders page after successful payment
-     
+      bagItems.forEach((item) => handleRemove(item.productId));
+      navigate("/user/myorder"); // Redirect to my orders page after successful payment
     } catch (error) {
       console.error(error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error!',
-        text: 'Something went wrong. Please try again.',
+        icon: "error",
+        title: "Error!",
+        text: "Something went wrong. Please try again.",
         timer: 3000,
         timerProgressBar: true,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
     }
   };
 
   return (
     <div className="bg-gray-50 shadow-md w-full flex gap-4 content-center p-4 mt-2 mb-4">
-      <span className="bg-blue-gray-200 py-1 px-2 h-7 text-sm rounded-sm text-blue-600">3</span>
+      <span className="bg-blue-gray-200 py-1 px-2 h-7 text-sm rounded-sm text-blue-600">
+        3
+      </span>
       <div className="w-full items-center content-center">
         {!authenticated ? (
           <div>
@@ -201,12 +205,20 @@ const Payment = () => {
                   id="cashOnDelivery"
                   name="paymentOption"
                   value="cashOnDelivery"
-                  checked={paymentOption === 'cashOnDelivery'}
+                  checked={paymentOption === "cashOnDelivery"}
                   onChange={handlePaymentOptionChange}
                   className="mr-2"
                 />
-                <label htmlFor="cashOnDelivery" className="text-gray-700">Cash on Delivery</label>
-                <IoCheckmarkDone className={`ml-2 ${paymentOption === 'cashOnDelivery' ? 'text-green-500' : 'hidden'}`} />
+                <label htmlFor="cashOnDelivery" className="text-gray-700">
+                  Cash on Delivery
+                </label>
+                <IoCheckmarkDone
+                  className={`ml-2 ${
+                    paymentOption === "cashOnDelivery"
+                      ? "text-green-500"
+                      : "hidden"
+                  }`}
+                />
               </div>
 
               <div className="my-2 flex items-center">
@@ -215,12 +227,18 @@ const Payment = () => {
                   id="upi"
                   name="paymentOption"
                   value="upi"
-                  checked={paymentOption === 'upi'}
+                  checked={paymentOption === "upi"}
                   onChange={handlePaymentOptionChange}
                   className="mr-2"
                 />
-                <label htmlFor="upi" className="text-gray-700">UPI</label>
-                <IoCheckmarkDone className={`ml-2 ${paymentOption === 'upi' ? 'text-green-500' : 'hidden'}`} />
+                <label htmlFor="upi" className="text-gray-700">
+                  UPI
+                </label>
+                <IoCheckmarkDone
+                  className={`ml-2 ${
+                    paymentOption === "upi" ? "text-green-500" : "hidden"
+                  }`}
+                />
               </div>
 
               <div className="my-2 flex items-center">
@@ -229,12 +247,18 @@ const Payment = () => {
                   id="netBanking"
                   name="paymentOption"
                   value="netBanking"
-                  checked={paymentOption === 'netBanking'}
+                  checked={paymentOption === "netBanking"}
                   onChange={handlePaymentOptionChange}
                   className="mr-2"
                 />
-                <label htmlFor="netBanking" className="text-gray-700">Net Banking</label>
-                <IoCheckmarkDone className={`ml-2 ${paymentOption === 'netBanking' ? 'text-green-500' : 'hidden'}`} />
+                <label htmlFor="netBanking" className="text-gray-700">
+                  Net Banking
+                </label>
+                <IoCheckmarkDone
+                  className={`ml-2 ${
+                    paymentOption === "netBanking" ? "text-green-500" : "hidden"
+                  }`}
+                />
               </div>
 
               <div className="my-2 flex items-center">
@@ -243,12 +267,18 @@ const Payment = () => {
                   id="creditCard"
                   name="paymentOption"
                   value="creditCard"
-                  checked={paymentOption === 'creditCard'}
+                  checked={paymentOption === "creditCard"}
                   onChange={handlePaymentOptionChange}
                   className="mr-2"
                 />
-                <label htmlFor="creditCard" className="text-gray-700">Credit Card</label>
-                <IoCheckmarkDone className={`ml-2 ${paymentOption === 'creditCard' ? 'text-green-500' : 'hidden'}`} />
+                <label htmlFor="creditCard" className="text-gray-700">
+                  Credit Card
+                </label>
+                <IoCheckmarkDone
+                  className={`ml-2 ${
+                    paymentOption === "creditCard" ? "text-green-500" : "hidden"
+                  }`}
+                />
               </div>
 
               <div className="my-2 flex items-center">
@@ -257,12 +287,18 @@ const Payment = () => {
                   id="debitCard"
                   name="paymentOption"
                   value="debitCard"
-                  checked={paymentOption === 'debitCard'}
+                  checked={paymentOption === "debitCard"}
                   onChange={handlePaymentOptionChange}
                   className="mr-2"
                 />
-                <label htmlFor="debitCard" className="text-gray-700">Debit Card</label>
-                <IoCheckmarkDone className={`ml-2 ${paymentOption === 'debitCard' ? 'text-green-500' : 'hidden'}`} />
+                <label htmlFor="debitCard" className="text-gray-700">
+                  Debit Card
+                </label>
+                <IoCheckmarkDone
+                  className={`ml-2 ${
+                    paymentOption === "debitCard" ? "text-green-500" : "hidden"
+                  }`}
+                />
               </div>
             </div>
 

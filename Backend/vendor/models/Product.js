@@ -43,7 +43,7 @@ const productSchema = new mongoose.Schema({
   meta: { type: metaSchema, default: () => ({}) },
   images: { type: [String], required: true },
   thumbnail: { type: String, required: true },
-  User: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  vendorUser: { type: mongoose.Schema.Types.ObjectId, ref: "VendorUser" },
 });
 
 const Product = mongoose.model("AddProductVendor", productSchema);

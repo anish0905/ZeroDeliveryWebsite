@@ -47,5 +47,5 @@ userSchema.methods.generateAuthToken = function () {
   return token;
 };
 
-const User = mongoose.model("VendorUser", userSchema);
-module.exports = User;
+const VendorUser = mongoose.model("VendorUser", userSchema);
+module.exports = VendorUser;

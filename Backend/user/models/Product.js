@@ -43,7 +43,11 @@ const productSchema = new mongoose.Schema({
   meta: { type: metaSchema, default: () => ({}) },
   images: { type: [String], required: true },
   thumbnail: { type: String, required: true },
-  User: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  VendorUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "VendorUser",
+    required: true,
+  },
 });
 
 const Product = mongoose.model("Product", productSchema);

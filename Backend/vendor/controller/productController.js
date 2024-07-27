@@ -21,7 +21,7 @@ exports.createProduct = async (req, res) => {
 exports.getProducts = async (req, res) => {
   try {
     const { id } = req.params;
-    const products = await Product.find({ User: id });
+    const products = await Product.find({ VendorUser: id });
     res.status(200).json(products);
   } catch (error) {
     res.status(400).json({ message: error.message });

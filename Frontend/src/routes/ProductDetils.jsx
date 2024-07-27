@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { bagActions } from "../store/BagSlice";
 import { Link } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 import { API_URI } from "../Contants";
-
 
 const ProductDetails = ({ item }) => {
   const [selectedImage, setSelectedImage] = useState(item.images[0]);
@@ -12,11 +11,13 @@ const ProductDetails = ({ item }) => {
   const [quantity, setQuantity] = useState(1);
   const dispatch = useDispatch();
   const bagItem = useSelector((store) => store.bag);
-  
+
   const flattenedBagItems = bagItem?.data?.flat() || [];
-  const elementFound = flattenedBagItems.some(bagItem => bagItem.productId === item._id);
-  
-  const userId = localStorage.getItem('userId');
+  const elementFound = flattenedBagItems.some(
+    (bagItem) => bagItem.productId === item._id
+  );
+
+  const userId = localStorage.getItem("userId");
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -34,13 +35,14 @@ const ProductDetails = ({ item }) => {
   const handleAddToBag = async () => {
     try {
       const resp = await axios.post(`${API_URI}/api/cart`, {
-          userId,
-          productId: item._id,
-          productName: item.title,
-          price: item.price,
-          quantity: quantity,
-          discountPercentage: item.discountPercentage,
-          promotionCode: item.promotionCode || "null",
+        userId,
+        VendorUser: item.VendorUser,
+        productId: item._id,
+        productName: item.title,
+        price: item.price,
+        quantity: quantity,
+        discountPercentage: item.discountPercentage,
+        promotionCode: item.promotionCode || "null",
       });
       fetchItems();
     } catch (error) {
@@ -48,20 +50,20 @@ const ProductDetails = ({ item }) => {
     }
   };
 
-  const handleRemove = async() => {
-    try{
+  const handleRemove = async () => {
+    try {
       await axios.post(`${API_URI}/api/cart/${userId}/${item._id}`);
-      dispatch(bagActions.removeFromBag({productId:item._id}));
-
-    }catch (error) {
+      dispatch(bagActions.removeFromBag({ productId: item._id }));
+    } catch (error) {
       console.error("Error removing from cart:", error.message);
     }
-  
-};
+  };
 
   const fetchItems = async () => {
     try {
-      const resp = await axios.get(`${API_URI}/api/cart/totalProductQuantity/${userId}`);
+      const resp = await axios.get(
+        `${API_URI}/api/cart/totalProductQuantity/${userId}`
+      );
       // console.log(resp.data.data)
       dispatch(bagActions.addToBag(resp.data));
     } catch (error) {
@@ -87,7 +89,9 @@ const ProductDetails = ({ item }) => {
                 key={index}
                 src={image}
                 alt={item.title}
-                className={`w-20 h-20 object-cover rounded-lg cursor-pointer ${selectedImage === image ? "border-2 border-blue-500" : ""}`}
+                className={`w-20 h-20 object-cover rounded-lg cursor-pointer ${
+                  selectedImage === image ? "border-2 border-blue-500" : ""
+                }`}
                 onClick={() => handleImageClick(image)}
               />
             ))}
@@ -99,7 +103,11 @@ const ProductDetails = ({ item }) => {
           <div className="flex gap-5 my-2  px-1">
             <span className="text-xl">RS {item.price}</span>
             <span className="text-gray-400 text-sm font-thin line-through">
-              RS {(item.price + item.price * (item.discountPercentage / 100)).toFixed(2)}{" "}
+              RS{" "}
+              {(
+                item.price +
+                item.price * (item.discountPercentage / 100)
+              ).toFixed(2)}{" "}
             </span>
             <span className="text-pink-400 text-sm font-thin">
               ({item.discountPercentage}% OFF)
@@ -112,27 +120,34 @@ const ProductDetails = ({ item }) => {
             <span className="font-bold">Brand:</span> {item.brand}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Warranty:</span> {item.warrantyInformation}
+            <span className="font-bold">Warranty:</span>{" "}
+            {item.warrantyInformation}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Shipping:</span> {item.shippingInformation}
+            <span className="font-bold">Shipping:</span>{" "}
+            {item.shippingInformation}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Availability:</span> {item.availabilityStatus}
+            <span className="font-bold">Availability:</span>{" "}
+            {item.availabilityStatus}
           </p>
           <p className="text-sm text-gray-600 mb-2">
-            <span className="font-bold">Return Policy:</span> {item.returnPolicy}
+            <span className="font-bold">Return Policy:</span>{" "}
+            {item.returnPolicy}
           </p>
           <p className="text-sm text-gray-600 mb-2">
             <span className="font-bold">Weight:</span> {item.weight} kg
           </p>
           <div className="text-sm text-gray-600 mb-4">
-            <span className="font-bold">Dimensions:</span> {item.dimensions.width} x {item.dimensions.height} x{" "}
+            <span className="font-bold">Dimensions:</span>{" "}
+            {item.dimensions.width} x {item.dimensions.height} x{" "}
             {item.dimensions.depth} cm
           </div>
 
           <div className="flex items-center mb-4">
-            <label htmlFor="quantity" className="mr-2">Quantity:</label>
+            <label htmlFor="quantity" className="mr-2">
+              Quantity:
+            </label>
             <div className="relative">
               <select
                 id="quantity"
@@ -141,12 +156,22 @@ const ProductDetails = ({ item }) => {
                 onChange={handleQuantityChange}
               >
                 {[...Array(item.stock).keys()].map((num) => (
-                  <option key={num + 1} value={num + 1}>{num + 1}</option>
+                  <option key={num + 1} value={num + 1}>
+                    {num + 1}
+                  </option>
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 12a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                <svg
+                  className="w-4 h-4 fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 12a2 2 0 100-4 2 2 0 000 4z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
             </div>
@@ -161,11 +186,13 @@ const ProductDetails = ({ item }) => {
             </button>
           ) : (
             <button
-              className={`bg-blue-500 text-white px-4 py-2 rounded-lg mb-4 mr-4 ${item.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`bg-blue-500 text-white px-4 py-2 rounded-lg mb-4 mr-4 ${
+                item.stock <= 0 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               onClick={handleAddToBag}
               disabled={item.stock <= 0} // Disable if out of stock
             >
-              {item.stock <= 0 ? 'Out of Stock' : 'Add to Bag'}
+              {item.stock <= 0 ? "Out of Stock" : "Add to Bag"}
             </button>
           )}
           <button
