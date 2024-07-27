@@ -25,36 +25,53 @@ exports.getOrdersByVendorUser = async (req, res) => {
       .find({ VendorUser: vendorUserId })
       .populate({
         path: "products.productId",
-        select: "name price image", // Add the fields you need from the Product schema
+        // Add the fields you need from the Product schema
       })
       .populate("address") // Populate address details
-      .exec();
+    
+ // Fetch addresses for each order
+ const ordersWithAddresses = await Promise.all(
+    orders.map(async (order) => {
+      const user = await User.findById(order.userId).select("addresses");
+      const address = user.addresses.id(order.address);
+      return { ...order.toObject(), address };
+    })
+  );
 
-    // Fetch addresses for each order
-    const ordersWithDetails = await Promise.all(
-      orders.map(async (order) => {
-        const user = await User.findById(order.userId).select("addresses");
-        const address = user.addresses.id(order.address);
-        return {
-          ...order.toObject(),
-          address,
-          products: order.products.map((product) => ({
-            ...product.toObject(),
-            image: product.productId.image, // Include image in the product details
-          })),
-        };
-      })
-    );
+  if (!ordersWithAddresses.length) {
+    return res
+      .status(404)
+      .json({ message: "No orders found for this user." });
+  }
 
-    if (!ordersWithDetails.length) {
-      return res
-        .status(404)
-        .json({ message: "No orders found for this vendor." });
+  res.status(200).json(ordersWithAddresses);
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ message: "Server error. Please try again later." });
+}
+};
+
+
+
+exports.changeStatus = async(req,res)=>{
+    const { orderId, newStatus } = req.body;
+    try {
+        // Fetch the order with the provided ID
+        const order = await recivedOrder.findByIdAndUpdate(orderId, { status: newStatus }, { new: true });
+        
+        if (!order) {
+            return res.status(404).json({ message: "Order not found." });
+        }
+        
+        // Fetch the updated order
+        const updatedOrder = await recivedOrder.findById(orderId);
+        
+        res.status(200).json(updatedOrder);
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error. Please try again later." });
+        
     }
 
-    res.status(200).json(ordersWithDetails);
-  } catch (error) {
-    console.error("Error in getOrdersByVendorUser:", error);
-    res.status(500).json({ message: "Server error. Please try again later." });
-  }
-};
+}

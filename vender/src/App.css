@@ -60,4 +60,26 @@
 
 
 
+  .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .hover\:bg-gray-50:hover {
+    background-color: rgba(249, 250, 251, 1);
+  }
+
+  .bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  }
+  
+  .from-green-400 {
+    --tw-gradient-from: #68d391;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(104, 211, 145, 0));
+  }
+  
+  .to-blue-500 {
+    --tw-gradient-to: #4299e1;
+  }
+
+
 
