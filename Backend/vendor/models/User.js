@@ -8,6 +8,28 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   mobile: { type: String, required: true },
+  name:{
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 3,
+    maxlength: 50,
+  },
+  address: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 10,
+    maxlength: 255,
+  },
+  pincode:{
+    type: String,
+    required: true,
+    minlength: 6,
+    maxlength: 6,
+  },
+
+
   isVerified: { type: Boolean, default: false },
   otp: { type: String, required: true },
   otpExpires: { type: Date, required: true },

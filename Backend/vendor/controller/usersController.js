@@ -14,11 +14,22 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.register = async (req, res) => {
-  const { email, password, mobile } = req.body;
+  const { email, password, mobile,name,address,pincode} = req.body;
+
+  
+  if (!email ||!password ||!mobile ||!name ||!address ||!pincode) {
+    return res.status(400).send("All fields are required");
+  }
+
   let user = await User.findOne({ email });
   if (user) return res.status(400).send("User already exists");
 
-  user = new User({ email, password, mobile });
+  user = new User({ email, password, mobile,
+    name,
+    address,
+    pincode,
+  
+   });
   user.generateOtp();
 
   await user.save();

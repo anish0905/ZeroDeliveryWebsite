@@ -17,6 +17,7 @@ import ProductHome from "./routes/AllProduct.jsx/ProductHome";
 import  Register  from "../src/Component/Register";
 import OtpVerification from "./Component/OtpVerification";
 import VendorDetails from "./routes/vendor/VendorDetails";
+import OrderHomePage from "./routes/vendor/OrderHomePage";
 
 const router = createBrowserRouter([
   {
@@ -52,6 +53,10 @@ const router = createBrowserRouter([
       {
         path: "/otpVerification",
         element: <OtpVerification/>,
+      },
+      {
+        path: "/order/:vendorId",
+        element: <OrderHomePage />,
       }
     ],
   },
