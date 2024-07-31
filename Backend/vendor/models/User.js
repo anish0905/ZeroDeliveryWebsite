@@ -54,6 +54,12 @@ userSchema.pre("validate", function (next) {
   next();
 });
 
+
+userSchema.methods.generateOtp = function () {
+  this.otp = crypto.randomBytes(3).toString("hex");
+  this.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+};
+
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };

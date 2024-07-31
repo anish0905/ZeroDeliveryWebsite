@@ -21,9 +21,9 @@ const VendorDetails = () => {
   useEffect(() => {
     const fetchVendorDetails = async () => {
       try {
-        const response = await axios.get(`${API_URI}/api/vendor/vendor-details`);
-        setVendorDetails(response.data.data);
-        setFilteredVendorDetails(response.data.data);
+        const response = await axios.get(`${API_URI}/api/vendor/vendors-with-total-products`);
+        setVendorDetails(response.data);
+        setFilteredVendorDetails(response.data);
       } catch (error) {
         console.error("Error fetching vendor details:", error);
         setError("Failed to load vendor details");
@@ -36,13 +36,13 @@ const VendorDetails = () => {
   }, []);
 
   useEffect(() => {
-    const filtered = vendorDetails.filter((vendor) =>
+    const filtered = vendorDetails?.filter((vendor) =>
       vendor?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       vendor?.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Sorting logic
-    const sorted = filtered.sort((a, b) => {
+    const sorted = filtered?.sort((a, b) => {
       const valueA = a[sortKey]?.toLowerCase();
       const valueB = b[sortKey]?.toLowerCase();
       if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
@@ -80,7 +80,7 @@ const VendorDetails = () => {
     return <div>{error}</div>;
   }
 
-  if (!filteredVendorDetails.length) {
+  if (!filteredVendorDetails?.length) {
     return <div>No vendor details available</div>;
   }
 
@@ -88,6 +88,20 @@ const VendorDetails = () => {
   const endIndex = startIndex + PAGE_SIZE;
   const paginatedVendors = filteredVendorDetails.slice(startIndex, endIndex);
   const totalPages = Math.ceil(filteredVendorDetails.length / PAGE_SIZE);
+
+  const handleDelete = (vendorId)=>{
+    axios.delete(`${API_URI}/api/vendor/delete/${vendorId}`)
+   .then(res => {
+     console.log(res);
+     // Update the vendor details after deleting the vendor
+     setVendorDetails(vendorDetails.filter(vendor => vendor._id!== vendorId));
+     setFilteredVendorDetails(filteredVendorDetails.filter(vendor => vendor._id!== vendorId));
+   })
+    .catch(err => {
+     console.log(err);
+   });
+
+  }
 
   return (
     <div className="flex">
@@ -136,7 +150,8 @@ const VendorDetails = () => {
                 <th className="py-3 px-4 border">Mobile</th>
                 <th className="py-3 px-4 border">Address</th>
                 <th className="py-3 px-4 border">Verified</th>
-                <th className="py-3 px-4 border">Order</th>
+                <th className="py-3 px-4 border">Total Products order</th>
+                <th className="py-3 px-4 border">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -149,8 +164,22 @@ const VendorDetails = () => {
                     {vendor.address} - {vendor.pincode}
                   </td>
                   <td className="py-2 px-4 border">{vendor.isVerified ? "Yes" : "No"}</td>
-                  <td className="py-2 px-4 border">
-                    <Link to={`/order/${vendor._id}`}>View</Link>
+                  <td className="py-2 px-4 border  ">
+                    <div className="flex justify-start items-center content-center gap-5">
+                    <p>{vendor.totalProducts}</p>
+                    
+                    {
+                      vendor.totalProducts > 0 && (
+                        <Link to={`/order/${vendor._id}`}>
+                          View
+                        </Link>
+                      )
+                    }
+                    </div>
+                  </td>
+                  <td className="py-2 px-4 border flex justify-between items-center content-center gap-5">
+                    <button className="px-4 bg-red-700 py-2 rounded-md text-white" onClick={()=>handleDelete(vendor._id)}>Delete</button>
+                    <button className="px-4 bg-red-700 py-2 rounded-md text-white">Block</button>
                   </td>
                 </tr>
               ))}
