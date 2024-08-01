@@ -11,6 +11,7 @@ const OrderTable = ({ orders, updateOrderStatus }) => {
                             <th className="px-4 py-2 border">User ID</th>
                             <th className="px-4 py-2 border">Products</th>
                             <th className="px-4 py-2 border">Address</th>
+                            <th className="px-4 py-2 border">Address</th>
                             <th className="px-4 py-2 border">Status</th>
                             <th className="px-4 py-2 border">Payment Method</th>
                             <th className="px-4 py-2 border">Payment Status</th>
