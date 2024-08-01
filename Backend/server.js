@@ -11,6 +11,9 @@ const productOrderRoutes = require("./user/routes/productOrder");
 const vendorRoutes = require("./vendor/routes/userRoutes");
 const vendorAddProducts = require("./vendor/routes/productRoutes");
 const recivedVendororder = require("./vendor/routes/orderRouters");
+const admin = require("./admin/routes/userRoutes");
+const vendor = require("./admin/routes/vendorDetailsRouter");
+const deliveryRoutes = require("./deliveryBoy/routes/usersRoutes");
 
 connectDB();
 const app = express();
@@ -37,6 +40,17 @@ app.use("/api/products", productOrderRoutes);
 app.use("/api/vendor", vendorRoutes);
 app.use("/api/vendor", vendorAddProducts);
 app.use("/api/vendor", recivedVendororder);
+app.use("/api/vendor", vendor);
+
+//admin
+
+app.use("/api/admin", admin);
+
+//deliver boys Users
+
+app.use("/api/deliveryBoys", deliveryRoutes);
+
+// // Home route for admin routes
 
 // // Use the category routes
 // app.use("/api/categories", categoryRoutes);

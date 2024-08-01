@@ -20,12 +20,12 @@ const Sidebar = () => {
           Dashboard
         </NavLink>
         <NavLink
-          to="/orders"
+          to="/venderDetails"
           className={({ isActive }) => 
             `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
           }
         >
-          All Orders
+          Vendor Details
         </NavLink>
         <NavLink
           to="/products"

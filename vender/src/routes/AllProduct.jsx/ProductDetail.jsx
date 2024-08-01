@@ -53,7 +53,7 @@ const ProductDetail = ({ product, onEditClick ,setProducts }) => {
        <img
           src={product.thumbnail}
           alt={product.title}
-          className="w-full  h-64 object-cover rounded"
+          className="w-full  h-32 object-cover rounded"
         />
        </div>
        <h2 className="text-2xl font-bold mb-2">{product.title}</h2>

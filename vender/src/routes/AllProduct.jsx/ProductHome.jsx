@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProductDetail from "./ProductDetail";
 import UpdateProductModal from "./UpdateProductModal";
-import Sidebar from "../admin/Sidebar";
+import Sidebar from "../Vendor/Sidebar";
 import axios from "axios";
 import { API_URI } from "../../Contants";
 import Swal from "sweetalert2";
@@ -83,7 +83,7 @@ const ProductHome = () => {
       <div className="lg:block md:block hidden">
         <Sidebar />
       </div>
-      <div className="mb-4 grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+      <div className="mb-4 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
         {products?.map((product) => (
           <React.Fragment key={product._id}>
             <ProductDetail product={product} onEditClick={() => handleEditClick(product)} setProducts={setProducts} />
