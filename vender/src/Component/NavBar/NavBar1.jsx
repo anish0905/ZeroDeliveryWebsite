@@ -31,7 +31,7 @@ const NavBar1 = () => {
   const logout = () => {
     localStorage.clear();
     dispatch(userActions.clearUser());
-    window.location.reload();
+    // window.location.reload();
   };
 
   return (

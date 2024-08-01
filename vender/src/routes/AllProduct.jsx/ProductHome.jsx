@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ProductDetail from "./ProductDetail";
 import UpdateProductModal from "./UpdateProductModal";
-import Sidebar from "../admin/Sidebar";
+import Sidebar from "../Vendor/Sidebar";
 import axios from "axios";
 import { API_URI } from "../../Contants";
 import Swal from "sweetalert2";

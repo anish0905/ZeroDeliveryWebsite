@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import PieChart from "../admin/PieChart";
-import Charts from "../admin/Chart";
-import Sidebar from "../admin/Sidebar";
+import PieChart from "../Vendor/PieChart";
+import Charts from "../Vendor/Chart";
+import Sidebar from "../Vendor/Sidebar";
 
-const AdminDashBoard = () => {
+const VendorDashBoard = () => {
   const [todaySales, setTodaySales] = useState(0);
   const [weeklySales, setWeeklySales] = useState(15000);
   const [weeklyOrders, setWeeklyOrders] = useState(42254);
@@ -111,4 +111,4 @@ const AdminDashBoard = () => {
   );
 };
 
-export default AdminDashBoard;
+export default VendorDashBoard;
