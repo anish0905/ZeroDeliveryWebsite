@@ -7,4 +7,6 @@ router.post("/verify-otp", authController.verifyOtp);
 
 router.post("/resend-otp", authController.resendOtp);
 
+router.get("/getAllDeliveryDetails", authController.getAllDeliveryDetails);
+
 module.exports = router;

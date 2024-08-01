@@ -125,3 +125,14 @@ exports.resendOtp = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+exports.getAllDeliveryDetails = async(req, res) => {
+  try {
+    const deliveryDetails = await User.find({});
+    res.status(200).json(deliveryDetails);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch delivery details', error });
+  }
+};
+

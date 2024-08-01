@@ -7,9 +7,9 @@ import Register from "./Register";
 
 const PAGE_SIZE = 10;
 
-const DeliveryBoyDetils = () => {
-  const [DeliveryBoyDetils, setDeliveryBoyDetils] = useState([]);
-  const [filteredDeliveryBoyDetils, setFilteredDeliveryBoyDetils] = useState([]);
+const DeliveryBoyDetails = () => {
+  const [deliveryBoyDetails, setDeliveryBoyDetails] = useState([]);
+  const [filteredDeliveryBoyDetails, setFilteredDeliveryBoyDetails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showRegisterModal, setShowRegisterModal] = useState(false);
@@ -19,30 +19,30 @@ const DeliveryBoyDetils = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // Default ascending order
 
   useEffect(() => {
-    const fetchDeliveryBoyDetils = async () => {
+    const fetchDeliveryBoyDetails = async () => {
       try {
-        const response = await axios.get(`${API_URI}/api/vendor/vendors-with-total-products`);
-        setDeliveryBoyDetils(response.data);
-        setFilteredDeliveryBoyDetils(response.data);
+        const response = await axios.get(`${API_URI}/api/deliveryBoys/getAllDeliveryDetails`);
+        setDeliveryBoyDetails(response.data);
+        setFilteredDeliveryBoyDetails(response.data);
       } catch (error) {
-        console.error("Error fetching vendor details:", error);
-        setError("Failed to load vendor details");
+        console.error("Error fetching delivery boy details:", error);
+        setError("Failed to load delivery boy details");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDeliveryBoyDetils();
+    fetchDeliveryBoyDetails();
   }, []);
 
   useEffect(() => {
-    const filtered = DeliveryBoyDetils?.filter((vendor) =>
-      vendor?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      vendor?.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = deliveryBoyDetails.filter((boy) =>
+      boy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      boy.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     // Sorting logic
-    const sorted = filtered?.sort((a, b) => {
+    const sorted = filtered.sort((a, b) => {
       const valueA = a[sortKey]?.toLowerCase();
       const valueB = b[sortKey]?.toLowerCase();
       if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
@@ -50,9 +50,9 @@ const DeliveryBoyDetils = () => {
       return 0;
     });
 
-    setFilteredDeliveryBoyDetils(sorted);
+    setFilteredDeliveryBoyDetails(sorted);
     setCurrentPage(1); // Reset to first page on search
-  }, [searchTerm, DeliveryBoyDetils, sortKey, sortOrder]);
+  }, [searchTerm, deliveryBoyDetails, sortKey, sortOrder]);
 
   const handleRegister = () => {
     setShowRegisterModal(true);
@@ -72,6 +72,20 @@ const DeliveryBoyDetils = () => {
     setCurrentPage(page);
   };
 
+  const handleDelete = (vendorId) => {
+    axios
+      .delete(`${API_URI}/api/deliveryBoys/delete/${vendorId}`)
+      .then((res) => {
+        console.log(res);
+        // Update the delivery boy details after deleting the record
+        setDeliveryBoyDetails(deliveryBoyDetails.filter((boy) => boy._id !== vendorId));
+        setFilteredDeliveryBoyDetails(filteredDeliveryBoyDetails.filter((boy) => boy._id !== vendorId));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -80,28 +94,14 @@ const DeliveryBoyDetils = () => {
     return <div>{error}</div>;
   }
 
-  if (!filteredDeliveryBoyDetils?.length) {
-    return <div>No vendor details available</div>;
+  if (!filteredDeliveryBoyDetails.length) {
+    return <div>No delivery boy details available</div>;
   }
 
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const endIndex = startIndex + PAGE_SIZE;
-  const paginatedVendors = filteredDeliveryBoyDetils.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filteredDeliveryBoyDetils.length / PAGE_SIZE);
-
-  const handleDelete = (vendorId)=>{
-    axios.delete(`${API_URI}/api/vendor/delete/${vendorId}`)
-   .then(res => {
-     console.log(res);
-     // Update the vendor details after deleting the vendor
-     setDeliveryBoyDetils(DeliveryBoyDetils.filter(vendor => vendor._id!== vendorId));
-     setFilteredDeliveryBoyDetils(filteredDeliveryBoyDetils.filter(vendor => vendor._id!== vendorId));
-   })
-    .catch(err => {
-     console.log(err);
-   });
-
-  }
+  const paginatedBoys = filteredDeliveryBoyDetails.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(filteredDeliveryBoyDetails.length / PAGE_SIZE);
 
   return (
     <div className="flex">
@@ -123,7 +123,7 @@ const DeliveryBoyDetils = () => {
             <input
               type="text"
               placeholder="Search by name or email"
-              className="w-full px-3 py-2  rounded border-2 border-black "
+              className="w-full px-3 py-2 rounded border-2 border-black"
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -140,7 +140,7 @@ const DeliveryBoyDetils = () => {
             </select>
           </div>
         </div>
-        <p className="text-gray-600">Total Vendors: {filteredDeliveryBoyDetils.length}</p>
+        <p className="text-gray-600">Total Delivery Boys: {filteredDeliveryBoyDetails.length}</p>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
             <thead className="bg-gray-800 text-white">
@@ -149,36 +149,37 @@ const DeliveryBoyDetils = () => {
                 <th className="py-3 px-4 border">Email</th>
                 <th className="py-3 px-4 border">Mobile</th>
                 <th className="py-3 px-4 border">Address</th>
+                <th className="py-3 px-4 border">Current Address</th>
                 <th className="py-3 px-4 border">Verified</th>
-                <th className="py-3 px-4 border">Total Products order</th>
+                <th className="py-3 px-4 border">Total Products Order</th>
                 <th className="py-3 px-4 border">Action</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedVendors.map((vendor) => (
-                <tr key={vendor._id} className="odd:bg-gray-100 even:bg-gray-50">
-                  <td className="py-2 px-4 border">{vendor.name}</td>
-                  <td className="py-2 px-4 border">{vendor.email}</td>
-                  <td className="py-2 px-4 border">{vendor.mobile}</td>
+              {paginatedBoys.map((boy) => (
+                <tr key={boy._id} className="odd:bg-gray-100 even:bg-gray-50">
+                  <td className="py-2 px-4 border">{boy.name}</td>
+                  <td className="py-2 px-4 border">{boy.email}</td>
+                  <td className="py-2 px-4 border">{boy.mobile}</td>
                   <td className="py-2 px-4 border">
-                    {vendor.address} - {vendor.pincode}
+                    {boy.address.address} - {boy.address.pincode}
                   </td>
-                  <td className="py-2 px-4 border">{vendor.isVerified ? "Yes" : "No"}</td>
-                  <td className="py-2 px-4 border  ">
+                  <td className="py-2 px-4 border">
+                    {boy.currentAddress.address} - {boy.currentAddress.pincode}
+                  </td>
+                  <td className="py-2 px-4 border">{boy.isVerified ? "Yes" : "No"}</td>
+                  <td className="py-2 px-4 border">
                     <div className="flex justify-start items-center content-center gap-5">
-                    <p>{vendor.totalProducts}</p>
-                    
-                    {
-                      vendor.totalProducts > 0 && (
-                        <Link to={`/order/${vendor._id}`}>
+                      <p>{boy.totalProducts}</p>
+                      {boy.totalProducts > 0 && (
+                        <Link to={`/order/${boy._id}`}>
                           View
                         </Link>
-                      )
-                    }
+                      )}
                     </div>
                   </td>
                   <td className="py-2 px-4 border flex justify-between items-center content-center gap-5">
-                    <button className="px-4 bg-red-700 py-2 rounded-md text-white" onClick={()=>handleDelete(vendor._id)}>Delete</button>
+                    <button className="px-4 bg-red-700 py-2 rounded-md text-white" onClick={() => handleDelete(boy._id)}>Delete</button>
                     <button className="px-4 bg-red-700 py-2 rounded-md text-white">Block</button>
                   </td>
                 </tr>
@@ -215,4 +216,4 @@ const DeliveryBoyDetils = () => {
   );
 };
 
-export default DeliveryBoyDetils;
+export default DeliveryBoyDetails;

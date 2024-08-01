@@ -14,6 +14,12 @@ const Register = ({ onClose }) => {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [pincode, setPincode] = useState("");
+  const [currentAddress, setCurrentAddress] = useState("");
+  const [currentPincode, setCurrentPincode] = useState("");
+  const [drivingLicenceNo, setDrivingLicenceNo] = useState("");
+  const [uploadDrivingLicenceProof, setUploadDrivingLicenceProof] = useState("");
+  const [vehicleNo, setVehicleNo] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState("");
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -21,16 +27,30 @@ const Register = ({ onClose }) => {
     setter(e.target.value);
   };
 
+  const handleFileChange = (setter) => (e) => {
+    setter(e.target.files[0]);
+  };
+
   const registerUser = async () => {
     try {
-      const resp = await axios.post(`${API_URI}/api/vendor/register`, {
-        email,
-        password,
-        mobile: mobileNumber,
-        name,
-        address,
-        pincode,
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("mobile", mobileNumber);
+      formData.append("name", name);
+      formData.append("address", JSON.stringify({ address, pincode }));
+      formData.append("currentAddress", JSON.stringify({ address: currentAddress, pincode: currentPincode }));
+      formData.append("drivingLicenceNo", drivingLicenceNo);
+      formData.append("uploadDrivingLicenceProof", uploadDrivingLicenceProof);
+      formData.append("vehicleNo", vehicleNo);
+      formData.append("profilePhoto", profilePhoto);
+
+      const resp = await axios.post(`${API_URI}/api/vendor/register`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
+
       if (resp.status === 201) {
         Swal.fire({
           title: "Success!",
@@ -38,9 +58,8 @@ const Register = ({ onClose }) => {
           icon: "success",
           confirmButtonText: "OK",
         });
-        
+        setOtpModalOpen(true);
       }
-      setOtpModalOpen(true);
     } catch (error) {
       console.error("Error registering user:", error);
       Swal.fire({
@@ -114,6 +133,58 @@ const Register = ({ onClose }) => {
             value={pincode}
             onChange={handleInputChange(setPincode)}
             aria-label="Pincode"
+          />
+        </div>
+        <div className="mb-4">
+          <input
+            className="w-full px-3 py-2 border rounded"
+            placeholder="Current Address"
+            value={currentAddress}
+            onChange={handleInputChange(setCurrentAddress)}
+            aria-label="Current Address"
+          />
+        </div>
+        <div className="mb-4">
+          <input
+            className="w-full px-3 py-2 border rounded"
+            placeholder="Current Pincode"
+            value={currentPincode}
+            onChange={handleInputChange(setCurrentPincode)}
+            aria-label="Current Pincode"
+          />
+        </div>
+        <div className="mb-4">
+          <input
+            className="w-full px-3 py-2 border rounded"
+            placeholder="Driving Licence Number"
+            value={drivingLicenceNo}
+            onChange={handleInputChange(setDrivingLicenceNo)}
+            aria-label="Driving Licence Number"
+          />
+        </div>
+        <div className="mb-4">
+          <input
+            type="file"
+            className="w-full px-3 py-2 border rounded"
+            onChange={handleFileChange(setUploadDrivingLicenceProof)}
+            aria-label="Upload Driving Licence Proof"
+          />
+        </div>
+        <div className="mb-4">
+          <input
+            className="w-full px-3 py-2 border rounded"
+            placeholder="Vehicle Number"
+            value={vehicleNo}
+            onChange={handleInputChange(setVehicleNo)}
+            aria-label="Vehicle Number"
+          />
+        </div>
+        <div className="mb-4">
+          <input
+            type="file"
+            className="w-full px-3 py-2 border rounded"
+            onChange={handleFileChange(setProfilePhoto)}
+            aria-label="Profile Photo"
           />
         </div>
         <Button onClick={registerUser} className="w-full bg-blue-gray-600">
