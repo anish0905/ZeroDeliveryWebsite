@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Button, Dialog } from "@material-tailwind/react";
 import axios from "axios";
-import { API_URI } from "../../Contants";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import OtpVerification from "./OtpVerification";
 import { AiOutlineClose } from "react-icons/ai";
+import { Button, Dialog } from "@material-tailwind/react";
+import { API_URI } from "../../Contants";
 
 const Register = ({ onClose }) => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -23,43 +23,77 @@ const Register = ({ onClose }) => {
   const [otpModalOpen, setOtpModalOpen] = useState(false);
   const navigate = useNavigate();
 
+
+  const userId = localStorage.getItem("userId");
+
   const handleInputChange = (setter) => (e) => {
     setter(e.target.value);
   };
 
-  const handleFileChange = (setter) => (e) => {
-    setter(e.target.files[0]);
+  const handleFileChange = (setter) => async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      try {
+        const base64 = await convertToBase64(file);
+        const url = await uploadToImageService(base64);
+        setter(url);
+      } catch (error) {
+        console.error("Error handling file:", error);
+      }
+    }
+  };
+
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const uploadToImageService = async (base64) => {
+    try {
+      const response = await axios.post(`${API_URI}/upload`, { image: base64 });
+      const { imageUrl } = response.data; // Assume the response contains an imageUrl
+      return imageUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
   };
 
   const registerUser = async () => {
     try {
-      const formData = new FormData();
-      formData.append("email", email);
-      formData.append("password", password);
-      formData.append("mobile", mobileNumber);
-      formData.append("name", name);
-      formData.append("address", JSON.stringify({ address, pincode }));
-      formData.append("currentAddress", JSON.stringify({ address: currentAddress, pincode: currentPincode }));
-      formData.append("drivingLicenceNo", drivingLicenceNo);
-      formData.append("uploadDrivingLicenceProof", uploadDrivingLicenceProof);
-      formData.append("vehicleNo", vehicleNo);
-      formData.append("profilePhoto", profilePhoto);
+      const formData = {
+        vendorId:userId,
+        email,
+        password,
+        mobile: mobileNumber,
+        name,
+        address: { address, pincode },
+        currentAddress: { address: currentAddress, pincode: currentPincode },
+        drivingLicenceNo,
+        uploadDrivingLicenceProof,
+        vehicleNo,
+        profilePhoto,
+      };
 
-      const resp = await axios.post(`${API_URI}/api/vendor/register`, formData, {
+      await axios.post(`${API_URI}/api/deliveryBoys/register`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'application/json',
         }
       });
 
-      if (resp.status === 201) {
-        Swal.fire({
-          title: "Success!",
-          text: "User registered successfully. Please verify your OTP.",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        setOtpModalOpen(true);
-      }
+      Swal.fire({
+        title: "Success!",
+        text: "User registered successfully. Please verify your OTP.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+      
+      setOtpModalOpen(true);
+
     } catch (error) {
       console.error("Error registering user:", error);
       Swal.fire({
@@ -72,13 +106,17 @@ const Register = ({ onClose }) => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-white p-10 rounded-md relative">
-      <button className="absolute top-4 right-3 text-gray-500 hover:text-gray-700" onClick={onClose}>
-        <AiOutlineClose size={24} />
-      </button>
-      <div className="w-full rounded shadow-md">
-        <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
-        <div className="mb-4">
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg relative overflow-y-auto max-h-screen">
+        <button
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          onClick={onClose}
+        >
+          <AiOutlineClose size={24} />
+        </button>
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        <div className="space-y-4">
+          {/* Inputs */}
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Name"
@@ -86,9 +124,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setName)}
             aria-label="Name"
           />
-        </div>
-        
-        <div className="mb-4">
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Email"
@@ -96,8 +131,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setEmail)}
             aria-label="Email"
           />
-        </div>
-        <div className="mb-4">
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Mobile Number"
@@ -105,8 +138,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setMobileNumber)}
             aria-label="Mobile Number"
           />
-        </div>
-        <div className="mb-4">
           <input
             type="password"
             className="w-full px-3 py-2 border rounded"
@@ -115,9 +146,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setPassword)}
             aria-label="Password"
           />
-        </div>
-        
-        <div className="mb-4">
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Address"
@@ -125,8 +153,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setAddress)}
             aria-label="Address"
           />
-        </div>
-        <div className="mb-4">
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Pincode"
@@ -134,8 +160,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setPincode)}
             aria-label="Pincode"
           />
-        </div>
-        <div className="mb-4">
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Current Address"
@@ -143,8 +167,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setCurrentAddress)}
             aria-label="Current Address"
           />
-        </div>
-        <div className="mb-4">
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Current Pincode"
@@ -152,8 +174,6 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setCurrentPincode)}
             aria-label="Current Pincode"
           />
-        </div>
-        <div className="mb-4">
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Driving Licence Number"
@@ -161,16 +181,18 @@ const Register = ({ onClose }) => {
             onChange={handleInputChange(setDrivingLicenceNo)}
             aria-label="Driving Licence Number"
           />
-        </div>
-        <div className="mb-4">
           <input
             type="file"
             className="w-full px-3 py-2 border rounded"
             onChange={handleFileChange(setUploadDrivingLicenceProof)}
             aria-label="Upload Driving Licence Proof"
           />
-        </div>
-        <div className="mb-4">
+          <input
+            type="file"
+            className="w-full px-3 py-2 border rounded"
+            onChange={handleFileChange(setProfilePhoto)}
+            aria-label="Profile Photo"
+          />
           <input
             className="w-full px-3 py-2 border rounded"
             placeholder="Vehicle Number"
@@ -179,15 +201,7 @@ const Register = ({ onClose }) => {
             aria-label="Vehicle Number"
           />
         </div>
-        <div className="mb-4">
-          <input
-            type="file"
-            className="w-full px-3 py-2 border rounded"
-            onChange={handleFileChange(setProfilePhoto)}
-            aria-label="Profile Photo"
-          />
-        </div>
-        <Button onClick={registerUser} className="w-full bg-blue-gray-600">
+        <Button onClick={registerUser} className="w-full mt-6 bg-blue-gray-600">
           Register
         </Button>
       </div>

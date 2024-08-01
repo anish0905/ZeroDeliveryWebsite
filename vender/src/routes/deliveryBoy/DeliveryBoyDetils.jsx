@@ -4,6 +4,7 @@ import { API_URI } from "../../Contants";
 import Sidebar from "../Vendor/Sidebar";
 import { Link } from "react-router-dom";
 import Register from "./Register";
+import Swal from "sweetalert2";
 
 const PAGE_SIZE = 10;
 
@@ -72,17 +73,31 @@ const DeliveryBoyDetails = () => {
     setCurrentPage(page);
   };
 
-  const handleDelete = (vendorId) => {
+  const handleDelete = (userId) => {
     axios
-      .delete(`${API_URI}/api/deliveryBoys/delete/${vendorId}`)
+      .delete(`${API_URI}/api/deliveryBoys/delete-user/${userId}`)
       .then((res) => {
-        console.log(res);
+       
+        Swal.fire({
+          title: "Success!",
+          text: "User Deleted successfully. ",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
         // Update the delivery boy details after deleting the record
-        setDeliveryBoyDetails(deliveryBoyDetails.filter((boy) => boy._id !== vendorId));
-        setFilteredDeliveryBoyDetails(filteredDeliveryBoyDetails.filter((boy) => boy._id !== vendorId));
+        setDeliveryBoyDetails(deliveryBoyDetails.filter((boy) => boy._id !== userId));
+        setFilteredDeliveryBoyDetails(filteredDeliveryBoyDetails.filter((boy) => boy._id !== userId));
+
       })
+      
       .catch((err) => {
         console.log(err);
+        Swal.fire({
+          title: "Error!",
+          text: error.response?.data?.message || "There was an issue deleting the user",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       });
   };
 

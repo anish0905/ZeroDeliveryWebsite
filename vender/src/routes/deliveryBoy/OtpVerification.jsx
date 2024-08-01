@@ -32,7 +32,7 @@ function OtpVerification({ email, password, mobileNumber, onClose }) {
 
   const verifyOtp = async () => {
     try {
-      const resp = await axios.post(`${API_URI}/api/vendor/verify-otp`, {
+      const resp = await axios.post(`${API_URI}/api/deliveryBoys/verify-otp`, {
         otp,
         email,
         password,
@@ -61,7 +61,7 @@ function OtpVerification({ email, password, mobileNumber, onClose }) {
 
   const resendOtp = async () => {
     try {
-      const resp = await axios.post(`${API_URI}/api/vendor/resend-otp`, {
+      const resp = await axios.post(`${API_URI}/api/deliveryBoys/resend-otp`, {
         email,
         mobile: mobileNumber,
       });

@@ -83,7 +83,7 @@ const ProductHome = () => {
       <div className="lg:block md:block hidden">
         <Sidebar />
       </div>
-      <div className="mb-4 grid lg:grid-cols-2 md:grid-cols-2 grid-cols-1 gap-4">
+      <div className="mb-4 grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
         {products?.map((product) => (
           <React.Fragment key={product._id}>
             <ProductDetail product={product} onEditClick={() => handleEditClick(product)} setProducts={setProducts} />
