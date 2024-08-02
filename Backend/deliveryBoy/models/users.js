@@ -21,10 +21,11 @@ const addressSchema = new mongoose.Schema({
 
 const drivingLicenceSchema = new mongoose.Schema({
   drivingLicenceNo: { type: String, required: true },
-  uploadDrivingLicenceProof: { type: String, required: true }, // Use String to store file path or URL
+  uploadDrivingLicenceProof: { type: String }, // Use String to store file path or URL
 });
 
 const userSchema = new mongoose.Schema({
+  vendorId: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   mobile: { type: String, required: true },
@@ -39,7 +40,7 @@ const userSchema = new mongoose.Schema({
   currentAddress: addressSchema,
   drivingLicence: drivingLicenceSchema,
   vehicleNo: { type: String, required: true },
-  profilePhoto: { type: String, required: true },
+  profilePhoto: { type: String },
   isVerified: { type: Boolean, default: false },
   otp: { type: String, required: true },
   otpExpires: { type: Date, required: true },

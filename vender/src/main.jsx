@@ -8,14 +8,15 @@ import myntrastore from "./store/index";
 
 import { Provider } from "react-redux";
 
-import { LoginPage } from "./routes/admin/LoginPage";
-
-import AdminDashBoard from "./routes/admin/AdminDashBoard";
-import CreateProduct from "./routes/admin/CreateProduct";
+import { LoginPage } from "./routes/Vendor/LoginPage";
+import CreateProduct from "./routes/Vendor/CreateProduct";
 import OrderHomePage from "./routes/AllOrder.jsx/OrderHomePage";
 import ProductHome from "./routes/AllProduct.jsx/ProductHome";
 import  Register  from "../src/Component/Register";
 import OtpVerification from "./Component/OtpVerification";
+import VendorDashBoard from "./routes/Vendor/VendorDashBoard";
+import DeliveryBoyDetils from "./routes/deliveryBoy/DeliveryBoyDetils";
+
 
 const router = createBrowserRouter([
   {
@@ -24,7 +25,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/dashboard",
-        element: <AdminDashBoard />,
+        element: <VendorDashBoard />,
       },
 
       {
@@ -51,7 +52,11 @@ const router = createBrowserRouter([
       {
         path: "/otpVerification",
         element: <OtpVerification/>,
+      },{
+        path: "/DeliveryDetails",
+        element: <DeliveryBoyDetils/>,
       }
+
     ],
   },
 ]);

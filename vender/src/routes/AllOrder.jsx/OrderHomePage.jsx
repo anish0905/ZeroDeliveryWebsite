@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import OrderTable from "./OrderTable";
 import axios from "axios";
-import Sidebar from "../admin/Sidebar";
+import Sidebar from "../Vendor/Sidebar";
 import { API_URI } from "../../Contants";
 
 const OrderHomePage = () => {

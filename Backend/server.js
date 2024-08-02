@@ -40,6 +40,8 @@ app.use("/api/products", productOrderRoutes);
 app.use("/api/vendor", vendorRoutes);
 app.use("/api/vendor", vendorAddProducts);
 app.use("/api/vendor", recivedVendororder);
+app.use("/api/vendor/qty", recivedVendororder);
+
 app.use("/api/vendor", vendor);
 
 //admin

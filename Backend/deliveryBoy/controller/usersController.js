@@ -1,6 +1,5 @@
 const User = require("../models/users");
 const nodemailer = require("nodemailer");
-
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -14,6 +13,7 @@ const transporter = nodemailer.createTransport({
 
 exports.register = async (req, res) => {
   const {
+    vendorId,
     email,
     password,
     mobile,
@@ -33,6 +33,7 @@ exports.register = async (req, res) => {
 
     // Temporarily create user object to generate OTP
     user = new User({
+      vendorId,
       email,
       password,
       mobile,
@@ -126,6 +127,17 @@ exports.resendOtp = async (req, res) => {
   }
 };
 
+
+exports.getAllDeliveryDetails = async(req, res) => {
+  try {
+    const deliveryDetails = await User.find({});
+    res.status(200).json(deliveryDetails);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch delivery details', error });
+  }
+};
+
+
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -206,3 +218,4 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+

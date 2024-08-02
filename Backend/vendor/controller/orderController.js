@@ -75,3 +75,56 @@ exports.changeStatus = async(req,res)=>{
     }
 
 }
+
+
+const { DateTime } = require('luxon'); 
+exports.getProductsLastThirtyDays = async (req, res) => {
+  try {
+    const { vendorId } = req.params; // Use vendorId for filtering
+    console.log('Vendor ID:', vendorId);
+    
+    const thirtyDaysAgo = DateTime.now().minus({ days: 30 }).toJSDate();
+    console.log('Date 30 Days Ago:', thirtyDaysAgo);
+
+    const orders = await recivedOrder.find({
+      VendorUser: vendorId,
+      createdAt: { $gte: thirtyDaysAgo }
+    });
+    console.log('Orders:', orders);
+
+    // Calculate the total quantity
+    const totalQuantity = orders.reduce((acc, order) => {
+      return acc + order.products.reduce((sum, product) => sum + product.quantity, 0);
+    }, 0);
+
+    res.status(200).json({ totalQuantity });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
+exports.getProductsLastSevenDays = async (req, res) => {
+  try {
+    const { vendorId } = req.params; 
+    console.log('Vendor ID:', vendorId);
+    
+    const sevenDaysAgo = DateTime.now().minus({ days: 7 }).toJSDate();
+    console.log('Date 7 Days Ago:', sevenDaysAgo);
+
+    const orders = await recivedOrder.find({
+      VendorUser: vendorId,
+      createdAt: { $gte: sevenDaysAgo }
+    });
+    console.log('Orders:', orders);
+
+    // Calculate the total quantity
+    const totalQuantity = orders.reduce((acc, order) => {
+      return acc + order.products.reduce((sum, product) => sum + product.quantity, 0);
+    }, 0);
+
+    res.status(200).json({ totalQuantity });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
