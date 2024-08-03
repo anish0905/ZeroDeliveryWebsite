@@ -7,8 +7,8 @@ import { API_URI } from "../../Contants";
 
 const VendorDashBoard = () => {
   const [todaySales, setTodaySales] = useState(0);
-  const [weeklySales, setWeeklySales] = useState(15000);
-  const [weeklyOrders, setWeeklyOrders] = useState(42254);
+  const [weeklySales, setWeeklySales] = useState(0);
+  const [weeklyOrders, setWeeklyOrders] = useState(0);
   const [revenue, setRevenue] = useState(1024565);
   const [monthlyOrder, setMonthlyOrder] = useState(0);
 
@@ -32,6 +32,23 @@ const VendorDashBoard = () => {
 
     calculateTodaySales(salesData);
   }, []);
+
+  const fetchdataSevenDays = async () => {
+    try {
+      const resp = await axios.get(
+        `${API_URI}/api/vendor/qty//products/lastSevenDays/${userId}`
+      );
+      console.log("================last seven====================");
+      console.log(resp.data.totalQuantity);
+      console.log("====================================");
+
+      const sevenDaysSales = resp.data.totalQuantity;
+      setWeeklyOrders(sevenDaysSales);
+    } catch (error) {
+      console.error("Error fetching seven days sales data:", error);
+    }
+  };
+  fetchdataSevenDays();
 
   const fetchDataMonths = async () => {
     try {
