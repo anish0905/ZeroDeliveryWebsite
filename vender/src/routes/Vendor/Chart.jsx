@@ -9,6 +9,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+
 Chart.register(LinearScale, CategoryScale, BarElement, Legend, Title, Tooltip);
 
 const options = {
@@ -56,13 +57,15 @@ const Charts = () => {
     const fetchMonthlyOrderQty = async () => {
       try {
         const token = localStorage.getItem("token");
+        const vendorId = localStorage.getItem("userId"); // Replace with actual vendorId
+
         if (!token) {
           console.error("No token found in localStorage");
           return;
         }
 
         const response = await fetch(
-          "http://localhost:5001/api/sales/getMonthlyOrderQty",
+          `http://localhost:5001/api/vendor/qty/totalorder/monthwise/${vendorId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -88,8 +91,8 @@ const Charts = () => {
 
   const datasetData = new Array(12).fill(0);
   sales.forEach((monthData) => {
-    if (monthData._id.month !== null) {
-      datasetData[monthData._id.month - 1] = monthData.totalOrderQty;
+    if (monthData.month !== null) {
+      datasetData[monthData.month - 1] = monthData.orderCount;
     }
   });
 
