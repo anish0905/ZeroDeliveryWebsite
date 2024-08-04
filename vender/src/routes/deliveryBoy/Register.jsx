@@ -115,7 +115,7 @@ const Register = ({ onClose }) => {
           <AiOutlineClose size={24} />
         </button>
         <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-        <div className="space-y-4">
+        <div className="grid lg:grid-cols-2 md:grid-cols-2 grid-col-1 gap-4">
           {/* Inputs */}
           <input
             className="w-full px-3 py-2 border rounded"

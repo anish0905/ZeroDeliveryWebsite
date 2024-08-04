@@ -5,6 +5,8 @@ import Sidebar from "../Vendor/Sidebar";
 import { Link } from "react-router-dom";
 import Register from "./Register";
 import Swal from "sweetalert2";
+import { useDispatch } from 'react-redux';
+import { deliveryBoyActions } from "../../store/deliveryBoyDetailsSlice";
 
 const PAGE_SIZE = 10;
 
@@ -16,8 +18,10 @@ const DeliveryBoyDetails = () => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortKey, setSortKey] = useState("name"); // Default sort by name
-  const [sortOrder, setSortOrder] = useState("asc"); // Default ascending order
+  const [sortKey, setSortKey] = useState("name"); 
+  const [sortOrder, setSortOrder] = useState("asc"); 
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchDeliveryBoyDetails = async () => {
@@ -25,6 +29,7 @@ const DeliveryBoyDetails = () => {
         const response = await axios.get(`${API_URI}/api/deliveryBoys/getAllDeliveryDetails`);
         setDeliveryBoyDetails(response.data);
         setFilteredDeliveryBoyDetails(response.data);
+        dispatch(deliveryBoyActions.addDeliveryBoys(response.data));
       } catch (error) {
         console.error("Error fetching delivery boy details:", error);
         setError("Failed to load delivery boy details");
@@ -87,6 +92,7 @@ const DeliveryBoyDetails = () => {
         // Update the delivery boy details after deleting the record
         setDeliveryBoyDetails(deliveryBoyDetails.filter((boy) => boy._id !== userId));
         setFilteredDeliveryBoyDetails(filteredDeliveryBoyDetails.filter((boy) => boy._id !== userId));
+        dispatch(deliveryBoyActions.deleteDeliveryBoy(userId));
 
       })
       

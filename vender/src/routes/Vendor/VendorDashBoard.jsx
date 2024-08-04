@@ -38,9 +38,7 @@ const VendorDashBoard = () => {
       const resp = await axios.get(
         `${API_URI}/api/vendor/qty//products/lastSevenDays/${userId}`
       );
-      console.log("================last seven====================");
-      console.log(resp.data.totalQuantity);
-      console.log("====================================");
+    
 
       const sevenDaysSales = resp.data.totalQuantity;
       setWeeklyOrders(sevenDaysSales);
@@ -98,7 +96,7 @@ const VendorDashBoard = () => {
                   <p className="font-bold text-xl">$ {monthlyOrder}</p>
                   <p className="font-medium text-lg">
                     {" "}
-                    <a href="">View Orders</a>
+                    <a href="/orders">View Orders</a>
                   </p>
                 </div>
                 <div className="bg-gradient-to-r from-[#77d8cf] to-[rgb(1,94,80)] rounded-lg p-5 text-white">
@@ -106,7 +104,7 @@ const VendorDashBoard = () => {
                   <p className="font-bold text-xl">{weeklyOrders}</p>
                   <p className="font-medium text-lg">
                     {" "}
-                    <a href="">View Products</a>
+                    <a href="products">View Products</a>
                   </p>
                 </div>
               </div>
