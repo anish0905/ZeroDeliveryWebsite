@@ -13,6 +13,7 @@ const vendorAddProducts = require("./vendor/routes/productRoutes");
 const recivedVendororder = require("./vendor/routes/orderRouters");
 const admin = require("./admin/routes/userRoutes");
 const vendor = require("./admin/routes/vendorDetailsRouter");
+const order = require("./admin/routes/orderRouters");
 const deliveryRoutes = require("./deliveryBoy/routes/usersRoutes");
 
 connectDB();
@@ -40,11 +41,14 @@ app.use("/api/products", productOrderRoutes);
 app.use("/api/vendor", vendorRoutes);
 app.use("/api/vendor", vendorAddProducts);
 app.use("/api/vendor", recivedVendororder);
+app.use("/api/vendor/qty", recivedVendororder);
+
 app.use("/api/vendor", vendor);
 
 //admin
 
 app.use("/api/admin", admin);
+app.use("/api/admin", order);
 
 //deliver boys Users
 

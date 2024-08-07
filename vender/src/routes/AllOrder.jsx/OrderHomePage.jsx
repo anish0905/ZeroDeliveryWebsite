@@ -3,6 +3,7 @@ import OrderTable from "./OrderTable";
 import axios from "axios";
 import Sidebar from "../Vendor/Sidebar";
 import { API_URI } from "../../Contants";
+import Swal from "sweetalert2";
 
 const OrderHomePage = () => {
   const [orders, setOrders] = useState([]);
@@ -51,6 +52,40 @@ const OrderHomePage = () => {
     }
   };
 
+  const assignOrderToDeliveryBoy = async (orderId, deliveryBoy) => {
+    
+    try {
+      const response = await axios.patch(
+        `${API_URI}/api/products/assgintoDeliveryBoy`,
+        {
+          orderId,
+          deliveryBoyId:deliveryBoy._id,
+        }
+      );
+
+      Swal.fire({
+        title: "Success!",
+        text: "Order is assgin  successfully",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      fetchOrders()
+      
+    } catch (error) {
+      console.error("Error assigning order to delivery boy:", error);
+      Swal.fire({
+        title: "error!",
+        text: `${error}` || `somthing is woring while assign order`,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+
+    }
+  };
+
+
+
   return (
     <div className="flex">
       <div className="lg:block md:block hidden">
@@ -72,7 +107,7 @@ const OrderHomePage = () => {
             </button>
           ))}
         </div>
-        <OrderTable orders={filteredOrders} updateOrderStatus={updateOrderStatus} />
+        <OrderTable orders={filteredOrders} updateOrderStatus={updateOrderStatus} assignOrderToDeliveryBoy={assignOrderToDeliveryBoy} />
       </div>
     </div>
   );

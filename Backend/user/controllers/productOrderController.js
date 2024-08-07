@@ -155,9 +155,45 @@ const productOrderById = async (req, res) => {
   }
 };
 
+const assgintoDeliveryBoy = async(req,res)=>{
+  try {
+    const { orderId, deliveryBoyId } = req.body;
+    
+    if (!orderId ||!deliveryBoyId) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+    
+    // Validate deliveryBoyId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(deliveryBoyId)) {
+      return res
+       .status(400)
+       .json({ message: "Invalid deliveryBoy ID format." });
+    }
+    
+    const updatedOrder = await ProductOrder.findByIdAndUpdate(
+      orderId,
+      { deliveryBoy: deliveryBoyId },
+      { new: true }
+    );
+    
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+    
+    res
+     .status(200)
+     .json({ message: "Order assigned to delivery boy successfully", updatedOrder });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+
+}
+
 module.exports = {
   productOrder,
   cancelledOrder,
   getProductOrdersByUserId,
   productOrderById,
+  assgintoDeliveryBoy,
 };
