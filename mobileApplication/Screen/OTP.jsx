@@ -3,100 +3,79 @@ import {
   Text,
   View,
   SafeAreaView,
-  Image,
   TextInput,
   TouchableOpacity,
   Alert,
+  Image, // Make sure to import Image
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from "../conatant";
-import loginIMg from "../assets/login.png"
+import loginIMg from "../assets/login.png"; // Ensure the path is correct
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Login = () => {
-  const [mobile, setMobile] = useState("");
-  const [password, setPassword] = useState("");
-
+const OTP = () => {
+  const [otp, setOtp] = useState("");
   const navigation = useNavigation();
+  const route = useRoute();
+  const { mobile } = route.params;
 
-  useEffect(() => {
-    const checkUserLogin = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        if (token) {
-          navigation.replace('HomeTabs');
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    checkUserLogin();
-  }, []);
-
-  const handleLogin = async () => {
-    if (!mobile || !password) {
-      Alert.alert("Error", "Please fill in all fields.");
+  const handleVerifyOTP = async () => {
+    if (!otp) {
+      Alert.alert("Error", "Please enter the OTP.");
       return;
     }
 
-    console.log(mobile, password);
+    console.log("Verifying", otp, mobile);
+
     try {
-      const response = await axios.post(`${API_URL}/user/login`, { mobileNumber:mobile});
-      
-        // Assuming the backend sends an OTP to the user's phone
-        console.log(response);
-        navigation.navigate('OTP', { mobile });
-  
+      const response = await axios.post(`${API_URL}/user/vefifyOpt`, {
+        mobileNumber: mobile,
+        otp,
+      });
+      console.log(response.data);
+
+      await AsyncStorage.setItem("token", response.data.token);
+      Alert.alert("Success", "Logged in successfully.");
+      navigation.replace("HomeTabs");
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "Invalid mobile or password.");
+      Alert.alert("Error", "Invalid OTP.");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={loginIMg }
-        style={styles.logo}
-      />
-
-      <Text style={styles.text}>Login to your Account</Text>
+       <Image source={loginIMg} style={styles.logo} />
+      <Text style={styles.text}>Enter OTP</Text>
       <View style={styles.mainContainer}>
         <View style={styles.inputFieldContainer}>
-          <Text style={styles.label}>Mobile</Text>
+         
           <TextInput
             style={styles.inputField}
-            placeholder="Phone Number"
-            keyboardType="phone-pad"
-            value={mobile}
-            onChangeText={setMobile}
-          />
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
+            placeholder="OTP"
+            keyboardType="numeric"
+            value={otp}
+            onChangeText={setOtp}
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+        <TouchableOpacity style={styles.button} onPress={handleVerifyOTP}>
+          <Text style={styles.buttonText}>Verify OTP</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 };
 
-export default Login;
+export default OTP;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
     alignItems: "center",
+    justifyContent: "center",
   },
   logo: {
     width: 200,
@@ -124,11 +103,6 @@ const styles = StyleSheet.create({
   inputFieldContainer: {
     width: "100%",
     marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 5,
   },
   inputField: {
     borderWidth: 1,

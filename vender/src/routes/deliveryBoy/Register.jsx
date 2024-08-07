@@ -162,7 +162,7 @@ const Register = ({ onClose }) => {
           />
           <input
             className="w-full px-3 py-2 border rounded"
-            placeholder="Current Address"
+            placeholder="Working Zone"
             value={currentAddress}
             onChange={handleInputChange(setCurrentAddress)}
             aria-label="Current Address"

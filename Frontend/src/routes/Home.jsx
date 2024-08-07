@@ -15,7 +15,7 @@ const Home = () => {
 
   // Function to get unique categories
   const getUniqueCategories = (smartPhones) => {
-    const categories = smartPhones.map(smartPhones =>smartPhones.category);
+    const categories = smartPhones?.map(smartPhones =>smartPhones.category);
     return [...new Set(categories)];
   };
 

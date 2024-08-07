@@ -170,7 +170,7 @@ const DeliveryBoyDetails = () => {
                 <th className="py-3 px-4 border">Email</th>
                 <th className="py-3 px-4 border">Mobile</th>
                 <th className="py-3 px-4 border">Address</th>
-                <th className="py-3 px-4 border">Current Address</th>
+                <th className="py-3 px-4 border">Working Zone</th>
                 <th className="py-3 px-4 border">Verified</th>
                 <th className="py-3 px-4 border">Total Products Order</th>
                 <th className="py-3 px-4 border">Action</th>
