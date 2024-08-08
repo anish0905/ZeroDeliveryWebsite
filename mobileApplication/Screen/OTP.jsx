@@ -38,7 +38,7 @@ const OTP = () => {
 
       await AsyncStorage.setItem("token", response.data.token);
       Alert.alert("Success", "Logged in successfully.");
-      navigation.replace("HomeTabs");
+      navigation.replace("Main");
     } catch (error) {
       console.log(error);
       Alert.alert("Error", "Invalid OTP.");

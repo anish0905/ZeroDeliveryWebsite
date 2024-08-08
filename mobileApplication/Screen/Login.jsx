@@ -26,7 +26,7 @@ const Login = () => {
       try {
         const token = await AsyncStorage.getItem("token");
         if (token) {
-          navigation.replace('HomeTabs');
+          navigation.replace('Main');
         }
       } catch (error) {
         console.log(error);

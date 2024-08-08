@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API_URL } from '../conatant';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link } from '@react-navigation/native';
 
 export default function Category() {
   const [categories, setCategories] = useState([]);
@@ -42,13 +43,18 @@ export default function Category() {
 
           return (
             <View key={category._id} style={styles.categoryContainer}>
-              <View style={styles.imageContainer}>
-                <Image
+              <Link
+                to={{ screen: 'Category', params: { categoryName: category._id } }}
+                style={styles.imageContainer}
+              >
+               <View style={styles.SubimageContainer}>
+               <Image
                   source={{ uri: imageUrl }}
                   style={styles.image}
                   resizeMode="cover"
                 />
-              </View>
+               </View>
+              </Link>
               <Text style={styles.categoryText}>{category._id}</Text>
             </View>
           );
@@ -74,21 +80,43 @@ const styles = StyleSheet.create({
   categoryContainer: {
     marginRight: 20,
     alignItems: 'center',
+    
+
   },
   imageContainer: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
+       
+
+  },
+  SubimageContainer: {
+    width: 65,
+    height: 65,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#d5f4e6',
+    shadowColor: '#000',
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 2,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#ddd',
     borderRadius: 50,
     overflow: 'hidden',
-    borderColor: '#d5f4e6',
   },
+
   image: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     borderRadius: 50,
+    overflow: 'hidden',
+    backgroundColor: '#ddd',
+    padding: 5,
+    borderColor: '#fff',
+    borderWidth: 1,
+    borderRadius: 50,
+    overflow: 'hidden',
+   
   },
   categoryText: {
     marginTop: 5,
