@@ -19,7 +19,7 @@ const UserInfo = () => {
           </div>
 
           <div className=" flex justify-between content-center items-center gap-5 ">
-            <h1>RAMNARAYAN MANDAL</h1>
+            <h1>Jhone</h1>
             <p className="text-sm">{userProfile.mobileNumber}</p>
           </div>
         </div>

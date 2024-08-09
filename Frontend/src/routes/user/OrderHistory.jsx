@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,9 +35,6 @@ const OrderHistory = () => {
 
       // Calculate expected delivery date
       expectedDate.setDate(createdDate.getDate() + minDays);
-      // For simplicity, here we're assuming the maxDays for a broader range
-      // You can use maxDays in your logic as per requirement
-
       return expectedDate.toDateString(); // Format expected date as needed
     }
 
@@ -54,36 +50,36 @@ const OrderHistory = () => {
       <input
         type="text"
         placeholder="Search your orders here"
-        className="w-full p-2 mb-4 border rounded"
+        className="w-full p-2 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
-      <div className="overflow-y-auto max-h-96">
+      <div className="overflow-y-auto max-h-[500px]">
         {filteredOrders.map(order => (
           <Link to={`/orderDetails/${order._id}`}
             key={order._id}
-            className="flex items-center justify-between p-4 mb-4 border rounded shadow-sm"
+            className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 mb-4 border rounded-md shadow-sm hover:bg-gray-50 transition"
           >
-            <div className="flex items-center">
+            <div className="flex items-start sm:items-center mb-4 sm:mb-0">
               <img
                 src={order.products[0].productId.thumbnail} // Assuming thumbnail is available
                 alt={order.products[0].productId.title}
-                className="w-20 h-20 mr-4"
+                className="w-16 h-16 sm:w-20 sm:h-20 mr-4 rounded-md object-cover"
               />
-              <div>
-                <h2 className="text-lg font-semibold">{order.products[0].productId.title}</h2>
-                <p className="text-gray-600">{order.products[0].price}</p>
-                <p className="text-gray-500">{order.products[0].productId.shippingInformation}</p>
+              <div className="text-sm sm:text-base">
+                <h2 className="font-semibold">{order.products[0].productId.title}</h2>
+                <p className="text-gray-600">Price: ${order.products[0].price}</p>
+                <p className="text-gray-500">Shipping: {order.products[0].productId.shippingInformation}</p>
               </div>
             </div>
-            <div>
-              <p className={order.status === 'pending' ? 'text-red-500' : 'text-green-500'}>
+            <div className="text-right text-sm sm:text-base">
+              <p className={order.status === 'pending' ? 'text-red-500 font-semibold' : 'text-green-500 font-semibold'}>
                 {order.status}
               </p>
-              <p className="mt-2 text-sm text-blue-500">
-                Payment {order.paymentStatus === 'unpaid' ? 'not successful' : 'successful'}.
+              <p className="mt-2 text-blue-500">
+                Payment {order.paymentStatus === 'unpaid' ? 'Not Successful' : 'Successful'}.
               </p>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-gray-600">
                 Expected Delivery: {calculateExpectedDate(order.createdAt, order.products[0].productId.shippingInformation)}
               </p>
             </div>
