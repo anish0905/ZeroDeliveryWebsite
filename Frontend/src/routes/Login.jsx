@@ -104,7 +104,8 @@ export function Login({name}) {
       </Button>
       <Dialog open={open} handler={handleOpen}>
         <div className="flex justify-center items-center content-center">
-          <img src={logo} alt="Blinkit Logo" className="w-60 h-72" />
+          <img src={logo} alt="zerodelivery
+ Logo" className="w-60 h-72" />
         </div>
 
         <div className="flex justify-center flex-col content-center items-center font-bold">

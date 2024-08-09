@@ -46,6 +46,15 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
+          to="/addbanner"
+          className={({ isActive }) => 
+            `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`
+          }
+        >
+          Add Banner
+        </NavLink>
+
+        <NavLink
           to="/events"
           className={({ isActive }) => 
             `p-2 my-2 rounded ${isActive ? 'bg-gray-700' : 'hover:bg-gray-700'}`

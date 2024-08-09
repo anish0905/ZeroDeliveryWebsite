@@ -18,6 +18,7 @@ import  Register  from "../src/Component/Register";
 import OtpVerification from "./Component/OtpVerification";
 import VendorDetails from "./routes/vendor/VendorDetails";
 import OrderHomePage from "./routes/vendor/OrderHomePage";
+import AddBanner from "./Component/AddBanner";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "/order/:vendorId",
         element: <OrderHomePage />,
+      },
+      {
+        path: "/addbanner",
+        element: <AddBanner/>,
       }
     ],
   },

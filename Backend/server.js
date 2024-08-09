@@ -15,7 +15,7 @@ const admin = require("./admin/routes/userRoutes");
 const vendor = require("./admin/routes/vendorDetailsRouter");
 const order = require("./admin/routes/orderRouters");
 const deliveryRoutes = require("./deliveryBoy/routes/usersRoutes");
-
+const banner = require("./admin/routes/bannerRouters");
 connectDB();
 const app = express();
 app.use(express.json());
@@ -49,6 +49,7 @@ app.use("/api/vendor", vendor);
 
 app.use("/api/admin", admin);
 app.use("/api/admin", order);
+app.use("/api/admin",banner);
 
 //deliver boys Users
 
