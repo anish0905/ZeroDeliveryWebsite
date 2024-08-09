@@ -46,10 +46,25 @@ function MyOrderStack() {
 function CartStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="My Cart (2)"
+        component={CartScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: '#96D6EF', // Change this color to your desired background color
+          },
+          headerTintColor: 'black', // Change the text color if needed
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerTitleAlign: 'left', // Align the title to the center
+         
+        }}
+      />
     </Stack.Navigator>
   );
 }
+
 
 function BottomTabs() {
   return (
@@ -130,4 +145,7 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  
+
+});

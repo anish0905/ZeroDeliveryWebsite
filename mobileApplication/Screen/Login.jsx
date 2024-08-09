@@ -25,7 +25,8 @@ const Login = () => {
     const checkUserLogin = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        if (token) {
+        const userId = await AsyncStorage.getItem("userId"); // Replace with actual userId
+        if (token||userId) {
           navigation.replace('Main');
         }
       } catch (error) {
@@ -40,13 +41,10 @@ const Login = () => {
       Alert.alert("Error", "Please fill in all fields.");
       return;
     }
-
-    console.log(mobile, password);
     try {
       const response = await axios.post(`${API_URL}/user/login`, { mobileNumber:mobile});
       
         // Assuming the backend sends an OTP to the user's phone
-        console.log(response);
         navigation.navigate('OTP', { mobile });
   
     } catch (error) {

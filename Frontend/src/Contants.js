@@ -1,2 +1,2 @@
 // Constants.js
-export const API_URI = "https://a3e0-2401-4900-1cc5-2e96-3835-e634-cb6b-f94f.ngrok-free.app";
+export const API_URI = "https://990d-2401-4900-1f29-8609-9915-fd94-7c56-ea92.ngrok-free.app";

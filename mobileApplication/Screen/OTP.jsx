@@ -27,16 +27,14 @@ const OTP = () => {
       return;
     }
 
-    console.log("Verifying", otp, mobile);
-
     try {
       const response = await axios.post(`${API_URL}/user/vefifyOpt`, {
         mobileNumber: mobile,
         otp,
       });
-      console.log(response.data);
-
+  
       await AsyncStorage.setItem("token", response.data.token);
+      await AsyncStorage.setItem("userId", response.data.userId);
       Alert.alert("Success", "Logged in successfully.");
       navigation.replace("Main");
     } catch (error) {
