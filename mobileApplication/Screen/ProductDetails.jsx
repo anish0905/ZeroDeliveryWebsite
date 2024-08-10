@@ -41,7 +41,7 @@ export default function ProductDetails() {
 
   const addToCart = async () => {
     try {
-      const userId = await AsyncStorage.getItem("userId"); // Await to properly retrieve the userId
+      const userId = await AsyncStorage.getItem("userId"); 
   
       if (userId) {
         await axios.post(`${API_URL}/api/cart`, {
@@ -52,7 +52,8 @@ export default function ProductDetails() {
           price: item.price,
           quantity: quantity,
           discountPercentage: item.discountPercentage,
-          promotionCode: item.promotionCode || "null"
+          promotionCode: item.promotionCode || "null",
+          Image: item.images[0]
         });
         Alert.alert(`${item.title} item added to cart successfully`);
       } else {

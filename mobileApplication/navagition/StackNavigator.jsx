@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import React, { useState, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -13,6 +13,9 @@ import OTP from "../Screen/OTP";
 import ShowCategoryWise from "../Screen/ShowCatogryWise";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import ProductDetails from "../Screen/ProductDetails";
+import { API_URL } from "../conatant";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -20,9 +23,21 @@ const Tab = createBottomTabNavigator();
 function HomeStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="Category" component={ShowCategoryWise} options={{ headerShown: false }} />
-      <Stack.Screen name="Product" component={ProductDetails} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Category"
+        component={ShowCategoryWise}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Product"
+        component={ProductDetails}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -30,7 +45,11 @@ function HomeStack() {
 function ProfileStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -38,35 +57,73 @@ function ProfileStack() {
 function MyOrderStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="MyOrder" component={MyOrder} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="MyOrder"
+        component={MyOrder}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
 
 function CartStack() {
+  const [cartItems, setCartItems] = useState({ totalQuantity: 0 });
+
+  const fetchItems = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    try {
+      const resp = await axios.get(
+        `${API_URL}/api/cart/totalProductQuantity/${userId}`
+      );
+      setCartItems(resp.data || { totalQuantity: 0 });
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="My Cart (2)"
+        name={`My Cart (${cartItems.totalQuantity})`}
         component={CartScreen}
         options={{
           headerStyle: {
-            backgroundColor: '#96D6EF', // Change this color to your desired background color
+            backgroundColor: "#96D6EF",
           },
-          headerTintColor: 'black', // Change the text color if needed
+          headerTintColor: "white",
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: "bold",
           },
-          headerTitleAlign: 'left', // Align the title to the center
-         
+          headerTitleAlign: "left",
         }}
       />
     </Stack.Navigator>
   );
 }
 
-
 function BottomTabs() {
+  const [cartItems, setCartItems] = useState({ totalQuantity: 0 });
+
+  const fetchItems = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    try {
+      const resp = await axios.get(
+        `${API_URL}/api/cart/totalProductQuantity/${userId}`
+      );
+      setCartItems(resp.data || { totalQuantity: 0 });
+    } catch (error) {
+      console.error("error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
@@ -115,13 +172,40 @@ function BottomTabs() {
         name="CartTab"
         component={CartStack}
         options={{
-          tabBarLabel: "Cart",
+          tabBarLabel: `Cart`,
           tabBarIcon: ({ color, size, focused }) => (
-            <MaterialIcons
-              name={focused ? "shopping-cart" : "shopping-cart"}
-              size={size}
-              color={color}
-            />
+            <View style={{ width: 24, height: 24 }}>
+              <MaterialIcons
+                name={focused ? "shopping-cart" : "shopping-cart"}
+                size={size}
+                color={color}
+              />
+              {cartItems.totalQuantity > 0 && ( // Only show the badge if there are items in the cart
+                <View
+                  style={{
+                    position: "absolute",
+                    top: -6,
+                    right: -10,
+                    backgroundColor: "red",
+                    borderRadius: 10,
+                    width: 20,
+                    height: 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: 12,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {cartItems.totalQuantity}
+                  </Text>
+                </View>
+              )}
+            </View>
           ),
         }}
       />
@@ -133,19 +217,24 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="OTP" component={OTP} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OTP"
+          component={OTP}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Main"
           component={BottomTabs}
-          options={{ headerShown: false }} // Bottom tabs as the main navigator
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  
-
-});
+const styles = StyleSheet.create({});

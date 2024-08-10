@@ -1,50 +1,85 @@
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import * as Updates from 'expo-updates'; // Import expo-updates
+import { API_URL } from '../conatant'; // Ensure this path is correct
 
 const CartScreen = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: '1',
-      title: 'Product 1',
-      image: 'https://via.placeholder.com/100',
-      price: 100,
-      quantity: 1,
-    },
-    {
-      id: '2',
-      title: 'Product 2',
-      image: 'https://via.placeholder.com/100',
-      price: 200,
-      quantity: 1,
-    },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  const [userId, setUserId] = useState(null);
 
-  const increaseQuantity = (itemId) => {
-    const updatedCartItems = cartItems.map(item => 
-      item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    setCartItems(updatedCartItems);
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedUserId = await AsyncStorage.getItem("userId");
+      setUserId(storedUserId);
+
+      try {
+        const resp = await axios.get(
+          `${API_URL}/api/cart/totalProductQuantity/${storedUserId}`
+        );
+        setCartItems(resp.data.data);
+      } catch (error) {
+        console.error("error", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleRemove = async (itemId) => {
+    const storedUserId = await AsyncStorage.getItem("userId");
+    try {
+      await axios.post(`${API_URL}/api/cart/${storedUserId}/${itemId}`);
+      setCartItems(prevItems => prevItems.filter(item => item.productId !== itemId));
+      await Updates.reloadAsync(); // Trigger a full app reload
+    } catch (error) {
+      console.error("Error removing from cart:", error.message);
+    }
   };
 
-  const decreaseQuantity = (itemId) => {
-    const updatedCartItems = cartItems.map(item => 
-      item.id === itemId && item.quantity > 1 ? { ...item, quantity: item.quantity - 1 } : item
+  const increaseQuantity = (itemId) => {
+    setCartItems(prevItems =>
+      prevItems.map(item =>
+        item.productId === itemId ? { ...item, quantity: item.quantity + 1 } : item
+      )
     );
-    setCartItems(updatedCartItems);
+  };
+
+  const decreaseQuantity = async (itemId) => {
+    const updatedItems = cartItems.map(item =>
+      item.productId === itemId && item.quantity > 1
+        ? { ...item, quantity: item.quantity - 1 }
+        : item
+    );
+
+    const filteredItems = updatedItems.filter(item => item.quantity > 0);
+
+    setCartItems(filteredItems);
+
+    const itemToUpdate = updatedItems.find(item => item.productId === itemId);
+    if (itemToUpdate && itemToUpdate.quantity <= 1) {
+      await handleRemove(itemId); // Remove from server if quantity is 1 or less
+    }
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Image source={{ uri: item.image }} style={styles.itemImage} />
+      <Image source={item.Image} style={styles.itemImage} />
       <View style={styles.itemDetails}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemPrice}>${item.price}</Text>
+        <Text style={styles.itemTitle}>{item.productName}</Text>
+        <View style={styles.priceContainer}>
+        <Text style={styles.itemPrice}>₹ {(item.price) * (item.quantity)}</Text>
+        <Text style={styles.discountPercentage}>
+            ({item.discountPercentage}% OFF)
+          </Text>
+        </View>
         <View style={styles.quantityContainer}>
-          <TouchableOpacity onPress={() => decreaseQuantity(item.id)} style={styles.quantityButton}>
+          <TouchableOpacity onPress={() => decreaseQuantity(item.productId)} style={styles.quantityButton}>
             <Text style={styles.quantityButtonText}>-</Text>
           </TouchableOpacity>
           <Text style={styles.quantityText}>{item.quantity}</Text>
-          <TouchableOpacity onPress={() => increaseQuantity(item.id)} style={styles.quantityButton}>
+          <TouchableOpacity onPress={() => increaseQuantity(item.productId)} style={styles.quantityButton}>
             <Text style={styles.quantityButtonText}>+</Text>
           </TouchableOpacity>
         </View>
@@ -57,7 +92,7 @@ const CartScreen = () => {
       <FlatList
         data={cartItems}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.productId}
       />
       <TouchableOpacity style={styles.placeOrderButton}>
         <Text style={styles.placeOrderButtonText}>Place Order</Text>
@@ -75,7 +110,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: '#EEEDEB',
     marginVertical: 5,
     marginHorizontal: 10,
     padding: 10,
@@ -84,7 +119,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   itemImage: {
-    width: 100,
+    width: 200,
     height: 100,
     borderRadius: 5,
   },
@@ -98,10 +133,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
+  priceContainer: {
+    flexDirection: 'row',
+    justifyContent:'flex-start',
+    marginBottom: 10,
+    gap:5
+  },
   itemPrice: {
     fontSize: 14,
     color: '#888',
     marginBottom: 10,
+  },
+  discountPercentage: {
+    fontSize: 12,
+    color: '#888',
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -110,6 +155,7 @@ const styles = StyleSheet.create({
   quantityButton: {
     backgroundColor: '#ddd',
     padding: 5,
+    paddingHorizontal:12,
     borderRadius: 5,
   },
   quantityButtonText: {
@@ -121,7 +167,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   placeOrderButton: {
-    backgroundColor: '#2874F0',
+    backgroundColor: '#3ABEF9',
     paddingVertical: 15,
     margin: 10,
     borderRadius: 5,

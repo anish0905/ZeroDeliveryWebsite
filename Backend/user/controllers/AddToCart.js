@@ -12,6 +12,7 @@ exports.addItemToCart = async (req, res) => {
     attributes,
     promotionCode,
     discountPercentage,
+    Image,
   } = req.body;
 
   try {
@@ -42,6 +43,7 @@ exports.addItemToCart = async (req, res) => {
         attributes,
         promotionCode,
         discountPercentage,
+        Image,
       });
     }
 
