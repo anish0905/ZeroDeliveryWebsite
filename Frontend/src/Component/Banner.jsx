@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {API_URI} from "../Contants"
+
 
 const Banner = () => {
   const [banners, setBanners] = useState([]);
@@ -7,7 +9,7 @@ const Banner = () => {
 
   const fetchBanners = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/admin/banners`);
+      const response = await axios.get(`${API_URI}/api/admin/banners`);
       setBanners(response.data);
     } catch (error) {
       console.error('Error fetching banners:', error);
@@ -30,7 +32,7 @@ const Banner = () => {
     <div className="mt-20 object-fill mb-10">
       {banners.length > 0 && (
         <img 
-          src={banners[currentSlide].images[0]} 
+          src={`${API_URI}/${banners[currentSlide].path}`} 
           alt={`Banner ${currentSlide + 1}`} 
           className="w-full object-cover mb-4 h-96" 
         />
