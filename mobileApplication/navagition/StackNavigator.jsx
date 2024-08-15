@@ -16,6 +16,8 @@ import ProductDetails from "../Screen/ProductDetails";
 import { API_URL } from "../conatant";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Address from "../component/address/Address";
+import AddressDetails from "../component/address/AddressDetails";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,6 +39,37 @@ function HomeStack() {
         name="Product"
         component={ProductDetails}
         options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="Add New Adress"
+        component={Address}
+
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
+      />
+
+      <Stack.Screen
+        name="Adress"
+        component={AddressDetails}
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
       />
     </Stack.Navigator>
   );
