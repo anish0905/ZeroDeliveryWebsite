@@ -31,23 +31,42 @@ export function Login({name}) {
     setOtp(e.target.value);
   };
 
+ 
   const requestOtp = async () => {
+    // Append +91 to the mobile number if it's not already included
+    const fullMobileNumber = `+91${mobileNumber}`;
+
+    // Regular expression for validating Indian mobile numbers
+    const mobileNumberPattern = /^\+91\d{10}$/;
+
+    if (!mobileNumberPattern.test(fullMobileNumber)) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Please enter a valid mobile number in the format XXXXXXXXXX (10 digits)',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     try {
-      const resp = await axios.post(`${API_URI}/user/login`, {
-        mobileNumber: mobileNumber
+      const resp = await axios.post(`${API_URI}/user/request-otp`, {
+        mobileNumber: fullMobileNumber
       });
       if (resp.status === 200) {
         setOtpSent(true);
       }
     } catch (error) {
-      console.log("error", error);
+      console.log("Error requesting OTP:", error);
     }
   };
-
   const verifyOtp = async () => {
+    // Append +91 to the mobile number for verification
+    const fullMobileNumber = `+91${mobileNumber}`;
+
     try {
-      const resp = await axios.post(`${API_URI}/user/vefifyOpt`, {
-        mobileNumber: mobileNumber,
+      const resp = await axios.post(`${API_URI}/user/verify-otp`, {
+        mobileNumber: fullMobileNumber,
         otp
       });
       if (resp.status === 200) {
@@ -64,20 +83,17 @@ export function Login({name}) {
         });
 
         navigate("/");
-
-      
-    }}
-     catch (error) {
+      }
+    } catch (error) {
       console.log("Error verifying OTP:", error);
       Swal.fire({
         title: 'Error!',
-        text: 'There was an issue logining the User',
+        text: 'There was an issue logging in the User',
         icon: 'error',
         confirmButtonText: 'OK'
       });
     }
   };
-
   const FetchUserDeatils = async(userId) =>{
     try {
       const resp = await axios.get(`${API_URI}/user/getGetUser/${userId}`)

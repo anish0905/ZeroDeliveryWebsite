@@ -11,7 +11,7 @@ import Location from "../Location";
 import Swal from 'sweetalert2';
 import { userActions } from "../../store/userInfoSlice";
 
-const NavBar1 = () => {
+const NavBar1 = ({searchQuery,handleSearch}) => {
   const bag = useSelector((store) => store.bag) || { totalQuantity: 0, data: [] };
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const userId = localStorage.getItem('userId');
@@ -68,9 +68,11 @@ const NavBar1 = () => {
       <div className="w-1/2 flex content-center items-center relative">
         <IoSearch className="text-2xl absolute left-3 top-2 text-gray-500" />
         <input
-          type="search"
-          placeholder="Search for products, brand and more"
-          className="bg-gray-200 rounded w-full h-10 hover:border-none px-12"
+          type='search'
+          value={searchQuery}
+          onChange={handleSearch}
+          placeholder='Search for products, brands, and more'
+          className='bg-gray-200 rounded w-full h-10 px-10'
         />
       </div>
       <div className="w-1/4 gap-5 content-center items-center font-semibold text-sm hidden lg:block md:block">
