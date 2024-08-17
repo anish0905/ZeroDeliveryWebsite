@@ -30,7 +30,7 @@ const CreateProduct = () => {
     returnPolicy: "",
     minimumOrderQuantity: "",
     images: [],
-    thumbnail: "",
+    thumbnail: null,
   });
 
   const handleChange = (e) => {
@@ -41,50 +41,58 @@ const CreateProduct = () => {
     });
   };
 
-  const handleImageChange = async (e, fieldName) => {
-    const files = Array.from(e.target.files);
-    const base64Images = await Promise.all(
-      files.map((file) => convertToBase64(file))
-    );
+  const handleImageChange = (e) => {
     setFormData({
       ...formData,
-      [fieldName]: base64Images,
-    });
-  };
-  const handleThumbnailChange = async (e, fieldName) => {
-    const file = e.target.files[0];
-    const base64Thumbnail = await convertToBase64(file);
-    setFormData({
-      ...formData,
-      thumbnail: base64Thumbnail,
+      images: e.target.files,
     });
   };
 
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
+  const handleThumbnailChange = (e) => {
+    setFormData({
+      ...formData,
+      thumbnail: e.target.files[0],
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { tags, dimensions, ...rest } = formData;
-    const productData = {
-      ...rest,
-      tags: tags.split(",").map((tag) => tag.trim()),
-      dimensions: {
-        width: parseFloat(dimensions.width),
-        height: parseFloat(dimensions.height),
-        depth: parseFloat(dimensions.depth),
-      },
-    };
+
+    const productData = new FormData();
+    productData.append("VendorUser", formData.VendorUser);
+    productData.append("title", formData.title);
+    productData.append("description", formData.description);
+    productData.append("category", formData.category);
+    productData.append("price", formData.price);
+    productData.append("discountPercentage", formData.discountPercentage);
+    productData.append("rating", formData.rating);
+    productData.append("stock", formData.stock);
+    productData.append("tags", formData.tags.split(","));
+    productData.append("brand", formData.brand);
+    productData.append("sku", formData.sku);
+    productData.append("weight", formData.weight);
+    productData.append("dimensions", JSON.stringify(formData.dimensions));
+    productData.append("warrantyInformation", formData.warrantyInformation);
+    productData.append("shippingInformation", formData.shippingInformation);
+    productData.append("availabilityStatus", formData.availabilityStatus);
+    productData.append("returnPolicy", formData.returnPolicy);
+    productData.append("minimumOrderQuantity", formData.minimumOrderQuantity);
+
+    // Append images and thumbnail to the FormData
+    Array.from(formData.images).forEach((file) => {
+      productData.append("images", file);
+    });
+
+    if (formData.thumbnail) {
+      productData.append("thumbnail", formData.thumbnail);
+    }
 
     try {
       await axios.post(`${API_URI}/api/vendor/products`, productData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
       Swal.fire({
         icon: "success",
@@ -184,14 +192,59 @@ const CreateProduct = () => {
             <label htmlFor="dimensions" className="block">
               Dimensions (W x H x D)
             </label>
-            <input
-              type="text"
-              id="dimensions"
-              name="dimensions"
-              value={`${formData.dimensions.width} x ${formData.dimensions.height} x ${formData.dimensions.depth}`}
-              onChange={handleChange}
-              className="border p-2 w-full"
-            />
+            <div className="flex gap-2">
+              <input
+                type="number"
+                id="dimensions-width"
+                name="dimensions-width"
+                placeholder="Width"
+                value={formData.dimensions.width}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    dimensions: {
+                      ...formData.dimensions,
+                      width: e.target.value,
+                    },
+                  })
+                }
+                className="border p-2 w-full"
+              />
+              <input
+                type="number"
+                id="dimensions-height"
+                name="dimensions-height"
+                placeholder="Height"
+                value={formData.dimensions.height}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    dimensions: {
+                      ...formData.dimensions,
+                      height: e.target.value,
+                    },
+                  })
+                }
+                className="border p-2 w-full"
+              />
+              <input
+                type="number"
+                id="dimensions-depth"
+                name="dimensions-depth"
+                placeholder="Depth"
+                value={formData.dimensions.depth}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    dimensions: {
+                      ...formData.dimensions,
+                      depth: e.target.value,
+                    },
+                  })
+                }
+                className="border p-2 w-full"
+              />
+            </div>
           </div>
           <div>
             <label htmlFor="images" className="block">
@@ -202,7 +255,7 @@ const CreateProduct = () => {
               id="images"
               name="images"
               multiple
-              onChange={(e) => handleImageChange(e, "images")}
+              onChange={handleImageChange}
               className="border p-2 w-full"
             />
           </div>
@@ -214,7 +267,7 @@ const CreateProduct = () => {
               type="file"
               id="thumbnail"
               name="thumbnail"
-              onChange={(e) => handleThumbnailChange(e, "thumbnail")}
+              onChange={handleThumbnailChange}
               className="border p-2 w-full"
             />
           </div>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URI } from '../../Contants';
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -10,7 +11,7 @@ const OrderHistory = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/products/getHistory/${userId}`);
+        const response = await axios.get(`${API_URI}/api/products/getHistory/${userId}`);
         const sortedOrders = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setOrders(sortedOrders);
       } catch (error) {

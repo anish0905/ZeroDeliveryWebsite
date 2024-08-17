@@ -6,6 +6,7 @@ import Banner from '../Component/Banner';
 import ItemsCategory from '../routes/catgories/ItemsCategory';
 import ItemCards from '../Component/ItemCards';
 import NavBar1 from '../Component/NavBar/NavBar1';
+import { IoMdSearch } from 'react-icons/io';
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,12 +38,13 @@ const Home = () => {
       {!searchQuery && (
         <>
           <Banner />
+          <ItemsCategory />
           <ItemCards />
         </>
       )}
 
       {/* Display search results if there are any */}
-      {filteredSmartPhones.length > 0 && (
+      {filteredSmartPhones.length > 0 ? (
         <div className='px-5 py-3'>
           <h2 className='text-xl font-bold mb-4'>Search Results</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
@@ -51,11 +53,14 @@ const Home = () => {
             ))}
           </div>
         </div>
-      )}
-
-      {/* If no search query and no search results, show categories */}
-      {!searchQuery && (
-        <ItemsCategory />
+      ) : (
+        // Display message if no search results
+        <div className='flex flex-col items-center justify-center min-h-screen text-center px-4 py-8'>
+          <IoMdSearch className='text-6xl text-gray-400 mb-4' />
+          <h2 className='text-2xl font-bold mb-2'>No Items Found</h2>
+          <p className='text-lg mb-4'>Sorry, we couldn't find any items matching your search.</p>
+          <p className='text-sm text-gray-600'>Try searching with different keywords or check out our <Link to='/itemCard' className='text-blue-600 underline'>Home</Link>.</p>
+        </div>
       )}
     </div>
   );
