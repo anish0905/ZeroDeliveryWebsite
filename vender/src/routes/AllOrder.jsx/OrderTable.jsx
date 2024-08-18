@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
+import { API_URI } from "../../Contants";
+import { useDispatch } from 'react-redux';
+import { deliveryBoyActions } from "../../store/deliveryBoyDetailsSlice";
 
 const OrderTable = ({
   orders,
@@ -14,6 +17,23 @@ const OrderTable = ({
   const [selectedDeliveryBoy, setSelectedDeliveryBoy] = useState(null);
 
   const deliveryBoyDetails = useSelector((state) => state.deliveryBoy);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchDeliveryBoyDetails = async () => {
+      try {
+        const response = await axios.get(`${API_URI}/api/deliveryBoys/getAllDeliveryDetails`);
+        dispatch(deliveryBoyActions.addDeliveryBoys(response.data));
+      } catch (error) {
+        console.error("Error fetching delivery boy details:", error);
+        setError("Failed to load delivery boy details");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDeliveryBoyDetails();
+  }, []);
 
   const handleChangeStatusClick = (orderId) => {
     setSelectedOrderId(orderId);
@@ -75,7 +95,7 @@ const OrderTable = ({
                     {order.products.length > 0 && (
                       <div className="relative group mb-2">
                         <img
-                          src={order.products[0].productId.thumbnail}
+                          src={`${API_URI}/${order.products[0].productId.thumbnail}`}
                           alt={order.products[0].productId.title}
                           className="w-16 h-16 object-cover rounded-full mb-2 transform group-hover:scale-105 transition-transform"
                         />

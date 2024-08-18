@@ -32,6 +32,7 @@ exports.getOrdersByVendorUser = async (req, res) => {
     // Fetch addresses for each order
     const ordersWithAddresses = await Promise.all(
       orders.map(async (order) => {
+        console.log(order.address)
         const user = await User.findById(order.userId).select("addresses");
         const address = user.addresses.id(order.address);
         return { ...order.toObject(), address };

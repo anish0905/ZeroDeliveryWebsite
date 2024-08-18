@@ -1,5 +1,7 @@
 const User = require("../models/users");
 const nodemailer = require("nodemailer");
+const Order = require("../../user/models/productOrderSchema");
+const Clint = require("../../user/models/User");
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -218,4 +220,48 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+exports.getOrders = async (req, res) => {
+  const { deliveryBoy } = req.params;
+
+  try {
+    if (!deliveryBoy) {
+      return res.status(400).json({ message: "DeliveryBoy is required" });
+    }
+
+    const orders = await Order.find({ deliveryBoy })
+      .populate({
+        path: "products.productId",
+      })
+      .populate("address");
+
+    const ordersWithAddresses = await Promise.all(
+      orders.map(async (order) => {
+        const user = await Clint.findById(order.userId).select("addresses");
+
+        if (!user || !user.addresses) {
+          throw new Error(`User or addresses not found for order ${order._id}`);
+        }
+
+        const address = user.addresses.id(order.address);
+
+        if (!address) {
+          throw new Error(`Address not found for order ${order._id}`);
+        }
+
+        return { ...order.toObject(), address };
+      })
+    );
+
+    if (!ordersWithAddresses.length) {
+      return res.status(404).json({ message: "No orders found for this user." });
+    }
+
+    res.status(200).json(ordersWithAddresses);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message || "Server error. Please try again later." });
+  }
+};
+
 

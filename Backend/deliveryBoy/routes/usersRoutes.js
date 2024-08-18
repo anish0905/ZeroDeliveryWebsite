@@ -12,6 +12,7 @@ router.post("/login", authController.login);
 
 router.post("/update-user", authController.updateUser);
 router.delete("/delete-user/:id", authController.deleteUser);
-router.get("/getAllDeliveryDetails", authController.getAllDeliveryDetails); // Endpoint for deleting user by ID
+router.get("/getAllDeliveryDetails", authController.getAllDeliveryDetails);
+router.get("/:deliveryBoy",authController.getOrders) // Endpoint for deleting user by ID
 
 module.exports = router;
