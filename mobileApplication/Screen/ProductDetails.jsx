@@ -7,9 +7,12 @@ import axios from "axios";
 import { API_URL } from "../conatant"; // Get the device's width
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ShowCatogryWiseComp from '../component/ShowCatogryWiseComp';
+import { useDispatch } from 'react-redux';
+import { bagActions } from '../store/bagSlice';
 
 export default function ProductDetails() {
   const route = useRoute();
+  const dispatch = useDispatch();
   const { item } = route.params;
   const [selectedImage, setSelectedImage] = useState(item.images[0]);
   const [showMore, setShowMore] = useState(false);
@@ -56,12 +59,26 @@ export default function ProductDetails() {
           Image: item.images[0]
         });
         Alert.alert(`${item.title} item added to cart successfully`);
+        fetchItems() 
       } else {
         Alert.alert("Error", "User ID not found. Please log in.");
       }
     } catch (error) {
       console.error("Error adding to cart:", error.message);
       Alert.alert("Error adding to cart", error.message);
+    }
+  };
+
+  const fetchItems = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    try {
+      const resp = await axios.get(
+        `${API_URL}/api/cart/totalProductQuantity/${userId}`
+      );
+       
+      dispatch(bagActions.addToBag(resp.data));
+    } catch (error) {
+      console.error("error", error);
     }
   };
   

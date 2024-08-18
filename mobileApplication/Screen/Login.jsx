@@ -26,7 +26,7 @@ const Login = () => {
       try {
         const token = await AsyncStorage.getItem("token");
         const userId = await AsyncStorage.getItem("userId"); // Replace with actual userId
-        if (token||userId) {
+        if (token && userId) {
           navigation.replace('Main');
         }
       } catch (error) {

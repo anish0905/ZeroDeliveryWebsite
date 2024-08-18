@@ -16,6 +16,13 @@ import ProductDetails from "../Screen/ProductDetails";
 import { API_URL } from "../conatant";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Address from "../component/address/Address";
+import AddressDetails from "../component/address/AddressDetails";
+import { useDispatch, useSelector } from "react-redux";
+import { bagActions } from "../store/bagSlice";
+import SellectAddress from "../component/cart/SellectAddress";
+import Payment from "../component/cart/Payment";
+import OrderDetails from "../component/myOrder/OrderDetails";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,6 +45,34 @@ function HomeStack() {
         component={ProductDetails}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="Add New Address"
+        component={Address}
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
+      />
+      <Stack.Screen
+        name="Address"
+        component={AddressDetails}
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -58,16 +93,47 @@ function MyOrderStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="MyOrder"
+        name="My Order"
         component={MyOrder}
-        options={{ headerShown: false }}
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
+      
       />
+      <Stack.Screen
+        name="Order Details"
+        component={OrderDetails}
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
+      
+      />
+
+      
     </Stack.Navigator>
   );
 }
 
 function CartStack() {
-  const [cartItems, setCartItems] = useState({ totalQuantity: 0 });
+  const dispatch = useDispatch();
+  const bag = useSelector((store) => store.bag) || {
+    totalQuantity: 0,
+    data: [],
+  };
 
   const fetchItems = async () => {
     const userId = await AsyncStorage.getItem("userId");
@@ -75,7 +141,7 @@ function CartStack() {
       const resp = await axios.get(
         `${API_URL}/api/cart/totalProductQuantity/${userId}`
       );
-      setCartItems(resp.data || { totalQuantity: 0 });
+      dispatch(bagActions.addToBag(resp.data));
     } catch (error) {
       console.error("error", error);
     }
@@ -88,7 +154,7 @@ function CartStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={`My Cart (${cartItems.totalQuantity})`}
+        name={`My Cart (${bag.totalQuantity})`}
         component={CartScreen}
         options={{
           headerStyle: {
@@ -101,28 +167,42 @@ function CartStack() {
           headerTitleAlign: "left",
         }}
       />
+
+      <Stack.Screen
+        name={`Select Address`}
+        component={SellectAddress}
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
+      />
+      <Stack.Screen
+        name={`Payment`}
+        component={Payment}
+        options={{
+          headerStyle: {
+            backgroundColor: "#96D6EF",
+          },
+          headerTintColor: "white",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+          headerTitleAlign: "left",
+        }}
+      />
     </Stack.Navigator>
+    
   );
 }
 
 function BottomTabs() {
-  const [cartItems, setCartItems] = useState({ totalQuantity: 0 });
-
-  const fetchItems = async () => {
-    const userId = await AsyncStorage.getItem("userId");
-    try {
-      const resp = await axios.get(
-        `${API_URL}/api/cart/totalProductQuantity/${userId}`
-      );
-      setCartItems(resp.data || { totalQuantity: 0 });
-    } catch (error) {
-      console.error("error", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  const cartItems = useSelector((store) => store.bag) || { totalQuantity: 0 };
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -158,7 +238,7 @@ function BottomTabs() {
         name="MyOrderTab"
         component={MyOrderStack}
         options={{
-          tabBarLabel: "MyOrder",
+          tabBarLabel: "My Order",
           tabBarIcon: ({ color, size, focused }) => (
             <MaterialIcons
               name={focused ? "addchart" : "assignment-add"}

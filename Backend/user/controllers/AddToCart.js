@@ -283,6 +283,7 @@ exports.getTotalQuantity = async (req, res) => {
       attributes: item.attributes,
       discountPercentage: item.discountPercentage,
       promotionCode: item.promotionCode,
+      Image: item.Image,
     }));
 
     const totalQuantity = user.cart.reduce(

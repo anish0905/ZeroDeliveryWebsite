@@ -32,7 +32,7 @@ const OTP = () => {
         mobileNumber: mobile,
         otp,
       });
-  
+     
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userId", response.data.userId);
       Alert.alert("Success", "Logged in successfully.");

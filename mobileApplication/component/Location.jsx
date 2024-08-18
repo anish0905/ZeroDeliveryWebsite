@@ -3,14 +3,15 @@ import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from "rea
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Octicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import AddressModal from './AddressModal'; // Import your AddressModal component
+import { useNavigation } from "@react-navigation/native";
 
 export default function LocationComponent() {
   const [location, setLocation] = useState(null);
   const [address, setAddress] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -39,24 +40,9 @@ export default function LocationComponent() {
     return <Text>{errorMsg}</Text>;
   }
 
-  const handleOpenModal = () => {
-    setModalVisible(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalVisible(false);
-  };
-
-  const handleSaveAddress = (newAddress) => {
-    // Update the address with the new one provided by the user
-    setAddress({ ...address, ...newAddress }); // Adjust according to your data structure
-  };
-
-  const region = {
-    latitude: location.coords.latitude,
-    longitude: location.coords.longitude,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
+  const handleOnpress = (event, newAddress) => {
+    event.persist(); // Prevents React from pooling the event
+    navigation.navigate("Address", { newAddress: newAddress });
   };
 
   return (
@@ -67,20 +53,12 @@ export default function LocationComponent() {
       <View style={styles.info}>
         <Text style={styles.text}>
           Deliver to{" "}
-          {address
-            ? `${address.street}, ${address.city}`
-            : "Fetching address..."}
+          {address ? `${address.street}, ${address.city}` : "Fetching address..."}
         </Text>
       </View>
-      <TouchableOpacity onPress={handleOpenModal} style={styles.iconContainer}>
+      <TouchableOpacity onPress={(event) => handleOnpress(event, address)} style={styles.iconContainer}>
         <Octicons name="chevron-down" size={24} color="black" />
       </TouchableOpacity>
-      <AddressModal
-        visible={modalVisible}
-        onClose={handleCloseModal}
-        onSave={handleSaveAddress}
-        currentAddress={address} // Pass current address to the modal
-      />
     </View>
   );
 }
@@ -90,7 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     backgroundColor: "#BFE4F0",
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
     alignItems: "center",
   },
   info: {

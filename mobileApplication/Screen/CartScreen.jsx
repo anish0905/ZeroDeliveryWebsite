@@ -1,76 +1,101 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
-import * as Updates from 'expo-updates'; // Import expo-updates
-import { API_URL } from '../conatant'; // Ensure this path is correct
+import { View, Text, Image, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { bagActions } from '../store/bagSlice';
+import { API_URL } from '../conatant';
 
 const CartScreen = () => {
   const [cartItems, setCartItems] = useState([]);
-  const [userId, setUserId] = useState(null);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const storedUserId = await AsyncStorage.getItem("userId");
-      setUserId(storedUserId);
+  const fetchData = async () => {
+    const storedUserId = await AsyncStorage.getItem("userId");
 
+    if (storedUserId) {
       try {
-        const resp = await axios.get(
-          `${API_URL}/api/cart/totalProductQuantity/${storedUserId}`
-        );
+        const resp = await axios.get(`${API_URL}/api/cart/totalProductQuantity/${storedUserId}`);
         setCartItems(resp.data.data);
       } catch (error) {
-        console.error("error", error);
+        console.error("Error fetching cart data:", error.message);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
   const handleRemove = async (itemId) => {
     const storedUserId = await AsyncStorage.getItem("userId");
-    try {
-      await axios.post(`${API_URL}/api/cart/${storedUserId}/${itemId}`);
-      setCartItems(prevItems => prevItems.filter(item => item.productId !== itemId));
-      await Updates.reloadAsync(); // Trigger a full app reload
-    } catch (error) {
-      console.error("Error removing from cart:", error.message);
+    if (storedUserId) {
+      try {
+        await axios.post(`${API_URL}/api/cart/${storedUserId}/${itemId}`);
+        dispatch(bagActions.removeFromBag({ productId: itemId }));
+        setCartItems(cartItems.filter(item => item.productId !== itemId));
+      } catch (error) {
+        console.error("Error removing from cart:", error.message);
+      }
     }
   };
 
-  const increaseQuantity = (itemId) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.productId === itemId ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+  const updateQuantityLocally = (itemId, change) => {
+    setCartItems(cartItems.map(item => 
+      item.productId === itemId ? { ...item, quantity: item.quantity + change } : item
+    ));
+  };
+
+  const increaseQuantity = async (itemId) => {
+    const storedUserId = await AsyncStorage.getItem("userId");
+    if (storedUserId) {
+      try {
+        await axios.put(`${API_URL}/api/cart/addProductQuantityByOne`, {
+          userId: storedUserId,
+          productId: itemId,
+        });
+        dispatch(bagActions.increaseQuantity({ productId: itemId }));
+        updateQuantityLocally(itemId, 1); // Update state locally
+      } catch (error) {
+        console.error("Error increasing item quantity:", error.message);
+      }
+    }
   };
 
   const decreaseQuantity = async (itemId) => {
-    const updatedItems = cartItems.map(item =>
-      item.productId === itemId && item.quantity > 1
-        ? { ...item, quantity: item.quantity - 1 }
-        : item
-    );
-
-    const filteredItems = updatedItems.filter(item => item.quantity > 0);
-
-    setCartItems(filteredItems);
-
-    const itemToUpdate = updatedItems.find(item => item.productId === itemId);
-    if (itemToUpdate && itemToUpdate.quantity <= 1) {
-      await handleRemove(itemId); // Remove from server if quantity is 1 or less
+    const storedUserId = await AsyncStorage.getItem("userId");
+    if (storedUserId) {
+      try {
+        await axios.put(`${API_URL}/api/cart/subProductQuantityByOne`, {
+          userId: storedUserId,
+          productId: itemId,
+        });
+        dispatch(bagActions.decreaseQuantity({ productId: itemId }));
+        updateQuantityLocally(itemId, -1); // Update state locally
+      } catch (error) {
+        console.error("Error decreasing item quantity:", error.message);
+      }
     }
+  };
+
+  const handleOnPress = () => {
+    if (cartItems.length === 0) {
+      Alert.alert("Cart is empty. Please add products to the cart.");
+      return;
+    }
+    navigation.navigate("Select Address");
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Image source={item.Image} style={styles.itemImage} />
+      <Image source={{ uri: item.Image }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
         <Text style={styles.itemTitle}>{item.productName}</Text>
         <View style={styles.priceContainer}>
-        <Text style={styles.itemPrice}>₹ {(item.price) * (item.quantity)}</Text>
-        <Text style={styles.discountPercentage}>
+          <Text style={styles.itemPrice}>₹ {(item.price) * (item.quantity)}</Text>
+          <Text style={styles.discountPercentage}>
             ({item.discountPercentage}% OFF)
           </Text>
         </View>
@@ -92,9 +117,9 @@ const CartScreen = () => {
       <FlatList
         data={cartItems}
         renderItem={renderItem}
-        keyExtractor={(item) => item.productId}
+        keyExtractor={(item) => item.productId.toString()}
       />
-      <TouchableOpacity style={styles.placeOrderButton}>
+      <TouchableOpacity style={styles.placeOrderButton} onPress={handleOnPress}>
         <Text style={styles.placeOrderButtonText}>Place Order</Text>
       </TouchableOpacity>
     </View>
@@ -135,14 +160,13 @@ const styles = StyleSheet.create({
   },
   priceContainer: {
     flexDirection: 'row',
-    justifyContent:'flex-start',
+    justifyContent: 'flex-start',
     marginBottom: 10,
-    gap:5
+    gap: 5,
   },
   itemPrice: {
     fontSize: 14,
     color: '#888',
-    marginBottom: 10,
   },
   discountPercentage: {
     fontSize: 12,
@@ -155,7 +179,7 @@ const styles = StyleSheet.create({
   quantityButton: {
     backgroundColor: '#ddd',
     padding: 5,
-    paddingHorizontal:12,
+    paddingHorizontal: 12,
     borderRadius: 5,
   },
   quantityButtonText: {
