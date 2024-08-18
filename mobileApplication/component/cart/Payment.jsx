@@ -24,7 +24,7 @@ export default function Payment() {
         const storedAddress = await AsyncStorage.getItem('selectedAddress');
         setUserId(storedUserId);
         setAddress(JSON.parse(storedAddress));
-        fetchCart();
+       
       } catch (error) {
         console.error('Error getting userId or address:', error);
       }
@@ -33,8 +33,13 @@ export default function Payment() {
     getUserId();
   }, []);
 
+  useEffect(() => {
+    fetchCart();
+  }, [userId]);
+
   const fetchCart = async () => {
     setLoading(true); // Start loading
+    console.log(userId);
     
     try {
       const resp = await axios.get(`${API_URL}/api/cart/${userId}`);

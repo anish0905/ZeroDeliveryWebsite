@@ -35,7 +35,7 @@ const OrderDetails = () => {
   const cancelOrder = async () => {
     try {
       await axios.put(`${API_URL}/api/products/cancelOrder/${id}`);
-      const response = await axios.get(`${API_URI}/api/products/getorder/${id}`);
+      const response = await axios.get(`${API_URL}/api/products/getorder/${id}`);
       setOrderDetails(response.data);
       Alert.alert('Success', 'Order cancelled successfully');
     } catch (error) {
@@ -81,7 +81,7 @@ const OrderDetails = () => {
       {products?.map((product) => (
         <View key={product._id} style={styles.productContainer}>
           <Image
-            source={{ uri: product.productId.thumbnail }}
+            source={{ uri: `${API_URL}/${product.productId.thumbnail}` }}
             style={styles.thumbnail}
           />
           <View style={styles.productDetails}>

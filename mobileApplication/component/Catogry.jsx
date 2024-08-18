@@ -38,7 +38,7 @@ export default function Category() {
         {categories.map((category) => {
           const product = category.products[0]; // Get the first product in the category
           const imageUrl = product
-            ? product.thumbnail || (product.images && product.images.length > 0 ? product.images[0] : 'defaultImage.png')
+            ? `${API_URL}/${product.thumbnail}` || (product.images && product.images.length > 0 ? product.images[0] : 'defaultImage.png')
             : 'defaultImage.png';
 
           return (

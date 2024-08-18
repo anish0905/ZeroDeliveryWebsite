@@ -22,7 +22,7 @@ export default function ProductDetails() {
 
   const renderImage = ({ item: image }) => (
     <TouchableOpacity onPress={() => setSelectedImage(image)}>
-      <Image source={{ uri: image }} style={styles.thumbnailImage} />
+      <Image source={{ uri: `${API_URL}/${image}`}} style={styles.thumbnailImage} />
     </TouchableOpacity>
   );
 
@@ -106,7 +106,7 @@ export default function ProductDetails() {
   return (
     <ScrollView style={styles.container}>
       {/* Selected Image Display */}
-      <Image source={{ uri: selectedImage }} style={styles.mainImage} />
+      <Image source={{ uri: `${API_URL}/${selectedImage}` }} style={styles.mainImage} />
 
       {/* Image Thumbnails */}
       <FlatList
@@ -190,12 +190,12 @@ export default function ProductDetails() {
         >
           <Text style={styles.buttonText}>Add to Cart</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.buyButton, { backgroundColor: '#E4723C' }]}
           onPress={() => console.log(`Buying ${item.title}`)}
         >
           <Text style={styles.buttonText}>Buy Now</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <ShowCatogryWiseComp products={products} />
     </ScrollView>
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   cartButton: {
-    backgroundColor: '#FFD700',
+    backgroundColor: '#E4723C',
     padding: 15,
     borderRadius: 5,
     flex: 1,

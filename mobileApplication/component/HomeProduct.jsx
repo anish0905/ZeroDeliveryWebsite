@@ -1,6 +1,7 @@
 import { Image, StyleSheet, Text, View, FlatList } from "react-native";
 import React from "react";
 import { Link } from "@react-navigation/native";
+import { API_URL } from "../conatant";
 
 export default function HomeProduct({ items, name }) {
   const renderItem = ({ item }) => (
@@ -8,7 +9,7 @@ export default function HomeProduct({ items, name }) {
       <Link to={{ screen: "Product", params: { item: item } }} style={styles.imgContainer}>
   
         <Image
-          source={{ uri: item.images[0] }}
+          source={{ uri: `${API_URL}/${item.images[0]}` }}
           style={styles.productImage}
           // Logs any image loading errors
         />

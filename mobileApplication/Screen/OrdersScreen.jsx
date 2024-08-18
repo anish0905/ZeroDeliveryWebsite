@@ -68,11 +68,11 @@ const OrdersScreen = () => {
     >
       <View style={styles.orderContent}>
         <Image
-          source={{ uri: item.products[0].productId.thumbnail }}
+          source={{ uri: `${API_URL}/${item.products[0].productId.thumbnail}` }}
           style={styles.thumbnail}
         />
         <View style={styles.details}>
-          <Text style={styles.title}>{item.products[0].productId.title}</Text>
+          <Text style={styles.title}>{item.products[0].productId?.title}</Text>
           <Text style={styles.price}>Price: ₹{item.products[0].price}</Text>
           <Text style={styles.shipping}>Shipping: {item.products[0].productId.shippingInformation}</Text>
         </View>
@@ -82,7 +82,7 @@ const OrdersScreen = () => {
           {item.status}
         </Text>
         <Text style={styles.paymentStatus}>
-          Payment {item.paymentStatus === 'unpaid' ? 'Not Successful' : 'Successful'}.
+          Payment: {item.paymentStatus === 'unpaid' ? 'Not Successful' : 'Successful'}.
         </Text>
         <Text style={styles.expectedDelivery}>
           Expected Delivery: {calculateExpectedDate(item.createdAt, item.products[0].productId.shippingInformation)}

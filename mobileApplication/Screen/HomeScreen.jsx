@@ -9,6 +9,7 @@ import { API_URL } from '../conatant';
 
 export default function HomeScreen() {
   const [products, setProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -18,7 +19,6 @@ export default function HomeScreen() {
     try {
       const resp = await axios.get(`${API_URL}/api/products/`);
       setProducts(resp.data);
-     
     } catch (error) {
       console.error(error);
     }
@@ -32,7 +32,10 @@ export default function HomeScreen() {
   const categories = getUniqueCategories(products);
 
   const filterProductsByCategory = (category) => {
-    return products.filter(product => product.category === category);
+    return products.filter(product => {
+      const title = product.title ? product.title.toLowerCase() : '';
+      return product.category === category && title.includes(searchQuery.toLowerCase());
+    });
   };
 
   const transformCategoryName = (category) => {
@@ -49,6 +52,8 @@ export default function HomeScreen() {
             style={styles.searchInput}
             placeholder="Search Product..."
             placeholderTextColor="#888"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
           />
         </View>
         <Location />
@@ -74,17 +79,15 @@ const styles = StyleSheet.create({
   fixedHeader: {
     position: 'absolute',
     width: '100%',
-    paddingTop:30,
+    paddingTop: 30,
     zIndex: 10,
-    marginTop:0,
+    marginTop: 0,
     backgroundColor: "#96D6EF" // Adjust the background color as needed
   },
   searcherBar: {
     flexDirection: "row",
     alignItems: "center",
-   
     padding: 10,
-    
   },
   searchInput: {
     flex: 1,
