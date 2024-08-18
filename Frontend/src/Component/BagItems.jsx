@@ -50,7 +50,7 @@ const BagItems = ({ item }) => {
   return (
     <div className='lg:flex border-2 border-solid rounded gap-5 block justify-center'>
       <Link to={`/productDetails/${item._id}`} className='p-6 lg:w-64 h-auto w-full md:w-64'>
-        <img src={item.images[0]} alt={item.title} className=' rounded object-cover'/>
+        <img src={`${API_URI}/${item.thumbnail}`} alt={item.title} className=' rounded object-cover'/>
       </Link>
       <div  className='p-10'>
         <div className='my-1'>

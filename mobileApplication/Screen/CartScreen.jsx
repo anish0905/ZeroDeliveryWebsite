@@ -90,7 +90,7 @@ const CartScreen = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.itemContainer}>
-      <Image source={{ uri: item.Image }} style={styles.itemImage} />
+      <Image source={{ uri: `${API_URL}/${item.Image}` }} style={styles.itemImage} />
       <View style={styles.itemDetails}>
         <Text style={styles.itemTitle}>{item.productName}</Text>
         <View style={styles.priceContainer}>

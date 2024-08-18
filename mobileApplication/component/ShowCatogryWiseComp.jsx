@@ -1,6 +1,7 @@
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Link } from '@react-navigation/native'
+import { API_URL } from '../conatant'
 
 export default function ShowCatogryWiseComp({products}) {
   return (
@@ -19,7 +20,7 @@ export default function ShowCatogryWiseComp({products}) {
                   style={styles.imgContainer}
                 >
                   <Image
-                    source={{ uri: item.images[0] }}
+                    source={{ uri: `${API_URL}/${item.thumbnail}` }}
                     style={styles.productImage}
                     // Logs any image loading errors
                   />

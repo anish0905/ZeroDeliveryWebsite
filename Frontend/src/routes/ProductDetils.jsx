@@ -77,7 +77,7 @@ const ProductDetails = ({ item }) => {
         <div className="w-full md:w-1/2">
           <div className="relative">
             <img
-              src={selectedImage}
+              src={`${API_URI}/${selectedImage}`}
               alt={item.title}
               loading="lazy"
               className="w-full h-auto object-cover rounded-lg"
@@ -87,7 +87,7 @@ const ProductDetails = ({ item }) => {
             {item.images.map((image, index) => (
               <img
                 key={index}
-                src={image}
+                src={`${API_URI}/${image}`}
                 alt={item.title}
                 className={`w-20 h-20 object-cover rounded-lg cursor-pointer ${
                   selectedImage === image ? "border-2 border-blue-500" : ""
