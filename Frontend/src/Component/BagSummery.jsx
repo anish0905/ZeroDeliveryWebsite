@@ -1,10 +1,10 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2"; // Import SweetAlert2 library
 
 const BagSummary = ({ name }) => {
-  const navagite = useNavigate()
+  const navigate = useNavigate(); // Fixed typo
   const bagItems = useSelector((state) => state.bag.data).flat(); // Flatten the nested data array
   const categories = {
     smartPhones: useSelector((state) => state.smartPhone),
@@ -19,16 +19,17 @@ const BagSummary = ({ name }) => {
     Object.values(categories).forEach((category) => {
       const item = category.find((item) => item._id === bagItem.productId);
       if (item) {
-        totalItem++;
-        totalMRP += item.price;
-        totalDiscount += (item.price * item.discountPercentage) / 100;
-        finalPayment += item.price - (item.price * item.discountPercentage) / 100;
+        totalItem += bagItem.quantity; // Increment total item count by the quantity in the bag
+        totalMRP += item.price * bagItem.quantity; // Correct total MRP calculation
+        const discount = (item.price * item.discountPercentage) / 100;
+        totalDiscount += discount * bagItem.quantity; // Correct total discount calculation
+        finalPayment += (item.price - discount) * bagItem.quantity; // Correct final payment calculation
       }
     });
   });
 
   const formattedTotalDiscount = totalDiscount.toFixed(2);
-  const formattedfinalPayment = finalPayment.toFixed(2);
+  const formattedFinalPayment = finalPayment.toFixed(2);
 
   const handlePlaceOrder = () => {
     if (totalItem === 0) {
@@ -40,8 +41,7 @@ const BagSummary = ({ name }) => {
         confirmButtonText: "OK",
       });
     } else {
-      navagite("/payment")
-     
+      navigate("/payment"); // Corrected navigate function
     }
   };
 
@@ -58,14 +58,14 @@ const BagSummary = ({ name }) => {
         <span>Discount on MRP</span>
         <span>-₹{formattedTotalDiscount}</span>
       </div>
-      <div className="flex justify-between content-center items-center my-2">
+      {/* <div className="flex justify-between content-center items-center my-2">
         <span>Convenience Fee</span>
         <span>₹99</span>
-      </div>
+      </div> */}
       <hr className="my-2" />
       <div className="flex justify-between content-center items-center my-2 font-semibold">
         <span>Total Amount</span>
-        <span>₹{formattedfinalPayment}</span>
+        <span>₹{formattedFinalPayment}</span>
       </div>
 
       {!name && (

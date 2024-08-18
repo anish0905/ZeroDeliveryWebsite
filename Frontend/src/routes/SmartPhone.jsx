@@ -65,7 +65,7 @@ const SmartPhone = ({ item }) => {
         className="my-2 relative flex justify-center items-center content-center "
       >
         <img
-          src={item.images[0]}
+          src={`${API_URI}/${item.thumbnail}`}
           alt="item image"
           loading="lazy"
           className="w-60 h-60 rounded"
