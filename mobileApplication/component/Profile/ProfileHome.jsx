@@ -1,10 +1,14 @@
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '../../conatant';
+import axios from 'axios';
 
-const ProfileHome = ({ username, userImage }) => {
+const ProfileHome = ({ username, userImage,fetchUserDetails }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [newUsername, setNewUsername] = useState(username);
   const navigation = useNavigation();
 
   // Logout function
@@ -15,9 +19,24 @@ const ProfileHome = ({ username, userImage }) => {
       
       Alert.alert('Logged Out', 'You have been logged out successfully.');
       // Navigate to the login screen or home screen
-      navigation.navigate('Login'); // Replace 'LoginScreen' with your actual login screen name
+      navigation.navigate('Login'); // Replace 'Login' with your actual login screen name
     } catch (error) {
       console.error('Logout failed:', error);
+    }
+  };
+
+  // Save the new username
+  const handleSaveUsername = async () => {
+    const userId = await AsyncStorage.getItem("userId");
+    try {
+      const resp = await axios.post(`${API_URL}/user/addname/${userId}`,{
+        name: newUsername
+      });
+     
+      fetchUserDetails()
+    } catch (error) {
+      console.error("Error fetching user data:", error.message);
+      
     }
   };
 
@@ -25,24 +44,44 @@ const ProfileHome = ({ username, userImage }) => {
     <>
       <View style={styles.profile}>
         <Image source={{ uri: userImage }} style={styles.image} />
-        <Text style={styles.greeting}>Hello, {username}!</Text>
+        {isEditing ? (
+          <TextInput
+            style={styles.usernameInput}
+            value={newUsername}
+            onChangeText={setNewUsername}
+            onSubmitEditing={handleSaveUsername}
+            autoFocus
+          />
+        ) : (
+          <TouchableOpacity onPress={() => setIsEditing(true)}>
+            <Text style={styles.username}>{newUsername}</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={handleLogout} style={styles.logout}>
           <Entypo name="log-out" size={24} color={"white"} />
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
         {/* Profile Section */}
-
+        
         {/* Your Orders Section */}
         <View style={styles.column}>
-          <Text style={styles.heading}>Your Orders</Text>
-          <Text style={styles.subHeading}>Buy Again</Text>
+          <TouchableOpacity onPress={() => navigation.navigate("My Order")}>
+            <Text style={styles.heading}>Your Orders</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Home")}>
+            <Text style={styles.subHeading}>Buy Again</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Your Account Section */}
         <View style={styles.column}>
-          <Text style={styles.heading}>Your Account</Text>
-          <Text style={styles.subHeading}>Your Lists</Text>
+          <TouchableOpacity>
+            <Text style={styles.heading}>Your Account</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Address")}>
+            <Text style={styles.subHeading}>Your Address</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -58,7 +97,7 @@ const styles = StyleSheet.create({
   profile: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:"space-between",
+    justifyContent: "space-between",
     marginBottom: 10,
     padding: 16,
     backgroundColor: '#96D6EF',
@@ -68,8 +107,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 3,
-    paddingTop:32,
-    
+    paddingTop: 32,
   },
   image: {
     width: 60,
@@ -77,13 +115,21 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginRight: 16,
   },
-  greeting: {
+  username: {
     fontSize: 20,
+    color: '#fff',
     fontWeight: 'bold',
-    color: 'white',
+  },
+  usernameInput: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
+    marginRight: 16,
+    flex: 1,
   },
   container: {
-    borderRadius: 2,
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 16,
@@ -117,7 +163,6 @@ const styles = StyleSheet.create({
   },
   logout: {
     padding: 8,
-    
   },
 });
 

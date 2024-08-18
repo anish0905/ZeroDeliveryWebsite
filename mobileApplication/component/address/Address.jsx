@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
   Text,
   TextInput,
   Button,
-  FlatList,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
@@ -14,6 +13,9 @@ import * as Location from "expo-location";
 import axios from "axios";
 import { API_URL } from "../../conatant";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { addressActions } from "../../store/addressSlice";
+
 
 export default function AddressManager({ navigation }) {
   const [addresses, setAddresses] = useState([]);
@@ -26,19 +28,21 @@ export default function AddressManager({ navigation }) {
     postalCode: "",
     name: "",
     phone: "",
-    addressType: "Home", // Default type
+    addressType: "Home",
     location: {
       lat: null,
       lng: null,
     },
   });
 
+  const dispatch = useDispatch(); // Initialize dispatch hook
+
   const handleInputChange = (field, value) => {
     setNewAddress({ ...newAddress, [field]: value });
   };
 
   const addAddress = async () => {
-    const  userId  = await AsyncStorage.getItem("userId")
+    const userId = await AsyncStorage.getItem("userId");
     if (!userId) {
       alert("Please login first");
       return;
@@ -49,8 +53,13 @@ export default function AddressManager({ navigation }) {
         newAddress
       );
       alert("Address added successfully");
-      navigation.navigate("Adress");
+      navigation.navigate("Address");
       setAddresses([...addresses, newAddress]);
+
+      // Dispatch the updateAddress action to update the Redux state
+      dispatch(addressActions.updateAddress({ address: newAddress }));
+
+      // Reset the address form
       setNewAddress({
         street: "",
         city: "",
@@ -194,30 +203,26 @@ export default function AddressManager({ navigation }) {
 
       <Button title="Add Address" onPress={addAddress} />
 
-      <FlatList
-        data={addresses}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.addressContainer}>
-            <Text>{item.name}</Text>
-            <Text>
-              {item.street}, {item.city}, {item.state}, {item.country},{" "}
-              {item.postalCode}
-            </Text>
-            <View style={styles.iconContainer}>
-              {renderIcon(item.addressType)}
-              <Text>{item.addressType}</Text>
-            </View>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("AdressDetails", { address: item })
-              }
-            >
-              <Text style={styles.link}>View Details</Text>
-            </TouchableOpacity>
+      {addresses.map((item, index) => (
+        <View key={index.toString()} style={styles.addressContainer}>
+          <Text>{item.name}</Text>
+          <Text>
+            {item.street}, {item.city}, {item.state}, {item.country},{" "}
+            {item.postalCode}
+          </Text>
+          <View style={styles.iconContainer}>
+            {renderIcon(item.addressType)}
+            <Text>{item.addressType}</Text>
           </View>
-        )}
-      />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("AdressDetails", { address: item })
+            }
+          >
+            <Text style={styles.link}>View Details</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
     </ScrollView>
   );
 }
@@ -225,11 +230,6 @@ export default function AddressManager({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
   },
   input: {
     borderWidth: 1,

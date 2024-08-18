@@ -42,7 +42,7 @@ export default function LocationComponent() {
 
   const handleOnpress = (event, newAddress) => {
     event.persist(); // Prevents React from pooling the event
-    navigation.navigate("Adress", { newAddress: newAddress });
+    navigation.navigate("Address", { newAddress: newAddress });
   };
 
   return (

@@ -6,11 +6,16 @@ import UpdateAddress from "./UpdateAddress";
 import Icon from "react-native-vector-icons/Ionicons"; // Adjust icon based on what you need
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch, useSelector } from "react-redux";
+import { addressActions } from "../../store/addressSlice";
 
 const AddressDetails = () => {
-  const [address, setAddress] = useState([]);
   const [userId, setUserId] = useState(null);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const address = useSelector((store) => store.address.address);
+  console.log(address)  // Accessing the correct state
 
   useEffect(() => {
     const getUserId = async () => {
@@ -30,7 +35,7 @@ const AddressDetails = () => {
   const fetchAddress = async () => {
     try {
       const resp = await axios.get(`${API_URL}/user/get-address/${userId}`);
-      setAddress(resp.data.address);
+      dispatch(addressActions.updateAddress({ address: resp.data.address }));
     } catch (error) {
       console.log(error);
     }
@@ -64,11 +69,10 @@ const AddressDetails = () => {
 
   return (
     <View style={styles.container}>
-      {address.length > 0 ? (
-        <ScrollView style={{marginBottom:40}}>
-          {address.map((addr, index) => (
+      {address && address.length > 0 ? (
+        <ScrollView style={{ marginBottom: 40 }}>
+          {address.map((addr) => (
             <View key={addr._id} style={styles.addressContainer}>
-             
               <View style={styles.addressDetails}>
                 <View style={styles.addressHeader}>
                   <Text style={styles.addressType}>{addr.addressType} Address</Text>
@@ -80,6 +84,11 @@ const AddressDetails = () => {
                   <Text style={styles.addressText}>{addr.city}, {addr.state}, {addr.country}</Text>
                   <Text style={styles.addressText}>{addr.postalCode}</Text>
                   <Text style={styles.addressText}>Phone: {addr.phone}</Text>
+                  {addr.location && (
+                    <Text style={styles.addressText}>
+                      Location: {addr.location.latitude}, {addr.location.longitude}
+                    </Text>
+                  )}
                 </View>
                 <View style={styles.actions}>
                   <UpdateAddress address={addr} fetchAddress={fetchAddress} />
@@ -102,7 +111,7 @@ const AddressDetails = () => {
       )}
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate('Add New Adress')}
+        onPress={() => navigation.navigate('Add New Address')}
       >
         <Text style={styles.addButtonText}>Add New Address</Text>
       </TouchableOpacity>
@@ -182,6 +191,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
 
 export default AddressDetails;

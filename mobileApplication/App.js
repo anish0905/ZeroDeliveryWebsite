@@ -3,6 +3,8 @@ import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import StackNavigator from './navagition/StackNavigator'; // Corrected the typo in the file name
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { Provider } from 'react-redux';
+import zeroDeliveryStore from './store';
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -32,5 +34,9 @@ export default function App() {
     return null; // Render nothing while waiting
   }
 
-  return <StackNavigator />;
+  return (
+   <Provider store={zeroDeliveryStore}>
+    <StackNavigator />
+    </Provider> 
+  );
 }

@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, Alert } fro
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo
 import axios from 'axios';
 import { API_URL } from "../../conatant";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const UpdateAddress = ({ address, fetchAddress }) => {
   const [addressType, setAddressType] = useState('Home');
@@ -26,7 +28,7 @@ const UpdateAddress = ({ address, fetchAddress }) => {
 
     getUserId();
   }, []);
-
+ 
   useEffect(() => {
     if (address) {
       setAddressType(address.addressType || 'Home');
