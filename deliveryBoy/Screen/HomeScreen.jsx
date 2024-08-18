@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   productImage: {
-    width: 60,
+    width: 70,
     height: 60,
     borderRadius: 5,
     marginRight: 10,
