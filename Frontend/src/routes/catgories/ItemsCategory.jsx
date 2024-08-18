@@ -37,7 +37,7 @@ const ItemsCategory = () => {
       ) : (
         categories.map((category, categoryIndex) => {
           const product = category.products[0]; // Get the first product in the category
-          const imageUrl = product ? (product.thumbnail || (product.images && product.images.length > 0 ? product.images[0] : 'defaultImage.png')) : 'defaultImage.png';
+          const imageUrl = product ? (`${API_URI}/${product.thumbnail}` ||(`${API_URI}/${product.images[0]}` && product.images.length > 0 ? product.images[0] : 'defaultImage.png')) : 'defaultImage.png';
 
           return (
             <Link to={`/showCategory/${category._id}`} key={categoryIndex} className='flex flex-col justify-evenly items-center w-28 h-40 gap-2'>

@@ -3,8 +3,7 @@ import { API_URI } from '../../Contants';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
-const ProductDetail = ({ product, onEditClick ,setProducts }) => {
- 
+const ProductDetail = ({ product, onEditClick, setProducts }) => {
   if (!product) return <div>No product selected</div>;
 
   const handleDelete = async (id) => {
@@ -16,10 +15,10 @@ const ProductDetail = ({ product, onEditClick ,setProducts }) => {
       confirmButtonText: 'Yes, delete it!',
       cancelButtonText: 'No, cancel!',
     });
-  
+
     if (result.isConfirmed) {
       try {
-       const resp = await axios.delete(`${API_URI}/api/vendor/products/${id}`, {
+        const resp = await axios.delete(`${API_URI}/api/vendor/products/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -31,8 +30,7 @@ const ProductDetail = ({ product, onEditClick ,setProducts }) => {
           confirmButtonText: 'Close',
         });
         // Optionally, update the products list
-       setProducts(resp.data);
-        setIsModalOpen(false);
+        setProducts(resp.data);
       } catch (error) {
         console.error('Error deleting product:', error);
         Swal.fire({
@@ -44,22 +42,20 @@ const ProductDetail = ({ product, onEditClick ,setProducts }) => {
       }
     }
   };
-  
 
   return (
     <div className="container mx-auto p-4 pt-24 w-full">
       <div className="flex flex-col border rounded shadow-lg p-4 space-y-4 md:space-y-0 md:space-x-4">
-       <div>
-       <img
-          src={product.thumbnail}
-          alt={product.title}
-          className="w-full  h-32 object-cover rounded"
-        />
-       </div>
-       <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
-          <p className="text-gray-700 my-4">{product.description}</p>
+        <div>
+          <img
+            src={`${API_URI}/${product.thumbnail}`} // Update to ensure correct path
+            alt={product.title}
+            className="w-full h-32 object-cover rounded"
+          />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">{product.title}</h2>
+        <p className="text-gray-700 my-4">{product.description}</p>
         <div className="grid grid-cols-2 gap-2">
-          
           <div className="">
             <span className="text-gray-900 font-semibold">Category:</span> {product.category}
           </div>
@@ -99,11 +95,9 @@ const ProductDetail = ({ product, onEditClick ,setProducts }) => {
           <div className="">
             <span className="text-gray-900 font-semibold">Minimum Order Quantity:</span> {product.minimumOrderQuantity}
           </div>
-          
         </div>
-        
         <div className='flex items-center justify-between gap-5'>
-        <button
+          <button
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
             onClick={onEditClick}
           >
@@ -111,9 +105,9 @@ const ProductDetail = ({ product, onEditClick ,setProducts }) => {
           </button>
           <button
             className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
-            onClick={()=>handleDelete(product._id)}
+            onClick={() => handleDelete(product._id)}
           >
-           delete
+            Delete
           </button>
         </div>
       </div>

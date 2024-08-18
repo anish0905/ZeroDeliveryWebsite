@@ -15,12 +15,16 @@ const admin = require("./admin/routes/userRoutes");
 const vendor = require("./admin/routes/vendorDetailsRouter");
 const order = require("./admin/routes/orderRouters");
 const deliveryRoutes = require("./deliveryBoy/routes/usersRoutes");
+const path = require('path');
+
 const banner = require("./admin/routes/bannerRouters");
 connectDB();
 const app = express();
 app.use(express.json());
 app.use(cors());
 // Home route for admin routes
+// Serve static files from the "uploads" directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.get("/", (req, res) => {
   res.send("API is running successfully");
 });

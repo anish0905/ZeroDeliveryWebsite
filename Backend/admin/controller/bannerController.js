@@ -1,27 +1,33 @@
 const Banner = require("../models/banner");
+const upload = require("../../modules/fileModule");
+const multer = require("multer");
 // Create a new banner
-exports.createBanner = async (req, res) => {
-    try {
-      const { images } = req.body;
-  
-      // Create a new banner instance
-      const newBanner = new Banner({
-        images,
-      });
-  
-      // Save the banner to the database
-      const savedBanner = await newBanner.save();
-  
-      res.status(201).json({
-        message: 'Banner created successfully',
-        banner: savedBanner,
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: 'Error creating banner',
-        error: error.message,
-      });
+exports.createBanner = async (req, res,next) => {
+  upload.single("file")(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).send(err.message);
+    } else if (err) {
+      return res.status(500).send("An unknown error occurred.");
     }
+
+    // Save file metadata to the database
+    const fileData = new Banner({
+      filename: req.file.filename,
+      path: req.file.path,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+    });
+
+    try {
+      await fileData.save();
+      const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${
+        req.file.filename
+      }`;
+      res.json({ message: "Upload successful", file: req.file, url: fileUrl });
+    } catch (error) {
+      res.status(500).send("Error saving file data to the database.");
+    }
+  });
   };
   
   // Get all banners

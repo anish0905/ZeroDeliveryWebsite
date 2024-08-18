@@ -3,8 +3,26 @@
 const mongoose = require('mongoose');
 
 const bannerSchema = new mongoose.Schema({
-  images: [{ type: String, required: true }], // Array of image URLs
-  createdAt: { type: Date, default: Date.now }
+  filename: {
+    type: String,
+    required: true,
+  },
+  path: {
+    type: String,
+    required: true,
+  },
+  uploadDate: {
+    type: Date,
+    default: Date.now,
+  },
+  mimetype: {
+    type: String,
+    required: true,
+  },
+  size: {
+    type: Number,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('Banner', bannerSchema);

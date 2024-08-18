@@ -31,10 +31,27 @@ export function LoginPage() {
     setOtp(e.target.value);
   };
 
+
   const requestOtp = async () => {
+    // Append +91 to the mobile number if it's not already included
+    const fullMobileNumber = `+91${mobileNumber}`;
+
+    // Regular expression for validating Indian mobile numbers
+    const mobileNumberPattern = /^\+91\d{10}$/;
+
+    if (!mobileNumberPattern.test(fullMobileNumber)) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Please enter a valid mobile number in the format XXXXXXXXXX (10 digits)',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
+
     try {
-      const resp = await axios.post(`${API_URI}/user/login`, {
-        mobileNumber: mobileNumber,
+      const resp = await axios.post(`${API_URI}/user/request-otp`, {
+        mobileNumber: fullMobileNumber
       });
       if (resp.status === 200) {
         setOtpSent(true);
@@ -43,12 +60,14 @@ export function LoginPage() {
       console.log("Error requesting OTP:", error);
     }
   };
-
   const verifyOtp = async () => {
+    // Append +91 to the mobile number for verification
+    const fullMobileNumber = `+91${mobileNumber}`;
+
     try {
-      const resp = await axios.post(`${API_URI}/user/vefifyOpt`, {
-        mobileNumber: mobileNumber,
-        otp,
+      const resp = await axios.post(`${API_URI}/user/verify-otp`, {
+        mobileNumber: fullMobileNumber,
+        otp
       });
       if (resp.status === 200) {
         localStorage.setItem('token', resp.data.token);
@@ -69,9 +88,9 @@ export function LoginPage() {
       console.log("Error verifying OTP:", error);
       Swal.fire({
         title: 'Error!',
-        text: 'There was an issue logging in the user',
+        text: 'There was an issue logging in the User',
         icon: 'error',
-        confirmButtonText: 'OK',
+        confirmButtonText: 'OK'
       });
     }
   };

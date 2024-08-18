@@ -26,9 +26,11 @@ const App = () => {
     
   );
 
+  const showNavBar = pathname !== '/';
+
   return (
     <div>
-      <NavBar1 />
+       {showNavBar && <NavBar1 />}
       <FetchItem />
       {fetchStatus.currentlyFetching ? (
         <LoadingSpinner />
