@@ -1,14 +1,21 @@
-import { StyleSheet, SafeAreaView, ScrollView, TextInput, View, Text, Alert, Image, TouchableOpacity, Linking } from 'react-native';
+import { StyleSheet, SafeAreaView, ScrollView, TextInput, View, Text, Alert, Image, TouchableOpacity, Linking, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Location from "../component/Location";
 import axios from 'axios';
-import { API_URL } from '../conatant';
+import { API_URL } from '../conatant'; // Corrected import path
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons';
 
 export default function HomeScreen() {
   const [orders, setOrders] = useState([]);
   const [userId, setUserId] = useState(null);
+  const [showOtpModal, setShowOtpModal] = useState(false); // State to control OTP modal visibility
+  const [selectedOrderId, setSelectedOrderId] = useState(''); // State to store the selected order ID
+  const [otp, setOtp] = useState(''); // State to manage OTP input
+
+  const navigate = useNavigation(); // Corrected typo
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -32,22 +39,33 @@ export default function HomeScreen() {
   const fetchOrders = async () => {
     try {
       const response = await axios.get(`${API_URL}/api/deliveryBoys/${userId}`);
-      setOrders(response.data);
-      console.log(response.data);
+      const incomingOrder = response.data.filter(order => order.status.toLowerCase() != 'delivered');
+      setOrders(incomingOrder);
+     
     } catch (error) {
       console.log('Error fetching orders:', error);
       Alert.alert('Error', 'Failed to fetch orders.');
     }
   };
 
-  const handleDelivered = async (orderId) => {
+  const handleDelivered = (orderId) => {
+    setSelectedOrderId(orderId); // Set the order ID
+    setShowOtpModal(true); // Show the OTP modal
+  };
+
+  const handleVerifyOTP = async () => {
     try {
-      await axios.put(`${API_URL}/api/orders/${orderId}/delivered`);
-      Alert.alert('Success', 'Order marked as delivered.');
-      fetchOrders(); // Refresh orders after updating
+      const response = await axios.post(`${API_URL}/api/deliveryBoys/deliverOrder/verifyOrder`, {
+        orderId: selectedOrderId,
+        otp,
+      });
+
+      Alert.alert('Success', 'Order delivered successfully.');
+      setShowOtpModal(false); // Close the OTP modal on success
+      fetchOrders(); // Refresh the order list
     } catch (error) {
-      console.log('Error updating order status:', error);
-      Alert.alert('Error', 'Failed to mark order as delivered.');
+      console.log('Error verifying OTP:', error);
+      Alert.alert('Error', 'Failed to verify OTP.');
     }
   };
 
@@ -55,6 +73,21 @@ export default function HomeScreen() {
     const query = `${address.street}, ${address.city}, ${address.state} ${address.postalCode}`;
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     Linking.openURL(url);
+  };
+
+  const calculateShippingInformation = (createdAt) => {
+    const orderDate = new Date(createdAt);
+    const expectedDeliveryDate = new Date(orderDate);
+    expectedDeliveryDate.setDate(orderDate.getDate() + 5); // Adding 5 days for delivery
+
+    return {
+      orderDate: orderDate.toLocaleDateString(),
+      expectedDelivery: expectedDeliveryDate.toLocaleDateString(),
+    };
+  };
+
+  const handlePhoneCall = (phoneNumber) => {
+    Linking.openURL(`tel:${phoneNumber}`);
   };
 
   return (
@@ -72,45 +105,87 @@ export default function HomeScreen() {
       </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {orders.length > 0 ? (
-          orders.map((order, index) => (
-            <View key={index} style={styles.orderContainer}>
-              <Text style={styles.orderTitle}>Order ID: {order._id}</Text>
-              <View style={styles.productsContainer}>
-                <Text style={styles.sectionTitle}>Products:</Text>
-                {order.products.map((product, prodIndex) => (
-                  <View key={prodIndex} style={styles.productContainer}>
-                    <Image
-                      source={{ uri: `${API_URL}/${product.productId.thumbnail}` }}
-                      style={styles.productImage}
-                    />
-                    <View style={styles.productDetails}>
-                      <Text style={styles.productText}>{product.productId.title}</Text>
-                      <Text style={styles.productText}>Price: ${product.price}</Text>
-                      <Text style={styles.productText}>Quantity: {product.quantity}</Text>
-                      <Text style={styles.productText}>Shipping Info: {product.productId.shippingInformation}</Text>
-                      <Text style={styles.productText}>Order Date: {new Date(order.createdAt).toLocaleDateString()}</Text>
+          orders.map((order, index) => {
+            const shippingInfo = calculateShippingInformation(order.createdAt);
+
+            return (
+              <View key={index} style={styles.orderContainer}>
+                <Text style={styles.orderTitle}>Order ID: {order._id}</Text>
+                <View style={styles.productsContainer}>
+                  <Text style={styles.sectionTitle}>Products:</Text>
+                  {order.products.map((product, prodIndex) => (
+                    <View key={prodIndex} style={styles.productContainer}>
+                      <Image
+                        source={{ uri: `${API_URL}/${product.productId.thumbnail}` }}
+                        style={styles.productImage}
+                      />
+                      <View style={styles.productDetails}>
+                        <Text style={styles.productText}>{product.productId.title}</Text>
+                        <Text style={styles.productText}>Price: ₹{product.price}</Text>
+                        <Text style={styles.productText}>Quantity: {product.quantity}</Text>
+                        <Text style={styles.productText}>Order Date: {shippingInfo.orderDate}</Text>
+                        <Text style={styles.productText}>Expected Delivery: {shippingInfo.expectedDelivery}</Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  ))}
+                </View>
+                <TouchableOpacity onPress={() => handleOpenGoogleMaps(order.address)}>
+                  <Text style={styles.addressText}>
+                    Address: {order.address.name}, {order.address.phone}, {order.address.street}, {order.address.city}, {order.address.state} - {order.address.postalCode}
+                  </Text>
+                </TouchableOpacity>
+
+                
+                  <TouchableOpacity onPress={() => handlePhoneCall(order.address.phone)} style={styles.phoneContainer}>
+                    <FontAwesome name="phone" size={20} color="#0080FF" />
+                    <Text style={styles.phoneText}>{order.address.phone}</Text>
+                  </TouchableOpacity>
+                  
+              
+
+                <Text style={styles.statusText}>Status: {order.status}</Text>
+                <TouchableOpacity
+                  style={styles.moreButton}
+                  onPress={() => handleDelivered(order._id)}
+                >
+                  <Text style={styles.moreButtonText}>Mark as Delivered</Text>
+                </TouchableOpacity>
+               
               </View>
-              <TouchableOpacity onPress={() => handleOpenGoogleMaps(order.address)}>
-                <Text style={styles.addressText}>
-                  Address: {order.address.name}, {order.address.phone}, {order.address.street}, {order.address.city}, {order.address.state} - {order.address.postalCode}
-                </Text>
-              </TouchableOpacity>
-              <Text style={styles.statusText}>Status: {order.status}</Text>
-              <TouchableOpacity
-                style={styles.moreButton}
-                onPress={() => handleDelivered(order._id)}
-              >
-                <Text style={styles.moreButtonText}>Mark as Delivered</Text>
-              </TouchableOpacity>
-            </View>
-          ))
+            );
+          })
         ) : (
           <Text style={styles.noOrdersText}>No orders found</Text>
         )}
       </ScrollView>
+
+      {/* OTP Modal */}
+      <Modal
+        visible={showOtpModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowOtpModal(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Enter OTP</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={otp}
+              onChangeText={setOtp}
+              placeholder="Enter OTP"
+              keyboardType="numeric"
+              maxLength={6}
+            />
+            <TouchableOpacity style={styles.modalButton} onPress={handleVerifyOTP}>
+              <Text style={styles.modalButtonText}>Verify</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalCloseButton} onPress={() => setShowOtpModal(false)}>
+              <Text style={styles.modalCloseButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -146,7 +221,7 @@ const styles = StyleSheet.create({
   icon: {
     position: "absolute",
     left: 30,
-    zIndex:10
+    zIndex: 10,
   },
   scrollViewContent: {
     paddingTop: 120,
@@ -196,30 +271,78 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   addressText: {
+    fontSize: 14,
     marginBottom: 10,
-    fontStyle: "italic",
-    color: "#007AFF",
-    textDecorationLine: "underline",
   },
   statusText: {
-    color: "#4CAF50",
     fontWeight: "bold",
+    marginBottom: 10,
   },
   moreButton: {
-    backgroundColor: "#007AFF",
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    marginTop: 10,
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#0080FF",
+    padding: 8,
+    borderRadius: 5,
   },
   moreButtonText: {
     color: "white",
     fontWeight: "bold",
   },
   noOrdersText: {
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 20,
-    color: "#888",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalInput: {
+    width: '100%',
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: '#0080FF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  modalCloseButton: {
+    marginTop: 10,
+  },
+  modalCloseButtonText: {
+    color: '#0080FF',
+  },
+  phoneContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  phoneText: {
+    marginLeft: 10,
+    color: '#0080FF',
   },
 });

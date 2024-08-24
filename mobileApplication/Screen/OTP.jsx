@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  Image, // Make sure to import Image
+  Image,
 } from "react-native";
 import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -19,7 +19,7 @@ const OTP = () => {
   const [otp, setOtp] = useState("");
   const navigation = useNavigation();
   const route = useRoute();
-  const { mobile } = route.params;
+  const { mobile, email } = route.params; // Get both mobile and email
 
   const handleVerifyOTP = async () => {
     if (!otp) {
@@ -28,28 +28,32 @@ const OTP = () => {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/user/vefifyOpt`, {
-        mobileNumber: mobile,
-        otp,
-      });
-     
+      // Prepare the request payload based on available data
+      const payload = { otp };
+      if (mobile) {
+        payload.mobileNumber = mobile;
+      } else if (email) {
+        payload.email = email;
+      }
+
+      const response = await axios.post(`${API_URL}/user/verify-otp`, payload);
+
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userId", response.data.userId);
       Alert.alert("Success", "Logged in successfully.");
       navigation.replace("Main");
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "Invalid OTP.");
+      Alert.alert("Error", error.response?.data?.message || "Invalid OTP.");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-       <Image source={loginIMg} style={styles.logo} />
+      <Image source={loginIMg} style={styles.logo} />
       <Text style={styles.text}>Enter OTP</Text>
       <View style={styles.mainContainer}>
         <View style={styles.inputFieldContainer}>
-         
           <TextInput
             style={styles.inputField}
             placeholder="OTP"

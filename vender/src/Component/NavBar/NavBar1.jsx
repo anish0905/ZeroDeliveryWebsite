@@ -6,7 +6,6 @@ import { NavBarModal } from "./NavBarModal";
 import logo from "../../../public/images/logo11.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Login } from "../../routes/Login";
 import Location from "../Location";
 import Swal from "sweetalert2";
 import { userActions } from "../../store/userInfoSlice";
@@ -48,8 +47,8 @@ const NavBar1 = () => {
       <div className="w-1/2 flex justify-end items-center gap-5 font-semibold text-sm">
         <ul className="flex gap-5">
           {!userId ? (
-            <li className="flex justify-end items-center">
-              <Login name={"LOGIN"} />
+            <li className="flex justify-end items-center" onClick={()=>navagate("/")}>
+              Login
             </li>
           ) : (
             <li className="relative flex items-center">

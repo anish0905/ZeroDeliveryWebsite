@@ -52,9 +52,9 @@ const Login = () => {
         password: password,
       });
 
-      if (response.data.token) {
+      if (response) {
         await AsyncStorage.setItem("token", response.data.token);
-        await AsyncStorage.setItem("userId", response.data.user._id.toString());
+        await AsyncStorage.setItem("userId", response.data.user._id);
         dispatch(userActions.addUsers(response.data.user))
         navigation.replace("Main");
       } else {

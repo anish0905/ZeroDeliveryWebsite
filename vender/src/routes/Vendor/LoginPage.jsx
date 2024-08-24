@@ -74,10 +74,7 @@ export function LoginPage() {
               <span>Login</span>
             </Button>
           </div>
-          <p className="text-sm font-thin text-center">
-          create new account ? 
-            <a href="/vendorregister"> singUp </a>
-          </p>
+          
         </div>
       </div>
     </div>

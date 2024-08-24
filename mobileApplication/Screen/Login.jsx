@@ -12,11 +12,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from "../conatant";
-import loginIMg from "../assets/login.png"
+import loginIMg from "../assets/login.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = () => {
+  const [inputType, setInputType] = useState("mobile"); // State to determine login type
   const [mobile, setMobile] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
@@ -25,7 +27,7 @@ const Login = () => {
     const checkUserLogin = async () => {
       try {
         const token = await AsyncStorage.getItem("token");
-        const userId = await AsyncStorage.getItem("userId"); // Replace with actual userId
+        const userId = await AsyncStorage.getItem("userId");
         if (token && userId) {
           navigation.replace('Main');
         }
@@ -37,40 +39,88 @@ const Login = () => {
   }, []);
 
   const handleLogin = async () => {
-    if (!mobile || !password) {
-      Alert.alert("Error", "Please fill in all fields.");
+    if ((inputType === "mobile" && !mobile) || (inputType === "email" && !email) || !password) {
+      Alert.alert("Error", "Please fill in all required fields.");
       return;
     }
     try {
-      const response = await axios.post(`${API_URL}/user/login`, { mobileNumber:mobile});
-      
-        // Assuming the backend sends an OTP to the user's phone
-        navigation.navigate('OTP', { mobile });
+      const payload = inputType === "mobile" ? { mobileNumber: mobile } : { email: email };
+      const response = await axios.post(`${API_URL}/user/request-otp`, payload);
   
+      if (response.status === 200 || response.status === 201) {
+        navigation.navigate('OTP', { [inputType]: mobile || email });
+      }
     } catch (error) {
       console.log(error);
-      Alert.alert("Error", "Invalid mobile or password.");
+      Alert.alert("Error", "Invalid mobile number or email.");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        source={loginIMg }
-        style={styles.logo}
-      />
-
+      <Image source={loginIMg} style={styles.logo} />
       <Text style={styles.text}>Login to your Account</Text>
       <View style={styles.mainContainer}>
         <View style={styles.inputFieldContainer}>
-          <Text style={styles.label}>Mobile</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Phone Number"
-            keyboardType="phone-pad"
-            value={mobile}
-            onChangeText={setMobile}
-          />
+          <View style={styles.toggleContainer}>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                inputType === "mobile" && styles.activeToggleButton,
+              ]}
+              onPress={() => setInputType("mobile")}
+            >
+              <Text
+                style={[
+                  styles.toggleButtonText,
+                  inputType === "mobile" && styles.activeToggleButtonText,
+                ]}
+              >
+                Mobile
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.toggleButton,
+                inputType === "email" && styles.activeToggleButton,
+              ]}
+              onPress={() => setInputType("email")}
+            >
+              <Text
+                style={[
+                  styles.toggleButtonText,
+                  inputType === "email" && styles.activeToggleButtonText,
+                ]}
+              >
+                Email
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {inputType === "mobile" ? (
+            <>
+              <Text style={styles.label}>Mobile</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="Phone Number"
+                keyboardType="phone-pad"
+                value={mobile}
+                onChangeText={setMobile}
+              />
+            </>
+          ) : (
+            <>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={styles.inputField}
+                placeholder="Email"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </>
+          )}
+
           <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.inputField}
@@ -122,6 +172,28 @@ const styles = StyleSheet.create({
   inputFieldContainer: {
     width: "100%",
     marginBottom: 20,
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 10,
+    backgroundColor: "#cccccc",
+    alignItems: "center",
+  },
+  activeToggleButton: {
+    backgroundColor: "#333333",
+  },
+  toggleButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+  },
+  activeToggleButtonText: {
+    color: "#ffffff",
+    fontWeight: "bold",
   },
   label: {
     fontSize: 16,

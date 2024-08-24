@@ -6,7 +6,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../../conatant';
 import axios from 'axios';
 
-const ProfileHome = ({ username, userImage,fetchUserDetails }) => {
+const ProfileHome = ({
+  username,
+  userImage,
+  email,
+  mobile,
+  address,
+  pincode,
+  vehicleNo,
+  isVerified,
+  fetchUserDetails
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(username);
   const navigation = useNavigation();
@@ -16,7 +26,6 @@ const ProfileHome = ({ username, userImage,fetchUserDetails }) => {
     try {
       // Clear user data from AsyncStorage
       await AsyncStorage.clear();
-      
       Alert.alert('Logged Out', 'You have been logged out successfully.');
       // Navigate to the login screen or home screen
       navigation.navigate('Login'); // Replace 'Login' with your actual login screen name
@@ -25,7 +34,19 @@ const ProfileHome = ({ username, userImage,fetchUserDetails }) => {
     }
   };
 
- 
+  // Save new username function
+  const handleSaveUsername = async () => {
+    try {
+      // Update the username in the backend
+      await axios.put(`${API_URL}/api/deliveryBoys/update/${userId}`, { name: newUsername });
+      // Refresh user details
+      fetchUserDetails();
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving username:', error);
+    }
+  };
+
   return (
     <>
       <View style={styles.profile}>
@@ -47,19 +68,19 @@ const ProfileHome = ({ username, userImage,fetchUserDetails }) => {
           <Entypo name="log-out" size={24} color={"white"} />
         </TouchableOpacity>
       </View>
-      <View style={styles.container}>
-       
+      <View style={styles.detailsContainer}>
+        <Text style={styles.detail}>Email: {email}</Text>
+        <Text style={styles.detail}>Mobile: {mobile}</Text>
+        <Text style={styles.detail}>Address: {address}</Text>
+        <Text style={styles.detail}>Pincode: {pincode}</Text>
+        <Text style={styles.detail}>Vehicle No: {vehicleNo}</Text>
+        <Text style={styles.detail}>Verified: {isVerified ? "Yes" : "No"}</Text>
       </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#96D6EF',
-  },
   profile: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -95,40 +116,24 @@ const styles = StyleSheet.create({
     marginRight: 16,
     flex: 1,
   },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16,
-  },
-  column: {
-    flex: 1,
-    marginHorizontal: 8,
-    padding: 16,
-    borderRadius: 8,
-  },
-  heading: {
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'black',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 8,
-    color: '#333',
-    padding: 4,
-    color: '#666',
-  },
-  subHeading: {
-    borderRadius: 8,
-    backgroundColor: '#f8f9fa',
-    textAlign: 'center',
-    borderWidth: 2,
-    borderColor: 'black',
-    fontSize: 16,
-    color: '#666',
-    padding: 4,
-  },
   logout: {
     padding: 8,
+  },
+  detailsContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    margin: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  detail: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#333',
   },
 });
 

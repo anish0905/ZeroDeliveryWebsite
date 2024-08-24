@@ -1,130 +1,74 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  Image, // Make sure to import Image
-} from "react-native";
-import React, { useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import axios from "axios";
-import { API_URL } from "../conatant";
-import loginIMg from "../assets/login.png"; // Ensure the path is correct
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import axios from 'axios';
+import { API_URL } from '../conatant';
 
-const OTP = () => {
-  const [otp, setOtp] = useState("");
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { mobile } = route.params;
+export default function OTP({ route, navigation }) {
+  const { orderId } = route.params;
+  const [otp, setOtp] = useState('');
 
   const handleVerifyOTP = async () => {
-    if (!otp) {
-      Alert.alert("Error", "Please enter the OTP.");
-      return;
-    }
-
     try {
-      const response = await axios.post(`${API_URL}/user/vefifyOpt`, {
-        mobileNumber: mobile,
+      const response = await axios.post(`${API_URL}/api/deliveryBoys/deliverOrder/verifyOrder`, { // Corrected typo
+        orderId,
         otp,
       });
-     
-      await AsyncStorage.setItem("token", response.data.token);
-      await AsyncStorage.setItem("userId", response.data.userId);
-      Alert.alert("Success", "Logged in successfully.");
-      navigation.replace("Main");
+
+    
+        Alert.alert('Success', 'Order delivered successfully.'); // Updated message
+        navigation.goBack();
+      
     } catch (error) {
-      console.log(error);
-      Alert.alert("Error", "Invalid OTP.");
+      console.log('Error verifying OTP:', error);
+      Alert.alert('Error', 'Failed to verify OTP.');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-       <Image source={loginIMg} style={styles.logo} />
-      <Text style={styles.text}>Enter OTP</Text>
-      <View style={styles.mainContainer}>
-        <View style={styles.inputFieldContainer}>
-         
-          <TextInput
-            style={styles.inputField}
-            placeholder="OTP"
-            keyboardType="numeric"
-            value={otp}
-            onChangeText={setOtp}
-          />
-        </View>
-        <TouchableOpacity style={styles.button} onPress={handleVerifyOTP}>
-          <Text style={styles.buttonText}>Verify OTP</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Text style={styles.title}>Enter OTP</Text>
+      <TextInput
+        style={styles.input}
+        value={otp}
+        onChangeText={setOtp}
+        placeholder="Enter OTP"
+        keyboardType="numeric"
+        maxLength={6}
+      />
+      <TouchableOpacity style={styles.button} onPress={handleVerifyOTP}>
+        <Text style={styles.buttonText}>Verify</Text>
+      </TouchableOpacity>
+    </View>
   );
-};
-
-export default OTP;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f2f2f2',
   },
-  logo: {
-    width: 200,
-    height: 200,
-    marginTop: 50,
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  mainContainer: {
-    width: "90%",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    marginBottom: 40,
-  },
-  inputFieldContainer: {
-    width: "100%",
+  title: {
+    fontSize: 24,
     marginBottom: 20,
   },
-  inputField: {
-    borderWidth: 1,
-    borderColor: "#cccccc",
+  input: {
+    width: '80%',
     padding: 10,
     borderRadius: 5,
-    marginBottom: 10,
-    fontSize: 16,
-    color: "#333333",
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginBottom: 20,
   },
   button: {
-    width: "75%",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#333333",
-    paddingVertical: 10,
+    backgroundColor: '#007AFF',
     borderRadius: 5,
-    shadowColor: "#000000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   buttonText: {
-    fontSize: 18,
-    color: "#ffffff",
-    fontWeight: "bold",
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

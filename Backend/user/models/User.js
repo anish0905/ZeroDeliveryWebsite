@@ -36,19 +36,17 @@ const cartItemSchema = new mongoose.Schema({
     size: { type: String },
     color: { type: String },
   },
-  Image:{
+  Image: {
     type: String,
-    
-  }
+  },
 });
 
 // Define the User schema
 const userSchema = new mongoose.Schema({
   mobileNumber: {
     type: String,
-    required: true,
-    unique: true,
   },
+  email: { type: String},
   name: {
     type: String,
   },
@@ -72,6 +70,24 @@ const userSchema = new mongoose.Schema({
     default: true,
   },
 });
+
+userSchema.methods.generateOtp = function () {
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+  this.otp = otp;
+  this.otpExpires = Date.now() + 15 * 60 * 1000; // OTP expires in 15 minutes
+  return otp;
+};
+
+// Method to verify OTP
+userSchema.methods.verifyOtp = function (inputOtp) {
+  if (this.otp === inputOtp && this.otpExpires > Date.now()) {
+    this.isVerified = true;
+    this.otp = undefined; // Clear OTP after successful verification
+    this.otpExpires = undefined;
+    return true;
+  }
+  return false;
+};
 
 // Create the User model
 const User = mongoose.model("User", userSchema);

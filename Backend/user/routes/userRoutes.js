@@ -13,13 +13,15 @@ const {
   loginUser,
   verifyUser,
   getUserById,
-  addUserName
+  addUserName,
+
+  login,
 } = require("../controllers/userController");
 
 const router = express.Router();
 
-router.post("/request-otp", requestOtp);
-router.post("/verify-otp", verifyOtp);
+router.post("/request-otp", login);
+router.post("/verify-otp", verifyUser);
 // location
 router.post("/update-location", updateLocation);
 router.get("/get-location", getLocation);
@@ -38,13 +40,12 @@ router.get("/get-balance", getBalance);
 router.get("/account-security", checkSecurity);
 router.delete("/delete-user", deleteUser);
 
-router.post("/login",loginUser )
+router.post("/login", loginUser);
 
-router.post("/vefifyOpt",verifyUser)
+router.post("/vefifyOpt", verifyUser);
 
-router.get("/getGetUser/:userId",getUserById)
+router.get("/getGetUser/:userId", getUserById);
 
-router.post("/addname/:userId",addUserName)
-
+router.post("/addname/:userId", addUserName);
 
 module.exports = router;

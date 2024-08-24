@@ -1,208 +1,205 @@
+import { StyleSheet, SafeAreaView, ScrollView, TextInput, View, Text, Alert, Image, TouchableOpacity, Linking } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import AntDesign from "@expo/vector-icons/AntDesign";
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_URL } from '../conatant';
+import { API_URL } from '../conatant'; // Corrected import path
 
-const OrdersScreen = () => {
+export default function OrdersScreen() {
   const [orders, setOrders] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [userId, setUserId] = useState(null); // Initialize userId state
-  const navigation = useNavigation();
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchUserId = async () => {
       try {
-        const storedUserId = await AsyncStorage.getItem("userId");
-        if (storedUserId) {
-          setUserId(storedUserId);
-          const response = await axios.get(`${API_URL}/api/products/getHistory/${storedUserId}`);
-          const sortedOrders = response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-          setOrders(sortedOrders);
-        } else {
-          Alert.alert('Error', 'User ID not found');
-        }
+        const storedUserId = await AsyncStorage.getItem('userId');
+        setUserId(storedUserId);
       } catch (error) {
-        Alert.alert('Error', 'Error fetching data');
+        console.log('Failed to fetch user ID from AsyncStorage:', error);
       }
     };
 
-    fetchData();
-  }, []); // Only run on mount
+    fetchUserId();
+  }, []);
 
-  const calculateExpectedDate = (createdAt, shippingInfo) => {
-    const createdDate = new Date(createdAt);
-    let expectedDate = new Date(createdDate);
-
-    // Assuming shippingInfo format is like "Ships in 1-2 business days"
-    const match = shippingInfo.match(/\d+/g);
-    if (match) {
-      const minDays = parseInt(match[0], 10);
-      const maxDays = parseInt(match[1], 10) || minDays;
-
-      // Calculate expected delivery date
-      expectedDate.setDate(createdDate.getDate() + minDays);
-      return expectedDate.toDateString(); // Format expected date as needed
+  useEffect(() => {
+    if (userId) {
+      fetchOrders();
     }
+  }, [userId]);
 
-    return "N/A";
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/deliveryBoys/${userId}`);
+      const deliveredOrders = response.data.filter(order => order.status.toLowerCase() === 'delivered');
+      setOrders(deliveredOrders);
+    } catch (error) {
+      console.log('Error fetching orders:', error);
+      Alert.alert('Error', 'Failed to fetch orders.');
+    }
   };
 
-  const filteredOrders = orders.filter(order =>
-    order.products[0].productId.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handlePress = (orderId) => {
-    navigation.navigate('Order Details', { id:orderId });
+  const handleOpenGoogleMaps = (address) => {
+    const query = `${address.street}, ${address.city}, ${address.state} ${address.postalCode}`;
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    Linking.openURL(url);
   };
 
-  const handleGoHome = () => {
-    navigation.navigate('Home');
-  };
+  const calculateShippingInformation = (createdAt) => {
+    const orderDate = new Date(createdAt);
+    const expectedDeliveryDate = new Date(orderDate);
+    expectedDeliveryDate.setDate(orderDate.getDate() + 5); // Adding 5 days for delivery
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.orderContainer}
-      onPress={() => handlePress(item._id)}
-    >
-      <View style={styles.orderContent}>
-        <Image
-          source={{ uri: item.products[0].productId.thumbnail }}
-          style={styles.thumbnail}
-        />
-        <View style={styles.details}>
-          <Text style={styles.title}>{item.products[0].productId.title}</Text>
-          <Text style={styles.price}>Price: ₹{item.products[0].price}</Text>
-          <Text style={styles.shipping}>Shipping: {item.products[0].productId.shippingInformation}</Text>
-        </View>
-      </View>
-      <View style={styles.statusContainer}>
-        <Text style={[styles.status, { color: item.status === 'pending' ? 'red' : 'green' }]}>
-          {item.status}
-        </Text>
-        <Text style={styles.paymentStatus}>
-          Payment {item.paymentStatus === 'unpaid' ? 'Not Successful' : 'Successful'}.
-        </Text>
-        <Text style={styles.expectedDelivery}>
-          Expected Delivery: {calculateExpectedDate(item.createdAt, item.products[0].productId.shippingInformation)}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+    return {
+      orderDate: orderDate.toLocaleDateString(),
+      expectedDelivery: expectedDeliveryDate.toLocaleDateString(),
+    };
+  };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search your orders here"
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
-      {filteredOrders.length === 0 ? (
-        <View style={styles.noOrdersContainer}>
-          <Text style={styles.noOrdersText}>No orders found.</Text>
-          <TouchableOpacity style={styles.goHomeButton} onPress={handleGoHome}>
-            <Text style={styles.goHomeButtonText}>Go to Home</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredOrders}
-          keyExtractor={(item) => item._id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.list}
-        />
-      )}
-    </View>
+    <SafeAreaView style={styles.container}>
+      
+        <View style={styles.searchBar}>
+          <AntDesign name="search1" size={22} color="black" style={styles.icon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search Product..."
+            placeholderTextColor="#888"
+          />
+        
+      </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {orders.length > 0 ? (
+          orders.map((order, index) => {
+            const shippingInfo = calculateShippingInformation(order.createdAt);
+
+            return (
+              <View key={index} style={styles.orderContainer}>
+                <Text style={styles.orderTitle}>Order ID: {order._id}</Text>
+                <View style={styles.productsContainer}>
+                  <Text style={styles.sectionTitle}>Products:</Text>
+                  {order.products.map((product, prodIndex) => (
+                    <View key={prodIndex} style={styles.productContainer}>
+                      <Image
+                        source={{ uri: `${API_URL}/${product.productId.thumbnail}` }}
+                        style={styles.productImage}
+                      />
+                      <View style={styles.productDetails}>
+                        <Text style={styles.productText}>{product.productId.title}</Text>
+                        <Text style={styles.productText}>Price: ₹{product.price}</Text>
+                        <Text style={styles.productText}>Quantity: {product.quantity}</Text>
+                        <Text style={styles.productText}>Order Date: {shippingInfo.orderDate}</Text>
+                        <Text style={styles.productText}>Expected Delivery: {shippingInfo.expectedDelivery}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+                <TouchableOpacity onPress={() => handleOpenGoogleMaps(order.address)}>
+                  <Text style={styles.addressText}>
+                    Address: {order.address.name}, {order.address.phone}, {order.address.street}, {order.address.city}, {order.address.state} - {order.address.postalCode}
+                  </Text>
+                </TouchableOpacity>
+                <Text style={styles.statusText}>Status: {order.status}</Text>
+              </View>
+            );
+          })
+        ) : (
+          <Text style={styles.noOrdersText}>No delivered orders found</Text>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    backgroundColor: "#f2f2f2",
+  },
+  
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    marginTop: 10, // Added top margin
   },
   searchInput: {
+    flex: 1,
+    backgroundColor: "white",
+    borderRadius: 5,
+    paddingLeft: 35,
     height: 40,
-    borderColor: '#ddd',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    backgroundColor: '#f5f5f5',
+    color: "#333", // Updated text color
+    fontWeight: "bold",
   },
-  list: {
-    flexGrow: 1,
+  icon: {
+    position: "absolute",
+    left: 15,
+    zIndex: 5,
+    color: "#007AFF", // Updated icon color
+  },
+  scrollViewContent: {
+    paddingTop: 20, // Adjust padding if necessary
+    paddingHorizontal: 10,
   },
   orderContainer: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
-    marginBottom: 8,
+    backgroundColor: "white",
+    borderRadius: 10,
+    marginBottom:10,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  orderContent: {
+  orderTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  sectionTitle: {
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  productsContainer: {
+    marginBottom: 10,
+  },
+  productContainer: {
     flexDirection: 'row',
+    marginBottom: 10,
+    
   },
-  thumbnail: {
-    width: '50%',  // Image takes up half the width
-    height: 120,
-    borderRadius: 8,
+  productImage: {
+    width: 70,
+    height: 60,
+    borderRadius: 5,
+    marginRight: 10,
   },
-  details: {
-    width: '50%',  // Info takes up the other half
-    paddingLeft: 16,
-    justifyContent: 'center',
-    flexShrink: 1, // Allow the details to shrink if necessary
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    flexWrap: 'wrap', // Wrap text if it’s too long
-  },
-  price: {
-    color: '#666',
-    flexWrap: 'wrap', // Wrap text if it’s too long
-  },
-  shipping: {
-    color: '#888',
-    flexWrap: 'wrap', // Wrap text if it’s too long
-  },
-  statusContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  status: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  paymentStatus: {
-    color: '#007bff',
-  },
-  expectedDelivery: {
-    color: '#666',
-  },
-  noOrdersContainer: {
+  productDetails: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  productText: {
+    marginBottom: 2,
+  },
+  addressText: {
+    marginBottom: 10,
+    fontStyle: "italic",
+    color: "#007AFF",
+    textDecorationLine: "underline",
+  },
+  statusText: {
+    color: "#4CAF50",
+    fontWeight: "bold",
+    marginTop: 10,
   },
   noOrdersText: {
-    fontSize: 18,
-    color: '#666',
-    marginBottom: 16,
-  },
-  goHomeButton: {
-    padding: 12,
-    backgroundColor: '#007bff',
-    borderRadius: 8,
-  },
-  goHomeButtonText: {
-    color: '#fff',
+    textAlign: "center",
+    marginTop: 20,
     fontSize: 16,
   },
 });
 
-
-export default OrdersScreen;
