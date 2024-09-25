@@ -1,14 +1,9 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 const twilio = require("twilio");
 const { generateOTP } = require("../utils/otp");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
-const { sendSms } = require("../../utils/smsService");
-
-
-
 
 const client = new twilio(
   process.env.TWILIO_ACCOUNT_SID,
@@ -27,9 +22,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
-// console.log(client)
-
 const sendOtp = async (mobileNumber) => {
   try {
     const verification = await client.verify
@@ -38,183 +30,110 @@ const sendOtp = async (mobileNumber) => {
     console.log(`OTP sent to ${mobileNumber}. SID: ${verification.sid}`);
   } catch (error) {
     console.error("Error sending OTP:", error);
-    throw new Error("Failed to send OTP. Please try again.");
+    throw new Error("Failed to send OTP. Please verify the phone number.");
   }
 };
 
-exports.requestOtp = async (req, res) => {
-  const { mobileNumber } = req.body;
-
-  try {
-    let user = await User.findOne({ mobileNumber });
-    if (!user) {
-      user = new User({ mobileNumber });
-      await user.save();
-    }
-    await sendOtp(mobileNumber);
-    res.status(200).send("OTP sent");
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+const handleErrorResponse = (res, error) => {
+  console.error(error);
+  res.status(500).send(error.message);
 };
 
-exports.verifyOtp = async (req, res) => {
-  const { mobileNumber, otp } = req.body;
-  try {
-    const verificationCheck = await client.verify
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-      .verificationChecks.create({ to: mobileNumber, code: otp });
-
-    if (verificationCheck.status !== "approved") {
-      return res.status(400).send("Invalid or expired OTP");
-    }
-
-    let user = await User.findOne({ mobileNumber });
-    if (!user) {
-      return res.status(400).send("User not found");
-    }
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-    res.status(200).send({ token, userId: user._id });
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-};
-
-//location
+// Update Location
 exports.updateLocation = async (req, res) => {
   const { mobileNumber, location } = req.body;
 
   try {
     const user = await User.findOne({ mobileNumber });
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    if (!user) return res.status(404).send("User not found");
 
     user.location = location;
     await user.save();
-
     res.status(200).send("Location updated successfully");
   } catch (error) {
-    res.status(500).send(error.message);
+    handleErrorResponse(res, error);
   }
 };
 
+// Get Location
 exports.getLocation = async (req, res) => {
   const { mobileNumber } = req.query;
 
   try {
     const user = await User.findOne({ mobileNumber });
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    if (!user) return res.status(404).send("User not found");
 
     res.status(200).send({ location: user.location });
   } catch (error) {
-    res.status(500).send(error.message);
+    handleErrorResponse(res, error);
   }
 };
 
+// Update Address
 exports.updateAddress = async (req, res) => {
   const { mobileNumber, address } = req.body;
 
   try {
     const user = await User.findOne({ mobileNumber });
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    if (!user) return res.status(404).send("User not found");
 
     user.address = address;
     await user.save();
-
     res.status(200).send("Address updated successfully");
   } catch (error) {
-    res.status(500).send(error.message);
+    handleErrorResponse(res, error);
   }
 };
 
+// Get Address
 exports.getAddress = async (req, res) => {
-  const { userId } = req.params; // Fixed the typo from req.prams to req.params
+  const { userId } = req.params;
 
-  // Validate the UserId
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).send("Invalid User ID");
   }
 
   try {
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    if (!user) return res.status(404).send("User not found");
 
-    res.status(200).send({ address: user.addresses });
+    res.status(200).send({ address: user.address });
   } catch (error) {
-    res.status(500).send(error.message);
+    handleErrorResponse(res, error);
   }
 };
+
+// Add Balance
 exports.addBalance = async (req, res) => {
   const { mobileNumber, amount } = req.body;
 
   try {
     const user = await User.findOne({ mobileNumber });
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    if (!user) return res.status(404).send("User not found");
 
     user.wallet += amount;
     await user.save();
     res.status(200).send("Wallet updated successfully");
   } catch (error) {
-    res.status(500).send(error.message);
+    handleErrorResponse(res, error);
   }
 };
 
+// Get Balance
 exports.getBalance = async (req, res) => {
   const { mobileNumber } = req.query;
 
   try {
     const user = await User.findOne({ mobileNumber });
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
+    if (!user) return res.status(404).send("User not found");
+
     res.status(200).send({ wallet: user.wallet });
   } catch (error) {
-    res.status(500).send(error.message);
+    handleErrorResponse(res, error);
   }
 };
 
-//security
-
-exports.checkSecurity = async (req, res) => {
-  const { mobileNumber } = req.query;
-  console.log(`Checking security for ${mobileNumber}`);
-
-  if (!mobileNumber) {
-    return res.status(400).json({ message: "Mobile number is required" });
-  }
-
-  try {
-    const user = await User.findOne({ mobileNumber });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    if (user.security) {
-      return res.status(200).json({
-        message:
-          "Security is true. Do you want to delete this user? If yes, call the delete endpoint with confirmation.",
-        userId: user._id,
-      });
-    } else {
-      return res.status(200).json({ security: user.security });
-    }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
+// Delete User
 exports.deleteUser = async (req, res) => {
   const { mobileNumber, confirmDeletion } = req.query;
 
@@ -234,148 +153,70 @@ exports.deleteUser = async (req, res) => {
 
     if (user.security) {
       await User.deleteOne({ mobileNumber });
-      return res
-        .status(200)
-        .json({ message: "User details deleted successfully" });
+      return res.status(200).json({ message: "User details deleted successfully" });
     } else {
       return res.status(400).json({ message: "Deletion not allowed" });
     }
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    handleErrorResponse(res, error);
   }
 };
 
-exports.loginUser = async (req, res) => {
-  const { mobileNumber } = req.body;
-
-  try {
-    // Generate a 4-digit OTP
-    const otpCode = generateOTP(6);
-
-    // Find if user already exists
-    let user = await User.findOne({ mobileNumber });
-
-    if (!user) {
-      // If user doesn't exist, create a new user with the OTP
-      user = new User({ mobileNumber, otp: otpCode });
-      await user.save();
-
-      // Send OTP to user's mobile number (assuming you have an SMS sending service)
-      // sendOTPSMS(mobileNumber, otpCode);
-
-      return res.status(201).json({ message: "User created and OTP sent" });
-    } else {
-      // If user exists, update the OTP
-      user.otp = otpCode;
-      await user.save();
-
-      // Send OTP to user's mobile number (assuming you have an SMS sending service)
-      // sendOTPSMS(mobileNumber, otpCode);
-
-      return res.status(200).json({ message: "OTP sent" });
-    }
-  } catch (error) {
-    console.error("Error in loginUser:", error);
-    res.status(500).json({ message: "Error logging in", error });
-  }
-};
-
+// Verify User
 exports.verifyUser = async (req, res) => {
   const { mobileNumber, email, otp } = req.body;
 
   try {
     let user;
 
-    // Check if it's a mobile number verification
     if (mobileNumber) {
       user = await User.findOne({ mobileNumber });
-
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: "User not found with this mobile number." });
-      }
-
-      // Verify the OTP for mobile
-      if (user.otp !== otp) {
-        return res
-          .status(401)
-          .json({ message: "Invalid OTP for mobile number." });
-      }
-    }
-    // Check if it's an email verification
-    else if (email) {
+      if (!user) return res.status(404).json({ message: "User not found with this mobile number." });
+      if (user.otp !== otp) return res.status(401).json({ message: "Invalid OTP for mobile number." });
+    } else if (email) {
       user = await User.findOne({ email });
-
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: "User not found with this email." });
-      }
-
-      // Verify the OTP for email
-      if (user.otp !== otp) {
-        return res.status(401).json({ message: "Invalid OTP for email." });
-      }
-    }
-    // If neither mobile number nor email is provided
-    else {
-      return res.status(400).json({
-        message: "Please provide either a mobile number or an email.",
-      });
+      if (!user) return res.status(404).json({ message: "User not found with this email." });
+      if (user.otp !== otp) return res.status(401).json({ message: "Invalid OTP for email." });
+    } else {
+      return res.status(400).json({ message: "Please provide either a mobile number or an email." });
     }
 
-    // If OTP is valid, generate a JWT token and return it to the user
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    // Optionally, set user as verified
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     user.isVerified = true;
     await user.save();
 
-    return res.json({
-      message: "OTP verified. Login successful.",
-      token,
-      userId: user._id,
-    });
+    return res.json({ message: "OTP verified. Login successful.", token, userId: user._id });
   } catch (error) {
-    console.error("Error in verifyUser:", error);
-    res.status(500).json({ message: "Error verifying user", error });
+    handleErrorResponse(res, error);
   }
 };
 
-exports.getUserById = async (req, res, next) => {
+// Get User By ID
+exports.getUserById = async (req, res) => {
   const userId = req.params.userId;
   try {
     const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (error) {
-    console.error("Error in getUserById:", error);
-    res.status(500).json({ message: "Error fetching user", error });
+    handleErrorResponse(res, error);
   }
 };
 
+// Add User Name
 exports.addUserName = async (req, res) => {
   const userId = req.params.userId;
   const { name } = req.body;
   try {
     const user = await User.findByIdAndUpdate(userId, { name }, { new: true });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (error) {
-    console.error("Error in addUserName:", error);
-    res.status(500).json({ message: "Error updating user name", error });
+    handleErrorResponse(res, error);
   }
 };
 
-//email with login
-
+// Login
 exports.login = async (req, res) => {
   const { mobileNumber, email } = req.body;
 
@@ -384,132 +225,37 @@ exports.login = async (req, res) => {
     const otpCode = generateOTP(6); // Generate a 6-digit OTP
 
     if (mobileNumber) {
-      // Handle mobile number login
-      user = await User.findOne({ mobileNumber });
-
-      if (!user) {
-        // If user doesn't exist, create a new user with the OTP
-        user = new User({ mobileNumber, otp: otpCode });
-        await user.save();
-      } else {
-        // If user exists, update the OTP
-        user.otp = otpCode;
-        await user.save();
-      }
-
-      // Send OTP to user's mobile number
-      await sendOtp(mobileNumber);
-      return res.status(200).json({ message: "OTP sent via mobile." });
-
+      user = await User.findOne({ mobileNumber }) || new User({ mobileNumber, otp: otpCode });
     } else if (email) {
-      // Handle email login
-      user = await User.findOne({ email });
-
-      if (!user) {
-        // If user doesn't exist, create a new user with the OTP
-        user = new User({ email, otp: otpCode });
-        await user.save();
-      } else {
-        // If user exists, update the OTP
-        user.otp = otpCode;
-        await user.save();
-      }
-
-      // Prepare mail options
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: 'Your OTP Code',
-        text: `Your OTP code is ${otpCode}`,
-      };
-
-      // Send OTP via email
-      transporter.sendMail(mailOptions, async (error, info) => {
-        if (error) {
-          console.error("Error sending email:", error);
-          return res.status(500).json({ message: "Error sending OTP via email.", error });
-        }
-        
-        // Respond after email is sent successfully
-        res.status(200).json({
-          message: "OTP sent to your email. Please verify to complete registration.",
-          userId: user._id,
-        });
-      });
-
-      // Note: Remove this line as response is handled inside sendMail callback
-      // return res.status(200).json({ message: "OTP sent to your email." });
-
+      user = await User.findOne({ email }) || new User({ email, otp: otpCode });
     } else {
       return res.status(400).json({ message: "Please provide either a mobile number or an email." });
     }
-  } catch (error) {
-    console.error("Error in login:", error);
-    res.status(500).json({ message: "Error logging in", error });
-  }
-};
 
-exports.verifyUser = async (req, res) => {
-  const { mobileNumber, email, otp } = req.body;
-
-  try {
-    let user;
-
-    // Check if it's a mobile number verification
-    if (mobileNumber) {
-      user = await User.findOne({ mobileNumber });
-
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: "User not found with this mobile number." });
-      }
-
-      // Verify the OTP for mobile
-      if (user.otp !== otp) {
-        return res
-          .status(401)
-          .json({ message: "Invalid OTP for mobile number." });
-      }
-    }
-    // Check if it's an email verification
-    else if (email) {
-      user = await User.findOne({ email });
-
-      if (!user) {
-        return res
-          .status(404)
-          .json({ message: "User not found with this email." });
-      }
-
-      // Verify the OTP for email
-      if (user.otp !== otp) {
-        return res.status(401).json({ message: "Invalid OTP for email." });
-      }
-    }
-    // If neither mobile number nor email is provided
-    else {
-      return res.status(400).json({
-        message: "Please provide either a mobile number or an email.",
-      });
-    }
-
-    // If OTP is valid, generate a JWT token and return it to the user
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    // Optionally, set user as verified
-    user.isVerified = true;
+    user.otp = otpCode;
     await user.save();
 
-    return res.json({
-      message: "OTP verified. Login successful.",
-      token,
-      userId: user._id,
+    if (mobileNumber) {
+      await sendOtp(mobileNumber);
+      return res.status(200).json({ message: "OTP sent via mobile." });
+    }
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Your OTP Code',
+      text: `Your OTP code is ${otpCode}`,
+    };
+
+    transporter.sendMail(mailOptions, (error) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        return res.status(500).json({ message: "Error sending OTP via email." });
+      }
+      res.status(200).json({ message: "OTP sent via email." });
     });
   } catch (error) {
-    console.error("Error in verifyUser:", error);
-    res.status(500).json({ message: "Error verifying user", error });
+    handleErrorResponse(res, error);
   }
 };
+

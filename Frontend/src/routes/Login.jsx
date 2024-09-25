@@ -4,160 +4,169 @@ import logo from "../../public/images/login.png";
 import axios from "axios";
 import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
-import { HiArrowSmallLeft } from "react-icons/hi2";
+import Swal from 'sweetalert2';
 import { useDispatch } from "react-redux";
 import { userActions } from "../store/userInfoSlice";
-import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import { userProfileAction } from "../store/userProfile";
 
-export function Login({name}) {
+export function Login({ name }) {
   const [open, setOpen] = useState(false);
   const [mobileNumber, setMobileNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
-  const[userDetails,setUserDetails] = useState("")
-
-  const dispatch = useDispatch()
-
-  const handleOpen = () => setOpen(!open);
-
-  const handleMobileNumberChange = (e) => {
-    setMobileNumber(e.target.value);
-  };
+  const [inputType, setInputType] = useState("mobile");
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleOtpChange = (e) => {
-    setOtp(e.target.value);
+  const handleOpen = () => {
+    // Reset state when opening the modal
+    setMobileNumber("");
+    setEmail("");
+    setOtp("");
+    setOtpSent(false);
+    setOpen(!open);
   };
 
- 
-  const requestOtp = async () => {
-    // Append +91 to the mobile number if it's not already included
-    const fullMobileNumber = `+91${mobileNumber}`;
+  const handleInputChange = (e) => {
+    if (inputType === "mobile") {
+      setMobileNumber(e.target.value);
+    } else {
+      setEmail(e.target.value);
+    }
+  };
 
-    // Regular expression for validating Indian mobile numbers
-    const mobileNumberPattern = /^\+91\d{10}$/;
-
-    if (!mobileNumberPattern.test(fullMobileNumber)) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Please enter a valid mobile number in the format XXXXXXXXXX (10 digits)',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
+  const handleLogin = async () => {
+    if ((inputType === "mobile" && !mobileNumber) || (inputType === "email" && !email)) {
+      Swal.fire("Error", "Please fill in all required fields.", "error");
       return;
     }
 
     try {
-      const resp = await axios.post(`${API_URI}/user/request-otp`, {
-        mobileNumber: fullMobileNumber
-      });
-      if (resp.status === 200) {
-        setOtpSent(true);
+      const payload = inputType === "mobile" ? { mobileNumber: `+91${mobileNumber}` } : { email };
+      const response = await axios.post(`${API_URI}/user/request-otp`, payload);
+
+      if (response.status === 200) {
+        setOtpSent(true); // Set OTP sent state to true
       }
     } catch (error) {
-      console.log("Error requesting OTP:", error);
+      console.error(error);
+      Swal.fire("Error", "Invalid mobile number or email.", "error");
     }
   };
-  const verifyOtp = async () => {
-    // Append +91 to the mobile number for verification
-    const fullMobileNumber = `+91${mobileNumber}`;
 
-    try {
-      const resp = await axios.post(`${API_URI}/user/verify-otp`, {
-        mobileNumber: fullMobileNumber,
-        otp
+  const verifyOtp = async () => {
+    if (!otp) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Please enter the OTP.',
+        icon: 'error',
+        confirmButtonText: 'OK',
       });
+      return;
+    }
+  
+    try {
+      // Prepare the request payload based on available data
+      const payload = { otp };
+      if (mobileNumber) {
+        payload.mobileNumber = `+91${mobileNumber}`; // Assuming mobileNumber is already defined
+      } else if (email) {
+        payload.email = email; // Assuming email is already defined
+      }
+  
+      const resp = await axios.post(`${API_URI}/user/verify-otp`, payload);
+  
       if (resp.status === 200) {
         localStorage.setItem('token', resp.data.token);
         localStorage.setItem('userId', resp.data.userId);
         dispatch(userActions.updateUser({ userId: resp.data.userId }));
-        FetchUserDeatils(resp.data.userId)
-
+        FetchUserDetails(resp.data.userId);
+  
         Swal.fire({
           title: 'Success!',
           text: 'User logged in successfully',
           icon: 'success',
           confirmButtonText: 'OK',
         });
-
+  
         navigate("/");
       }
     } catch (error) {
-      console.log("Error verifying OTP:", error);
+      console.error("Error verifying OTP:", error);
       Swal.fire({
         title: 'Error!',
-        text: 'There was an issue logging in the User',
+        text: error.response?.data?.message || 'There was an issue logging in the User',
         icon: 'error',
         confirmButtonText: 'OK'
       });
     }
   };
-  const FetchUserDeatils = async(userId) =>{
+  
+
+  const FetchUserDetails = async (userId) => {
     try {
-      const resp = await axios.get(`${API_URI}/user/getGetUser/${userId}`)
-      setUserDetails(resp.data);
+      const resp = await axios.get(`${API_URI}/user/getUser/${userId}`);
       dispatch(userProfileAction.updateProfile(resp.data));
-
-
     } catch (error) {
-      console.log(error);
-      
+      console.error(error);
     }
-
-
-  }
-
+  };
 
   return (
     <>
-      <Button
-        onClick={handleOpen}
-        className="text-black shadow-none hover:shadow-none"
-      >
+      <Button onClick={handleOpen} className="text-black shadow-none hover:shadow-none">
         {name}
       </Button>
       <Dialog open={open} handler={handleOpen}>
-        <div className="flex justify-center items-center content-center">
-          <img src={logo} alt="zerodelivery
- Logo" className="w-60 h-72" />
+        <div className="flex justify-center items-center mb-6">
+          <img src={logo} alt="Logo" className="w-60 h-72" />
         </div>
 
-        <div className="flex justify-center flex-col content-center items-center font-bold">
-          {/* <p className="text-black text-2xl mb-1">India's last minute app</p> */}
-          <p className="text-base font-thin mb-4 text-black">Log in or Sign up</p>
+        <div className="flex justify-center flex-col items-center font-bold">
+          <p className="text-lg font-semibold mb-4 text-black">Log in or Sign up</p>
           {otpSent ? (
-            <OTPInput otp={otp} handleOtpChange={handleOtpChange} verifyOtp={verifyOtp} />
+            <OTPInput otp={otp} handleOtpChange={setOtp} verifyOtp={verifyOtp} />
           ) : (
             <>
-              <div className="w-72">
-                <div className="relative w-full min-w-[200px] h-10">
+              <div className="w-72 mb-4">
+                <div className="flex justify-between">
+                  <Button 
+                    onClick={() => setInputType("mobile")} 
+                    className={`w-1/2 py-2 text-white ${inputType === "mobile" ? "bg-blue-600" : "bg-gray-400"} transition duration-200`}
+                  >
+                    Mobile
+                  </Button>
+                  <Button 
+                    onClick={() => setInputType("email")} 
+                    className={`w-1/2 py-2 text-white ${inputType === "email" ? "bg-blue-600" : "bg-gray-400"} transition duration-200`}
+                  >
+                    Email
+                  </Button>
+                </div>
+                <div className="relative w-full min-w-[200px] h-10 mt-4">
                   <input
-                    className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline-none focus:outline-none disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900"
-                    placeholder=" "
-                    value={mobileNumber}
-                    onChange={handleMobileNumberChange}
+                    type={inputType === "email" ? "email" : "text"}
+                    className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 border focus:border-2 border-t-transparent text-sm px-3 py-2.5 rounded-md border-blue-gray-200 focus:border-gray-900"
+                    placeholder={inputType === "mobile" ? "+91" : "Email Address"}
+                    value={inputType === "mobile" ? mobileNumber : email}
+                    onChange={handleInputChange}
                   />
-                  <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-900 before:border-blue-gray-200 peer-focus:before:!border-gray-900 after:border-blue-gray-200 peer-focus:after:!border-gray-900">
-                    +91
+                  <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal leading-tight -top-1.5 text-gray-500 transition-all">
+                    {inputType === "mobile" ? "+91" : "Email Address"}
                   </label>
                 </div>
               </div>
-              <div className="flex justify-center items-center content-center w-full min-w-[200px] my-4">
-                <Button onClick={requestOtp} className="w-6/12 bg-blue-gray-600">
-                  <span>Continue</span>
-                </Button>
-              </div>
-              <div className="absolute top-5 left-5 text-2xl cursor-pointer">
-              <HiArrowSmallLeft onClick={() => setOpen(false)}/>
-              </div>
+              <Button 
+                onClick={handleLogin}
+                className="bg-blue-600 text-white hover:bg-blue-700 px-6 py-2 rounded"
+              >
+                Login
+              </Button>
             </>
           )}
         </div>
-        <p className="text-xs text-center mb-4 mt-2">
-          By continuing, you agree to our Terms of service & Privacy policy
-        </p>
       </Dialog>
     </>
   );
