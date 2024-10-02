@@ -5,10 +5,10 @@ const { generateOTP } = require("../utils/otp");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
 
-const client = new twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+const twilioClient = new twilio(accountSid, authToken);
 
 
 const transporter = nodemailer.createTransport({
@@ -22,22 +22,22 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendOtp = async (mobileNumber) => {
-  try {
-    const verification = await client.verify
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID)
-      .verifications.create({ to: mobileNumber, channel: "sms" });
-    console.log(`OTP sent to ${mobileNumber}. SID: ${verification.sid}`);
-  } catch (error) {
-    console.error("Error sending OTP:", error);
-    throw new Error("Failed to send OTP. Please verify the phone number.");
-  }
-};
+// const sendOtp = async (mobileNumber) => {
+//   try {
+//     const verification = await client.verify
+//       .services(process.env.TWILIO_VERIFY_SERVICE_SID)
+//       .verifications.create({ to: mobileNumber, channel: "sms" });
+//     console.log(`OTP sent to ${mobileNumber}. SID: ${verification.sid}`);
+//   } catch (error) {
+//     console.error("Error sending OTP:", error);
+//     throw new Error("Failed to send OTP. Please verify the phone number.");
+//   }
+// };
 
-const handleErrorResponse = (res, error) => {
-  console.error(error);
-  res.status(500).send(error.message);
-};
+// const handleErrorResponse = (res, error) => {
+//   console.error(error);
+//   res.status(500).send(error.message);
+// };
 
 // Update Location
 exports.updateLocation = async (req, res) => {
@@ -216,7 +216,6 @@ exports.addUserName = async (req, res) => {
   }
 };
 
-// Login
 exports.login = async (req, res) => {
   const { mobileNumber, email } = req.body;
 
@@ -224,6 +223,7 @@ exports.login = async (req, res) => {
     let user;
     const otpCode = generateOTP(6); // Generate a 6-digit OTP
 
+    // Check if the user exists by mobile number or email
     if (mobileNumber) {
       user = await User.findOne({ mobileNumber }) || new User({ mobileNumber, otp: otpCode });
     } else if (email) {
@@ -232,30 +232,45 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Please provide either a mobile number or an email." });
     }
 
+    // Update OTP in the user document
     user.otp = otpCode;
     await user.save();
 
+    // Send OTP via mobile number using Twilio
     if (mobileNumber) {
-      await sendOtp(mobileNumber);
-      return res.status(200).json({ message: "OTP sent via mobile." });
+      try {
+        await twilioClient.messages.create({
+          body: `Your OTP code is ${otpCode}`,
+          from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+          to: mobileNumber,
+        });
+        return res.status(200).json({ message: "OTP sent via mobile." });
+      } catch (error) {
+        console.error("Error sending OTP via Twilio:", error);
+        return res.status(500).json({ message: "Error sending OTP via mobile." });
+      }
     }
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Your OTP Code',
-      text: `Your OTP code is ${otpCode}`,
-    };
+    // Send OTP via email using Nodemailer
+    if (email) {
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Your OTP Code',
+        text: `Your OTP code is ${otpCode}`,
+      };
 
-    transporter.sendMail(mailOptions, (error) => {
-      if (error) {
-        console.error("Error sending email:", error);
-        return res.status(500).json({ message: "Error sending OTP via email." });
-      }
-      res.status(200).json({ message: "OTP sent via email." });
-    });
+      transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+          console.error("Error sending email:", error);
+          return res.status(500).json({ message: "Error sending OTP via email." });
+        }
+        res.status(200).json({ message: "OTP sent via email." });
+      });
+    }
   } catch (error) {
     handleErrorResponse(res, error);
   }
 };
+
 
