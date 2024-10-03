@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Dialog } from "@material-tailwind/react";
-import logo from "../../public/images/login.png";
+import logo from "../../public/images/logo11.png";
 import axios from "axios";
 import { API_URI } from "../../src/Contants";
 import { OTPInput } from "../Component/OTPInput";
@@ -66,7 +66,7 @@ export function Login({ name }) {
       });
       return;
     }
-  
+
     try {
       // Prepare the request payload based on available data
       const payload = { otp };
@@ -75,22 +75,22 @@ export function Login({ name }) {
       } else if (email) {
         payload.email = email; // Assuming email is already defined
       }
-  
+
       const resp = await axios.post(`${API_URI}/user/verify-otp`, payload);
-  
+
       if (resp.status === 200) {
         localStorage.setItem('token', resp.data.token);
         localStorage.setItem('userId', resp.data.userId);
         dispatch(userActions.updateUser({ userId: resp.data.userId }));
         FetchUserDetails(resp.data.userId);
-  
+
         Swal.fire({
           title: 'Success!',
           text: 'User logged in successfully',
           icon: 'success',
           confirmButtonText: 'OK',
         });
-  
+
         navigate("/");
       }
     } catch (error) {
@@ -103,7 +103,7 @@ export function Login({ name }) {
       });
     }
   };
-  
+
 
   const FetchUserDetails = async (userId) => {
     try {
@@ -116,7 +116,7 @@ export function Login({ name }) {
 
   return (
     <>
-      <Button onClick={handleOpen} className="text-black shadow-none hover:shadow-none">
+      <Button onClick={handleOpen} className="text-black shadow-none hover:shadow-none ">
         {name}
       </Button>
       <Dialog open={open} handler={handleOpen}>
@@ -130,37 +130,38 @@ export function Login({ name }) {
             <OTPInput otp={otp} handleOtpChange={setOtp} verifyOtp={verifyOtp} />
           ) : (
             <>
-              <div className="w-72 mb-4">
-                <div className="flex justify-between">
-                  <Button 
-                    onClick={() => setInputType("mobile")} 
+              <div className="w-80 mb-4">
+                <div className="flex justify-between gap-2">
+                  <Button
+                    onClick={() => setInputType("mobile")}
                     className={`w-1/2 py-2 text-white ${inputType === "mobile" ? "bg-blue-600" : "bg-gray-400"} transition duration-200`}
                   >
                     Mobile
                   </Button>
-                  <Button 
-                    onClick={() => setInputType("email")} 
+                  <Button
+                    onClick={() => setInputType("email")}
                     className={`w-1/2 py-2 text-white ${inputType === "email" ? "bg-blue-600" : "bg-gray-400"} transition duration-200`}
                   >
                     Email
                   </Button>
                 </div>
-                <div className="relative w-full min-w-[200px] h-10 mt-4">
+                <div className="relative w-full min-w-[200px] h-12 mt-6">
                   <input
                     type={inputType === "email" ? "email" : "text"}
                     className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 border focus:border-2 border-t-transparent text-sm px-3 py-2.5 rounded-md border-blue-gray-200 focus:border-gray-900"
-                    placeholder={inputType === "mobile" ? "+91" : "Email Address"}
+                    placeholder={inputType === "mobile" ? "" : "Email Address"} // Keep placeholder empty for label effect
                     value={inputType === "mobile" ? mobileNumber : email}
                     onChange={handleInputChange}
                   />
-                  <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal leading-tight -top-1.5 text-gray-500 transition-all">
-                    {inputType === "mobile" ? "+91" : "Email Address"}
+                  <label className={`flex w-full font-bold h-full select-none pointer-events-none absolute left-3  leading-tight text-black transition-all duration-200 ${inputType === "mobile" ? "top-[-16px]" : "top-[-16px]"}`}>
+                    {inputType === "mobile" ? "+91" : "Email"}
                   </label>
                 </div>
+
               </div>
-              <Button 
+              <Button
                 onClick={handleLogin}
-                className="bg-blue-600 text-white hover:bg-blue-700 px-6 py-2 rounded"
+                className="bg-blue-600 text-white hover:bg-blue-700 px-8  rounded m-8 py-2 text-xl"
               >
                 Login
               </Button>

@@ -7,7 +7,7 @@ import { FaClipboardList } from "react-icons/fa";
 import { MdLocationOn } from "react-icons/md";
 import { IoWallet } from "react-icons/io5";
 import { CiLogin } from "react-icons/ci";
-import loginIMg from "../../../public/images/login.png";
+import loginIMg from "../../../public/images/logo11.png";
 import Swal from 'sweetalert2'; // Import SweetAlert2
 import { Login } from "../../routes/Login";
 import { userActions } from "../../store/userInfoSlice";

@@ -46,7 +46,11 @@ const userSchema = new mongoose.Schema({
   mobileNumber: {
     type: String,
   },
-  email: { type: String},
+  email: {
+    type: String,
+    
+    sparse: true, // Allows multiple documents without email
+  },
   name: {
     type: String,
   },

@@ -23,9 +23,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const _dirname = path.dirname("");
-const buildPath = path.join(_dirname,"../Frontend/dist");
-app.use(express.static(buildPath));
+// const _dirname = path.dirname("");
+// const buildPath = path.join(_dirname,"../Frontend/dist");
+// app.use(express.static(buildPath));
 // Home route for admin routes
 // Serve static files from the "uploads" directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

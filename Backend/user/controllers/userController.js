@@ -216,6 +216,70 @@ exports.addUserName = async (req, res) => {
   }
 };
 
+// exports.login = async (req, res) => {
+//   const { mobileNumber, email } = req.body;
+
+//   try {
+//     let user;
+//     const otpCode = generateOTP(6); // Generate a 6-digit OTP
+
+//     // Check if the user exists by mobile number or email
+//     if (mobileNumber) {
+//       user = await User.findOne({ mobileNumber }) || new User({ mobileNumber, otp: otpCode });
+//     } else if (email) {
+//       user = await User.findOne({ email }) || new User({ email, otp: otpCode });
+//     } else {
+//       return res.status(400).json({ message: "Please provide either a mobile number or an email." });
+//     }
+
+//     // Update OTP in the user document
+//     user.otp = otpCode;
+//     await user.save();
+
+//     // Send OTP via mobile number using Twilio
+//     if (mobileNumber) {
+//       try {
+//         await twilioClient.messages.create({
+//           body: `Your OTP code is ${otpCode}`,
+//           from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+//           to: mobileNumber,
+//         });
+//         return res.status(200).json({ message: "OTP sent via mobile." });
+//       } catch (error) {
+//         console.error("Twilio error response:", error); // Log detailed error
+//         return res.status(500).json({ message: "Error sending OTP via mobile.", error: error.message });
+//       }
+//     }
+    
+
+//     // Send OTP via email using Nodemailer
+//     if (email) {
+//       const mailOptions = {
+//         from: process.env.EMAIL_USER,
+//         to: email,
+//         subject: 'Your OTP Code',
+//         text: `Your OTP code is ${otpCode}`,
+//       };
+
+//       transporter.sendMail(mailOptions, (error) => {
+//         if (error) {
+//           console.error("Error sending email:", error);
+//           return res.status(500).json({ message: "Error sending OTP via email." });
+//         }
+//         res.status(200).json({ message: "OTP sent via email." });
+//       });
+//     }
+//   } catch (error) {
+//     return res.status(500).json({ message: "Error sending OTP via mobile." });
+
+//   }
+// };
+
+
+
+
+
+
 exports.login = async (req, res) => {
   const { mobileNumber, email } = req.body;
 
@@ -223,17 +287,30 @@ exports.login = async (req, res) => {
     let user;
     const otpCode = generateOTP(6); // Generate a 6-digit OTP
 
-    // Check if the user exists by mobile number or email
+    // If mobileNumber is provided
     if (mobileNumber) {
-      user = await User.findOne({ mobileNumber }) || new User({ mobileNumber, otp: otpCode });
-    } else if (email) {
+      // Find or create user by mobile number
+      user = await User.findOne({ mobileNumber });
+
+      // If the user doesn't exist, create a new one with a demo email and OTP
+      if (!user) {
+        const defaultEmail = `${new mongoose.Types.ObjectId().toString()}@zerodelivery.com`; // Demo email
+        user = new User({ mobileNumber, email: defaultEmail, otp: otpCode });
+      }
+    } 
+    // If email is provided
+    else if (email && email.trim()) {
+      // Find or create user by email
       user = await User.findOne({ email }) || new User({ email, otp: otpCode });
-    } else {
-      return res.status(400).json({ message: "Please provide either a mobile number or an email." });
+    } 
+    else {
+      // If neither mobile number nor email is provided, return an error
+      return res.status(400).json({ message: "Please provide either a valid mobile number or an email." });
     }
 
-    // Update OTP in the user document
+    // Update OTP and expiry
     user.otp = otpCode;
+    user.otpExpires = Date.now() + 15 * 60 * 1000; // OTP expires in 15 minutes
     await user.save();
 
     // Send OTP via mobile number using Twilio
@@ -241,18 +318,25 @@ exports.login = async (req, res) => {
       try {
         await twilioClient.messages.create({
           body: `Your OTP code is ${otpCode}`,
-          from: process.env.TWILIO_PHONE_NUMBER, // Your Twilio phone number
+          from: process.env.TWILIO_PHONE_NUMBER,
           to: mobileNumber,
         });
         return res.status(200).json({ message: "OTP sent via mobile." });
       } catch (error) {
-        console.error("Error sending OTP via Twilio:", error);
-        return res.status(500).json({ message: "Error sending OTP via mobile." });
+        return res.status(500).json({ message: "Error sending OTP via mobile.", error: error.message });
       }
     }
 
     // Send OTP via email using Nodemailer
-    if (email) {
+    if (email && email.trim()) {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
@@ -262,15 +346,18 @@ exports.login = async (req, res) => {
 
       transporter.sendMail(mailOptions, (error) => {
         if (error) {
-          console.error("Error sending email:", error);
           return res.status(500).json({ message: "Error sending OTP via email." });
         }
-        res.status(200).json({ message: "OTP sent via email." });
+        return res.status(200).json({ message: "OTP sent via email." });
       });
+    } else {
+      // If the user only provided a mobile number, return success without email sending
+      return res.status(200).json({ message: "OTP generated and user created without email." });
     }
   } catch (error) {
-    handleErrorResponse(res, error);
+    return res.status(500).json({ message: "Server error occurred.", error: error.message });
   }
 };
+
 
 

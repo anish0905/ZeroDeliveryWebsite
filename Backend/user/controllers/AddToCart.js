@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const User = require("../models/User");
 
 // Add a new item to the cart
@@ -239,42 +240,84 @@ exports.deleteCartByUserId = async (req, res) => {
   }
 };
 
+// exports.getTotalQuantity = async (req, res) => {
+//   try {
+//     const userId = req.params.userId; // Assuming userId is passed as a route parameter
+
+//     // Fetch the user from database
+//     const user = await User.findById(userId);
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Calculate total quantity of products in the cart
+//     const totalQuantity = user.cart.reduce(
+//       (acc, item) => acc + item.quantity,
+//       0
+//     );
+
+//     res.json({ totalQuantity });
+//   } catch (error) {
+//     console.error("Error fetching user cart:", error);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
+
+// exports.getTotalQuantity = async (req, res) => {
+//   try {
+//     const userId = req.params.userId; // Assuming userId is passed as a route parameter
+
+//     // Fetch the user from database
+//     const user = await User.findById(userId);
+
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // Calculate total quantity of products in the cart and include productId
+//     const productDetails = user.cart.map((item) => ({
+//       productId: item.productId,
+//       quantity: item.quantity,
+//       productName: item.productName,
+//       price: item.price,
+//       attributes: item.attributes,
+//       discountPercentage: item.discountPercentage,
+//       promotionCode: item.promotionCode,
+//       Image: item.Image,
+//     }));
+
+//     const totalQuantity = user.cart.reduce(
+//       (acc, item) => acc + item.quantity,
+//       0
+//     );
+
+//     res.json({ totalQuantity, data: productDetails });
+//   } catch (error) {
+//     console.error("Error fetching user cart:", error);
+//     res.status(500).json({ message: "Server Error" });
+//   }
+// };
+
+
+
 exports.getTotalQuantity = async (req, res) => {
   try {
     const userId = req.params.userId; // Assuming userId is passed as a route parameter
 
-    // Fetch the user from database
+    // Check if userId is valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
+    // Fetch the user from the database
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Calculate total quantity of products in the cart
-    const totalQuantity = user.cart.reduce(
-      (acc, item) => acc + item.quantity,
-      0
-    );
-
-    res.json({ totalQuantity });
-  } catch (error) {
-    console.error("Error fetching user cart:", error);
-    res.status(500).json({ message: "Server Error" });
-  }
-};
-
-exports.getTotalQuantity = async (req, res) => {
-  try {
-    const userId = req.params.userId; // Assuming userId is passed as a route parameter
-
-    // Fetch the user from database
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Calculate total quantity of products in the cart and include productId
+    // Calculate total quantity of products in the cart and include product details
     const productDetails = user.cart.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
