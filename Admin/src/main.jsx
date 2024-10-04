@@ -20,6 +20,7 @@ import VendorDetails from "./routes/vendor/VendorDetails";
 import OrderHomePage from "./routes/vendor/OrderHomePage";
 import AddBanner from "./Component/AddBanner";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -62,7 +63,8 @@ const router = createBrowserRouter([
       {
         path: "/addbanner",
         element: <AddBanner/>,
-      }
+      },
+     
     ],
   },
 ]);

@@ -1,6 +1,11 @@
 const Banner = require("../models/banner");
 const upload = require("../../modules/fileModule");
 const multer = require("multer");
+  // Delete a banner by ID
+  const fs = require('fs');
+  const path = require('path'); // Make sure to import the 'path' module
+const { console } = require("inspector");
+
 // Create a new banner
 exports.createBanner = async (req, res,next) => {
   upload.single("file")(req, res, async (err) => {
@@ -91,25 +96,53 @@ exports.createBanner = async (req, res,next) => {
     }
   };
   
-  // Delete a banner by ID
-  exports.deleteBanner = async (req, res) => {
-    try {
-      const deletedBanner = await Banner.findByIdAndDelete(req.params.id);
+
+
   
-      if (!deletedBanner) {
-        return res.status(404).json({
-          message: 'Banner not found',
+  // Delete a banner by ID
+// Delete a banner by ID
+exports.deleteBanner = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: 'ID is required' });
+    }
+
+    // Find the banner by ID
+    const deletedBanner = await Banner.findById(id);
+    
+    if (!deletedBanner) {
+      return res.status(404).json({
+        message: 'Banner not found',
+      });
+    }
+
+    // Construct the path of the file to delete
+    const filePath = path.join(__dirname, '../../uploads', deletedBanner.filename); // Adjust path as necessary
+
+    // Delete the file from the file system
+    fs.unlink(filePath, async (err) => {
+      if (err) {
+        console.error('Error deleting file:', err);
+        return res.status(500).json({
+          message: 'Error deleting banner file',
+          error: err.message,
         });
       }
-  
+
+      // If file deletion is successful, proceed to delete the banner from the database
+      await Banner.deleteOne({ _id: id }); // Correctly delete the banner by ID
+
       res.status(200).json({
         message: 'Banner deleted successfully',
       });
-    } catch (error) {
-      res.status(500).json({
-        message: 'Error deleting banner',
-        error: error.message,
-      });
-    }
-  };
-  
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error deleting banner',
+      error: error.message,
+    });
+  }
+};

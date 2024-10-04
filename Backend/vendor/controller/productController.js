@@ -2,6 +2,10 @@
 const Product = require("../../user/models/Product"); // Adjust the path as necessary
 const upload = require("../../modules/fileModule");
 const multer = require("multer");
+const fs = require('fs');
+const path = require('path');
+const { log } = require("console");
+
 // Create a new product
 exports.createProduct = async (req, res) => {
   upload.fields([{ name: "images", maxCount: 10 }, { name: "thumbnail", maxCount: 1 }])(req, res, async (err) => {
@@ -112,16 +116,46 @@ exports.updateProductById = async (req, res) => {
 // Delete a product by ID
 exports.deleteProductById = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    // Find the product by ID
+    const product = await Product.findById(req.params.id);
+    
+    // Check if the product exists
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    res.status(200).json({ message: "Product deleted successfully" });
+
+    // Delete image files
+    const deleteFile = (filePath) => {
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error('Failed to delete file:', filePath, err);
+        }
+      });
+    };
+
+    // Deleting images in the `images` array
+    if (Array.isArray(product.images)) {
+      product.images.forEach(image => {
+        const imagePath = path.join(__dirname, '../../', image);
+        deleteFile(imagePath);
+      });
+    }
+
+    // Deleting the thumbnail
+    if (product.thumbnail) {
+      const thumbnailPath = path.join(__dirname, '../../', product.thumbnail);
+      deleteFile(thumbnailPath);
+    }
+
+    // Delete the product from the database
+    await Product.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ message: "Product and associated images deleted successfully" });
+
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
-
 // Group products by category
 exports.groupProductsByCategory = async (req, res) => {
   try {

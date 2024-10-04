@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import {API_URI} from "../Contants"
-
+import { API_URI } from "../Contants";
 
 const Banner = () => {
   const [banners, setBanners] = useState([]);
@@ -29,12 +28,13 @@ const Banner = () => {
   }, [banners.length]);
 
   return (
-    <div className="mt-20 object-fill mb-10">
+    <div className="mt-20 mb-10 relative overflow-hidden">
       {banners.length > 0 && (
         <img 
           src={`${API_URI}/${banners[currentSlide].path}`} 
           alt={`Banner ${currentSlide + 1}`} 
-          className="w-full object-cover mb-4 h-96" 
+          className="w-full h-auto object-cover transition-all duration-300 ease-in-out" 
+          style={{ maxHeight: '400px' }} // Set a max height for the banner
         />
       )}
     </div>

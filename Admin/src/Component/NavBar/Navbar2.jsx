@@ -40,11 +40,11 @@ const Navbar2 = () => {
         </NavLink>
 
         <NavLink
-          to="/orders"
+          to="/banner"
           className="p-2 my-2 rounded hover:bg-gray-700"
           activeClassName="bg-gray-700"
         >
-          All Events
+          Manage Banner
         </NavLink>
 
         <NavLink
